@@ -64,8 +64,10 @@ router.get(
   '/google/callback',
   passport.authenticate('google', { session: false, failureRedirect: '/' }),
   (req, res) => {
-    req.session.user = req.user;
-    res.redirect(process.env.FRONTEND_URL || '/');
+    // الواجهة (lhta.html) قد تكون مستضافة على أي رابط، لذلك نمرر بيانات المستخدم
+    // عبر رابط إعادة التوجيه نفسه بدلاً من الاعتماد على كوكيز الجلسة
+    const userParam = encodeURIComponent(JSON.stringify(req.user));
+    res.redirect(`${process.env.FRONTEND_URL || '/'}?oauth_user=${userParam}`);
   }
 );
 
@@ -76,8 +78,8 @@ router.get(
   '/facebook/callback',
   passport.authenticate('facebook', { session: false, failureRedirect: '/' }),
   (req, res) => {
-    req.session.user = req.user;
-    res.redirect(process.env.FRONTEND_URL || '/');
+    const userParam = encodeURIComponent(JSON.stringify(req.user));
+    res.redirect(`${process.env.FRONTEND_URL || '/'}?oauth_user=${userParam}`);
   }
 );
 
