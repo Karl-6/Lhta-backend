@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LHTA — تمارين، تغذية، وأبطال</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;900&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy: #060E22;
+    --navy2: #0B1B3D;
+    --panel: rgba(255,255,255,0.05);
+    --panel-solid: #101F45;
+    --panel-2: #172a57;
+    --blue: #1E4FD8;
+    --blue2: #4E7FFF;
+    --red: #D62839;
+    --red2: #FF4757;
+    --gold: #F4C430;
+    --ink: #F4F6FB;
+    --ink-dim: rgba(244,246,251,0.6);
+    --line: rgba(244,246,251,0.12);
+    --danger: #FF4757;
+    --star: #E7ECF7;
+  }
+  *{ box-sizing: border-box; }
+  html,body{
+    margin:0; padding:0;
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(214,40,57,0.20), transparent 60%),
+      radial-gradient(ellipse 800px 600px at 100% 5%, rgba(30,79,216,0.22), transparent 55%),
+      var(--navy);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    min-height: 100vh;
+  }
+  h1,h2,h3{ font-family: 'Tajawal', sans-serif; margin: 0; }
+  ::selection{ background: var(--red); color: #fff; }
+  [dir="ltr"]{ font-family: 'IBM Plex Sans Arabic', sans-serif; }
+
+  /* ---------- Topbar ---------- */
+  .topbar{
+    display: flex; align-items:center; justify-content: space-between;
+    padding: 18px 32px;
+    border-bottom: 1px solid var(--line);
+    position: sticky; top:0;
+    background: rgba(6,14,34,0.78);
+    backdrop-filter: blur(10px);
+    z-index: 40;
+    gap: 14px;
+  }
+  .brand-wrap{ display:flex; align-items:center; gap:10px; }
+  .brand-badge{
+    width:34px; height:34px; border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, var(--blue2), var(--navy2) 70%);
+    border: 2px solid var(--red);
+    position:relative; flex-shrink:0;
+    box-shadow: 0 0 14px rgba(214,40,57,0.5), inset 0 0 8px rgba(255,255,255,0.15);
+  }
+  .brand-badge::after{
+    content:'★'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    color: var(--star); font-size:0.85rem;
+  }
+  .brand{
+    font-family:'Bebas Neue','Tajawal',sans-serif;
+    font-weight:900; font-size:1.7rem; letter-spacing:3px;
+    background: linear-gradient(90deg, var(--red2) 0%, var(--star) 35%, var(--blue2) 65%, var(--red2) 100%);
+    background-size: 300% auto;
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    animation: shineBrand 5s linear infinite;
+  }
+  @keyframes shineBrand{ to{ background-position: -300% center; } }
+  .actions{ display:flex; gap:10px; align-items:center; }
+
+  .btn{
+    font-family:'IBM Plex Sans Arabic',sans-serif;
+    font-size:0.9rem; padding:10px 20px; border-radius:8px; cursor:pointer;
+    border:1px solid var(--line); background:transparent; color:var(--ink);
+    transition: all 0.25s ease;
+  }
+  .btn:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+  .btn.primary{
+    background: linear-gradient(135deg, var(--red), var(--red2));
+    border-color: transparent; color:#fff; font-weight:700;
+    box-shadow: 0 4px 18px rgba(214,40,57,0.35);
+  }
+  .btn.primary:hover{ transform: translateY(-1px); box-shadow: 0 6px 22px rgba(214,40,57,0.45); }
+  .btn.blue{
+    background: linear-gradient(135deg, var(--blue), var(--blue2));
+    border-color: transparent; color:#fff; font-weight:700;
+  }
+  .btn.ghost:hover{ border-color: var(--ink-dim); }
+  .btn.small{ padding:7px 14px; font-size:0.8rem; }
+  .icon-btn{
+    width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    border:1px solid var(--line); background: var(--panel); cursor:pointer; color:var(--ink);
+    transition: all .2s ease; flex-shrink:0;
+  }
+  .icon-btn:hover{ border-color: var(--gold); transform: rotate(25deg); }
+  .icon-btn svg{ width:19px; height:19px; }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding: 70px 32px 30px;
+    text-align:center;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .hero .eyebrow{
+    display:inline-block;
+    color: var(--gold);
+    font-size:0.8rem;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(244,196,48,0.35);
+    padding: 5px 14px;
+    border-radius: 100px;
+    margin-bottom: 22px;
+  }
+  .welcome-champ{
+    font-family:'Bebas Neue','Tajawal',sans-serif;
+    font-size: clamp(2.1rem, 7vw, 3.6rem);
+    letter-spacing: 4px;
+    margin-bottom: 14px;
+    color: #FFDD57;
+    text-shadow:
+      0 0 6px #FFB020,
+      0 0 16px #FF6A2B,
+      0 0 30px #E63229,
+      0 0 3px #fff;
+    animation: flameFlicker 1.6s infinite alternate;
+  }
+  @keyframes flameFlicker{
+    0%{ text-shadow: 0 0 6px #FFB020, 0 0 16px #FF6A2B, 0 0 30px #E63229, 0 0 3px #fff; }
+    50%{ text-shadow: 0 0 10px #FFD34D, 0 0 22px #FF7A3B, 0 0 42px #E63229, 0 0 4px #fff; }
+    100%{ text-shadow: 0 0 4px #FFB020, 0 0 12px #FF6A2B, 0 0 24px #E63229, 0 0 2px #fff; }
+  }
+  .hero h1{
+    font-size: clamp(1.7rem, 4.4vw, 2.7rem);
+    font-weight: 900; line-height:1.35; margin-bottom:16px;
+  }
+  .hero h1 em{
+    font-style:normal;
+    background: linear-gradient(90deg, var(--red2), var(--blue2));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero p{ color:var(--ink-dim); font-size:1.02rem; line-height:1.9; }
+  .gym-logos{
+    display:flex; gap:22px; justify-content:center; align-items:center;
+    margin-top:26px; opacity:0.75; flex-wrap:wrap;
+  }
+  .gym-logos span{ font-size:1.6rem; filter: grayscale(0.1); }
+
+  .tabs{
+    display:flex; gap:6px; justify-content:center; flex-wrap:wrap;
+    max-width: 620px; margin: 34px auto 0;
+    background: var(--panel-solid); border:1px solid var(--line);
+    border-radius: 12px; padding: 6px;
+  }
+  .tab-btn{
+    flex:1; min-width: 110px; text-align:center; padding:11px 10px; border-radius:8px;
+    cursor:pointer; font-size:0.88rem; color:var(--ink-dim);
+    transition: all 0.2s ease; border:none; background:transparent;
+    font-family:'IBM Plex Sans Arabic',sans-serif;
+  }
+  .tab-btn.active{ background: linear-gradient(135deg, var(--blue), var(--red)); color: #fff; font-weight:700; }
+
+  .content-wrap{ max-width: 1040px; margin: 0 auto; padding: 40px 32px 100px; }
+
+  .day-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+  }
+  .day-card{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px 22px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .day-card::before{
+    content:'';
+    position:absolute; inset:0;
+    background: linear-gradient(135deg, rgba(214,40,57,0.10), transparent 50%);
+    pointer-events:none;
+  }
+  .day-card .day-name{
+    font-family:'Tajawal',sans-serif; font-weight:800; font-size:1.15rem;
+    margin-bottom: 4px;
+  }
+  .day-card .day-type{
+    display:inline-block; font-size:0.78rem; color: var(--blue2);
+    margin-bottom: 14px;
+  }
+  .day-card .row{
+    display:flex; justify-content:space-between; gap:10px;
+    font-size:0.85rem; color: var(--ink-dim);
+    padding: 8px 0; border-top: 1px solid var(--line);
+  }
+  .day-card .row:first-of-type{ border-top:none; }
+  .day-card .row b{ color: var(--ink); font-weight:500; }
+  .day-card .desc{
+    font-size:0.88rem; line-height:1.8; color: var(--ink-dim);
+    margin-top: 10px;
+  }
+
+  /* ---------- Pro Blueprint: summary bar ---------- */
+  .summary-bar{
+    display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:12px;
+    background: var(--panel-solid); border:1px solid var(--line); border-radius:14px;
+    padding: 18px; margin-bottom: 26px;
+  }
+  .summary-item{ display:flex; flex-direction:column; gap:6px; text-align:center; }
+  .summary-item .slabel{ font-size:0.75rem; color: var(--ink-dim); }
+  .summary-item .sval{ font-family:'Tajawal',sans-serif; font-weight:800; font-size:1rem; }
+  .summary-item .sval.kcal{ color: var(--red2); }
+
+  /* ---------- Pro Blueprint: workout week ---------- */
+  .week-list{ display:flex; flex-direction:column; gap:16px; }
+  .day-head{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:6px; }
+  .day-head .day-name{ font-family:'Tajawal',sans-serif; font-weight:800; font-size:1.1rem; }
+  .day-head .day-type{ display:block; font-size:0.82rem; color: var(--blue2); font-weight:500; margin-top:2px; }
+  .day-head .day-type.rest{ color: var(--gold); }
+  .duration-tag{
+    font-size:0.78rem; color: var(--ink-dim); border:1px solid var(--line);
+    padding:4px 12px; border-radius:100px; flex-shrink:0;
+  }
+  .rest-card{ border-color: rgba(244,196,48,0.3); }
+  .rest-notes{ margin: 12px 0 0; padding-inline-start: 18px; font-size:0.85rem; color:var(--ink-dim); line-height:1.9; }
+  .exercise-table-wrap{ overflow-x:auto; margin-top:16px; }
+  .exercise-table{ width:100%; border-collapse:collapse; min-width: 520px; }
+  .exercise-table th{
+    text-align:right; font-size:0.72rem; font-weight:500; color:var(--ink-dim);
+    padding: 8px 10px; border-bottom:1px solid var(--line);
+  }
+  .exercise-table td{
+    padding: 10px 10px; font-size:0.82rem; border-bottom:1px solid var(--line); vertical-align:top;
+  }
+  .exercise-table tr:last-child td{ border-bottom:none; }
+  .exercise-table td b{ display:block; font-weight:600; }
+  .exercise-table .ex-en{ display:block; font-size:0.72rem; color:var(--ink-dim); direction:ltr; text-align:right; }
+  .exercise-table .ex-tempo{ color: var(--gold); font-size:0.76rem; }
+
+  /* ---------- Pro Blueprint: nutrition ---------- */
+  .meal-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:16px; margin-bottom: 26px; }
+  .meal-card{ background: var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px 20px; }
+  .meal-head{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+  .meal-num{
+    width:30px; height:30px; border-radius:50%; flex-shrink:0;
+    background: linear-gradient(135deg, var(--blue), var(--red)); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.9rem;
+  }
+  .meal-title{ font-family:'Tajawal',sans-serif; font-weight:700; font-size:0.98rem; }
+  .meal-title-en{ font-size:0.74rem; color:var(--ink-dim); direction:ltr; text-align:right; }
+  .meal-macros{ display:flex; gap:12px; flex-wrap:wrap; font-size:0.78rem; color:var(--ink-dim); margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--line); }
+  .meal-macros .mkcal{ color: var(--red2); font-weight:700; }
+  .meal-items{ margin:0; padding-inline-start:18px; font-size:0.83rem; line-height:1.85; color:var(--ink-dim); }
+  .meal-items b{ color: var(--ink); }
+  .rules-box{ background: var(--panel-solid); border:1px solid var(--line); border-radius:14px; padding:20px 22px; }
+  .rules-box h3{ font-size:1rem; margin-bottom:14px; }
+  .rules-box ul{ margin:0; padding-inline-start:18px; font-size:0.85rem; line-height:2; color:var(--ink-dim); }
+  .rules-box ul b{ color: var(--ink); }
+
+  .lock-wrap{
+    text-align:center;
+    padding: 70px 24px;
+    border: 1px dashed var(--line);
+    border-radius: 16px;
+    color: var(--ink-dim);
+  }
+  .lock-wrap svg{ width:30px; height:30px; stroke: var(--red2); margin-bottom:14px; }
+  .lock-wrap p{ margin-bottom: 20px; }
+
+  /* ---------- Calculator ---------- */
+  .calc-grid{ display:grid; grid-template-columns: 1.1fr 0.9fr; gap: 22px; }
+  @media (max-width: 800px){ .calc-grid{ grid-template-columns: 1fr; } }
+  .calc-search{
+    width:100%; background: var(--bg2, var(--panel-solid)); border:1px solid var(--line); color:var(--ink);
+    font-family:'IBM Plex Sans Arabic',sans-serif; font-size:0.95rem; padding:13px 16px; border-radius:10px;
+    margin-bottom: 14px;
+  }
+  .calc-search:focus{ outline:2px solid var(--blue2); outline-offset:1px; }
+  .food-list{ max-height: 420px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; padding-left:4px; }
+  .food-item{
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    background: var(--panel); border:1px solid var(--line); border-radius:10px; padding:11px 14px;
+    cursor:pointer; transition: border-color .2s ease;
+  }
+  .food-item:hover{ border-color: var(--blue2); }
+  .food-item .fname{ font-weight:600; font-size:0.92rem; }
+  .food-item .fmeta{ font-size:0.76rem; color: var(--ink-dim); }
+  .food-item .fadd{
+    width:30px; height:30px; border-radius:50%; background: linear-gradient(135deg, var(--blue), var(--blue2));
+    color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0;
+  }
+  .log-panel{ background: var(--panel-solid); border:1px solid var(--line); border-radius:14px; padding:20px; }
+  .log-empty{ text-align:center; color:var(--ink-dim); padding:30px 10px; font-size:0.9rem; }
+  .log-row{
+    display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--line);
+  }
+  .log-row:last-of-type{ border-bottom:none; }
+  .log-row .lname{ flex:1; font-size:0.88rem; }
+  .log-row .lgrams{
+    width:70px; background: var(--panel-2); border:1px solid var(--line); color:var(--ink);
+    border-radius:6px; padding:6px 8px; font-size:0.82rem; text-align:center;
+  }
+  .log-row .lkcal{ font-size:0.8rem; color:var(--gold); width:60px; text-align:left; }
+  .log-row .lremove{ color: var(--red2); cursor:pointer; font-size:1rem; background:none; border:none; }
+  .totals-box{
+    margin-top:16px; padding-top:16px; border-top:2px solid var(--line);
+    display:grid; grid-template-columns: repeat(4,1fr); gap:10px; text-align:center;
+  }
+  .totals-box .tval{ font-family:'Tajawal',sans-serif; font-weight:800; font-size:1.15rem; }
+  .totals-box .tlabel{ font-size:0.72rem; color:var(--ink-dim); margin-top:2px; }
+  .totals-box .tval.kcal{ color: var(--red2); }
+  .totals-box .tval.protein{ color: var(--blue2); }
+  .totals-box .tval.carbs{ color: var(--gold); }
+  .totals-box .tval.fat{ color: var(--ink-dim); }
+
+  /* ---------- Recipes ---------- */
+  .recipe-subtabs{ display:flex; gap:10px; margin-bottom:24px; }
+  .recipe-subtabs button{
+    flex:1; padding:13px; border-radius:10px; border:1px solid var(--line); cursor:pointer;
+    font-family:'Tajawal',sans-serif; font-weight:700; font-size:0.95rem; background: var(--panel);
+    color: var(--ink-dim); transition: all .2s ease;
+  }
+  .recipe-subtabs button.active.gain{ background: linear-gradient(135deg,#2b6b3a,#3f9a55); color:#fff; border-color:transparent; }
+  .recipe-subtabs button.active.loss{ background: linear-gradient(135deg, var(--blue), var(--blue2)); color:#fff; border-color:transparent; }
+  .recipe-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap:18px; }
+  .recipe-card{
+    background: var(--panel-solid); border:1px solid var(--line); border-radius:16px;
+    overflow:hidden; display:flex; flex-direction:column;
+  }
+  .recipe-top{ padding:20px 20px 14px; position:relative; }
+  .recipe-emoji{ font-size:2.1rem; margin-bottom:8px; display:block; }
+  .recipe-name{ font-family:'Tajawal',sans-serif; font-weight:800; font-size:1.08rem; margin-bottom:8px; }
+  .recipe-meta{ display:flex; gap:12px; font-size:0.78rem; color:var(--ink-dim); flex-wrap:wrap; margin-bottom:8px; }
+  .recipe-goal{
+    display:inline-block; font-size:0.72rem; padding:3px 10px; border-radius:100px; font-weight:600;
+  }
+  .recipe-goal.gain{ background: rgba(63,154,85,0.18); color:#7CD98F; border:1px solid rgba(63,154,85,0.4); }
+  .recipe-goal.loss{ background: rgba(30,79,216,0.18); color:#8FB4FF; border:1px solid rgba(30,79,216,0.4); }
+  .fav-btn{
+    position:absolute; top:16px; left:16px; background:none; border:none; font-size:1.25rem;
+    cursor:pointer; color: var(--ink-dim); transition: transform .15s ease, color .15s ease;
+  }
+  .fav-btn.saved{ color: var(--red2); transform: scale(1.15); }
+  .recipe-macros{ display:flex; gap:14px; padding: 0 20px 14px; font-size:0.78rem; color:var(--ink-dim); }
+  .recipe-macros b{ color:var(--ink); }
+  .recipe-details{
+    border-top:1px solid var(--line); padding:14px 20px 18px; font-size:0.85rem; color:var(--ink-dim);
+    display:none; line-height:1.9;
+  }
+  .recipe-details.open{ display:block; }
+  .recipe-details h4{ color:var(--ink); font-size:0.85rem; margin: 10px 0 6px; }
+  .recipe-details ul{ margin:0; padding-inline-start:18px; }
+  .recipe-toggle{
+    text-align:center; padding:11px; cursor:pointer; font-size:0.82rem; color: var(--blue2);
+    border-top:1px solid var(--line); font-weight:600;
+  }
+  .diff-tag{ font-size:0.72rem; padding:2px 9px; border-radius:100px; background:var(--panel-2); color:var(--ink-dim); }
+
+  /* ---------- Modals ---------- */
+  .modal-backdrop{
+    position:fixed; inset:0; background: rgba(4,8,20,0.85); backdrop-filter: blur(5px);
+    display:none; align-items:center; justify-content:center; z-index:60; padding:20px;
+  }
+  .modal-backdrop.open{ display:flex; }
+  .modal{
+    background: var(--panel-solid); border:1px solid var(--line);
+    width:100%; max-width:400px; padding:30px 26px; border-radius:14px;
+  }
+  .modal.wide{ max-width: 620px; }
+  .modal h2{ font-size:1.3rem; margin-bottom:20px; }
+  .field{ margin-bottom:14px; }
+  .field label{ display:block; font-size:0.82rem; color:var(--ink-dim); margin-bottom:6px; }
+  .field input, .field select, .field textarea{
+    width:100%; background: var(--navy2); border:1px solid var(--line); color:var(--ink);
+    font-family:'IBM Plex Sans Arabic',sans-serif; font-size:0.95rem; padding:11px 13px; border-radius:8px;
+  }
+  .field textarea{ min-height: 70px; resize: vertical; line-height:1.7; }
+  .field input:focus, .field select:focus, .field textarea:focus{ outline:2px solid var(--blue2); outline-offset:1px; border-color:transparent; }
+  .modal .error{ color:var(--danger); font-size:0.82rem; margin:-4px 0 12px; min-height:1em; }
+  .modal-actions{ display:flex; gap:10px; margin-top:18px; }
+  .modal-actions .btn{ flex:1; }
+  .switch-line{ margin-top:16px; text-align:center; font-size:0.85rem; color:var(--ink-dim); }
+  .switch-line a{ color:var(--blue2); cursor:pointer; text-decoration:none; }
+  .divider-or{ display:flex; align-items:center; gap:10px; margin:18px 0; color:var(--ink-dim); font-size:0.78rem; }
+  .divider-or::before, .divider-or::after{ content:''; flex:1; height:1px; background:var(--line); }
+  .social-row{ display:flex; gap:10px; }
+  .social-btn{
+    flex:1; display:flex; align-items:center; justify-content:center; gap:7px;
+    padding:10px; border-radius:8px; border:1px solid var(--line); background: var(--navy2);
+    color:var(--ink); font-size:0.82rem; cursor:pointer; transition: all .2s ease;
+  }
+  .social-btn:hover{ border-color: var(--blue2); transform: translateY(-1px); }
+  .social-btn svg{ width:16px; height:16px; }
+
+  /* ---------- Settings drawer ---------- */
+  .drawer-backdrop{
+    position:fixed; inset:0; background:rgba(4,8,20,0.6); z-index:70; display:none;
+  }
+  .drawer-backdrop.open{ display:block; }
+  .drawer{
+    position:fixed; top:0; bottom:0; right:0; width:min(50vw, 420px);
+    background: linear-gradient(165deg, var(--navy2) 0%, #16143a 60%, var(--navy) 100%);
+    border-left: 1px solid var(--line);
+    box-shadow: -20px 0 60px rgba(0,0,0,0.5);
+    transform: translateX(100%); transition: transform .35s cubic-bezier(.2,.8,.2,1);
+    display:flex; flex-direction:column; z-index:71;
+  }
+  [dir="ltr"] .drawer{ right:auto; left:0; transform: translateX(-100%); }
+  .drawer.open{ transform: translateX(0); }
+  @media (max-width: 640px){ .drawer{ width: 86vw; } }
+  .drawer-head{ display:flex; justify-content:space-between; align-items:center; padding:22px 24px; border-bottom:1px solid var(--line); }
+  .drawer-head h2{ font-size:1.2rem; }
+  .drawer-body{ padding:22px 24px; flex:1; overflow-y:auto; }
+  .drawer-section{ margin-bottom:26px; }
+  .drawer-section .label{ font-size:0.8rem; color:var(--ink-dim); margin-bottom:10px; }
+  .lang-options{ display:flex; gap:8px; }
+  .lang-options button{
+    flex:1; padding:10px; border-radius:9px; border:1px solid var(--line); background:var(--panel);
+    color:var(--ink-dim); cursor:pointer; font-size:0.85rem;
+  }
+  .lang-options button.active{ background: linear-gradient(135deg, var(--blue), var(--red)); color:#fff; border-color:transparent; font-weight:700; }
+  .drawer-foot{ padding:18px 24px; border-top:1px solid var(--line); text-align:center; font-size:0.78rem; color:var(--ink-dim); }
+  .close-x{ background:none; border:none; color:var(--ink-dim); font-size:1.3rem; cursor:pointer; }
+
+  /* ---------- Admin ---------- */
+  .admin-panel{ max-width: 1000px; margin: 50px auto 100px; padding: 0 32px; }
+  .admin-tabs{ display:flex; gap:8px; margin-bottom: 26px; flex-wrap:wrap; }
+  .admin-tabs .tab-btn{ flex:none; padding:9px 18px; background:var(--panel-solid); border:1px solid var(--line); }
+  .admin-tabs .tab-btn.active{ background: var(--red); color:#fff; border-color:transparent; }
+
+  table{ width:100%; border-collapse:collapse; background:var(--panel-solid); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+  th,td{ text-align:right; padding:12px 16px; font-size:0.88rem; border-bottom:1px solid var(--line); }
+  th{ color:var(--ink-dim); font-weight:500; background:var(--panel-2); }
+  tr:last-child td{ border-bottom:none; }
+  .empty-row td{ color:var(--ink-dim); text-align:center; padding:30px; }
+
+  .edit-day{
+    background: var(--panel-solid); border:1px solid var(--line); border-radius:12px;
+    padding: 18px 20px; margin-bottom:14px;
+  }
+  .edit-day .day-title{ font-weight:700; margin-bottom:12px; }
+  .edit-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:12px; }
+
+  footer{ text-align:center; padding:26px; font-size:0.8rem; color:var(--ink-dim); border-top:1px solid var(--line); }
+  footer a{ color:var(--ink-dim); cursor:pointer; }
+  footer .credit{ display:block; margin-top:6px; font-size:0.74rem; letter-spacing:1px; color: var(--ink-dim); opacity:0.7; }
+  .admin-la{
+    display:inline-block; font-family:'Bebas Neue','Tajawal',sans-serif; letter-spacing:1px;
+    padding:1px 7px; border-radius:5px; cursor:pointer; user-select:none;
+    color: var(--ink-dim); opacity:0.55; transition: opacity .2s ease;
+  }
+  .admin-la:hover{ opacity:1; }
+
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand-wrap">
+    <div class="brand-badge"></div>
+    <div class="brand" data-i18n="brand">LHTA</div>
+  </div>
+  <div class="actions">
+    <div id="topActions"></div>
+    <button class="icon-btn" id="settingsBtn" title="الإعدادات" aria-label="الإعدادات">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+  </div>
+</div>
+
+<div id="mainView"></div>
+
+<footer>
+  <span data-i18n="footerText">LHTA</span>
+  <span class="credit">by saen · <span id="adminLA" class="admin-la" title=" ">LA</span></span>
+</footer>
+
+<!-- Settings Drawer -->
+<div class="drawer-backdrop" id="settingsBackdrop">
+  <div class="drawer" id="settingsDrawer">
+    <div class="drawer-head">
+      <h2 data-i18n="settingsTitle">الإعدادات</h2>
+      <button class="close-x" id="settingsClose">✕</button>
+    </div>
+    <div class="drawer-body">
+      <div class="drawer-section">
+        <div class="label" data-i18n="langLabel">اللغة / Language / Langue</div>
+        <div class="lang-options">
+          <button data-lang="ar">العربية</button>
+          <button data-lang="en">English</button>
+          <button data-lang="fr">Français</button>
+        </div>
+      </div>
+      <div class="drawer-section">
+        <div class="label" data-i18n="aboutLabel">عن LHTA</div>
+        <p style="font-size:0.85rem; color:var(--ink-dim); line-height:1.8;" data-i18n="aboutText">
+          LHTA منصتك الكاملة للتمارين والتغذية وحساب السعرات — بروح الأبطال، لتصل لهدفك بانضباط بطل.
+        </p>
+      </div>
+    </div>
+    <div class="drawer-foot">LHTA © 2026 — by saen</div>
+  </div>
+</div>
+
+<!-- Register Modal -->
+<div class="modal-backdrop" id="registerBackdrop">
+  <div class="modal">
+    <h2 data-i18n="createAccount">إنشاء حساب</h2>
+    <div class="field"><label for="regName" data-i18n="nameLabel">الاسم</label><input id="regName" type="text" autocomplete="name"></div>
+    <div class="field"><label for="regEmail" data-i18n="emailLabel">الإيميل</label><input id="regEmail" type="email" autocomplete="email"></div>
+    <div class="field"><label for="regPass" data-i18n="passLabel">كلمة المرور</label><input id="regPass" type="password" autocomplete="new-password"></div>
+    <div class="error" id="regError"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="regCancel" data-i18n="cancel">إلغاء</button>
+      <button class="btn primary" id="regSubmit" data-i18n="register">تسجيل</button>
+    </div>
+    <div class="switch-line"><span data-i18n="haveAccount">عندك حساب؟</span> <a id="toLogin" data-i18n="loginLink">سجّل دخول</a></div>
+  </div>
+</div>
+
+<!-- Login Modal -->
+<div class="modal-backdrop" id="loginBackdrop">
+  <div class="modal">
+    <h2 data-i18n="loginTitle">تسجيل الدخول</h2>
+    <div class="field"><label for="logEmail" data-i18n="emailLabel">الإيميل</label><input id="logEmail" type="email" autocomplete="email"></div>
+    <div class="field"><label for="logPass" data-i18n="passLabel">كلمة المرور</label><input id="logPass" type="password" autocomplete="current-password"></div>
+    <div class="error" id="logError"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="logCancel" data-i18n="cancel">إلغاء</button>
+      <button class="btn primary" id="logSubmit" data-i18n="login">دخول</button>
+    </div>
+    <div class="switch-line"><span data-i18n="noAccount">ما عندك حساب؟</span> <a id="toRegister" data-i18n="registerLink">أنشئ واحد</a></div>
+  </div>
+</div>
+
+<!-- Admin login modal -->
+<div class="modal-backdrop" id="adminBackdrop">
+  <div class="modal">
+    <h2>دخول المشرف</h2>
+    <div class="field"><label for="adminPass">كلمة مرور المشرف</label><input id="adminPass" type="password"></div>
+    <div class="error" id="adminError"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="adminCancel">إلغاء</button>
+      <button class="btn primary" id="adminSubmit">دخول</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  const DAY_NAMES = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+
+  const PLAN_SUMMARY = {
+    splitName: 'Upper / Lower Split',
+    frequency: '4 تمرين / 3 راحة',
+    tempoSystem: 'نظام الـ Tempo وال RIR',
+    rirTarget: 'RIR 1 - 2 (قريب للفشل)',
+    proteinTarget: '150g - 160g',
+    dailyCalories: '~2150 Kcal'
+  };
+
+  const defaultWorkoutPlan = [
+    { day:'الأحد', isRest:false, title:'علوي أ (Upper A)', focus:'التركيز: قوة صدر، ظهر عمودي وأكتاف جانبية', duration:'55 دقيقة',
+      exercises:[
+        {ar:'صدر مستوٍ بالبار', en:'Barbell Bench Press', sets:'4', reps:'6-8', rest:'90-120 ثا', tempo:'Tempo 3-0-1-0 | RIR 2'},
+        {ar:'سحب ظهر عمودي قبضة واسعة', en:'Lat Pulldown', sets:'4', reps:'8-10', rest:'75-90 ثا', tempo:'Tempo 3-1-1-0 | RIR 1-2'},
+        {ar:'صدر مائل بالدامبلز 30°', en:'Incline DB Press', sets:'3', reps:'8-10', rest:'75 ثا', tempo:'Tempo 2-0-1-0 | RIR 1'},
+        {ar:'رفرفة كتف جانبي بالدامبلز', en:'DB Lateral Raises', sets:'4', reps:'12-15', rest:'60 ثا', tempo:'ثبات 1 ثانية بالقمة | RIR 1'},
+        {ar:'ترايسبس حبل (Rope)', en:'Rope Triceps Pushdown', sets:'3', reps:'10-12', rest:'60 ثا', tempo:'فتح الحبل بالأسفل | RIR 0-1'},
+        {ar:'بايسبس بار مستقيم/EZ', en:'Barbell Biceps Curl', sets:'3', reps:'10-12', rest:'60 ثا', tempo:'نزول بطيء وممتحكم | RIR 1'},
+      ]},
+    { day:'الاثنين', isRest:false, title:'سفلي أ (Lower A)', focus:'التركيز: قوة عضلات الفخذ الأمامية والسمانة', duration:'50 دقيقة',
+      exercises:[
+        {ar:'سكوات خلفي كامل', en:'Barbell Back Squat', sets:'4', reps:'6-8', rest:'120 ثا', tempo:'Tempo 3-1-1-0 | RIR 2'},
+        {ar:'ضغط أرجل بالجهاز', en:'Leg Press', sets:'3', reps:'10-12', rest:'90 ثا', tempo:'مدى حركي كامل دون قفل الركبة'},
+        {ar:'طحن خلفي للأفخاذ', en:'Lying/Seated Leg Curl', sets:'4', reps:'10-12', rest:'60-75 ثا', tempo:'Tempo 3-0-1-1 | RIR 1'},
+        {ar:'طعن متقدم بالدامبلز', en:'Walking DB Lunges', sets:'3', reps:'10 عدات/رجل', rest:'75 ثا', tempo:'تركيز على استقرار الحوض والنزول'},
+        {ar:'سمانة واقف بالجهاز', en:'Standing Calf Raises', sets:'4', reps:'12-15', rest:'45-60 ثا', tempo:'تمدد كامل بالأسفل وثبات ثانية بالأعلى'},
+      ]},
+    { day:'الثلاثاء', isRest:true, title:'راحة نشطة (Active Rest)', focus:'استشفاء واستعادة الجهاز العصبي المركزي (CNS)', duration:'—',
+      restNotes:['راحة تامة من الأوزان', 'مشي خارجي منخفض الشدة لمدة 30-40 دقيقة (Zone 2 Cardio)', 'شرب 3.5 لتر ماء والحفاظ على نفس سعرات الخطة'] },
+    { day:'الأربعاء', isRest:false, title:'علوي ب (Upper B)', focus:'التركيز: سمك الظهر، زوايا الصدر العلوية والأكتاف', duration:'55 دقيقة',
+      exercises:[
+        {ar:'ضغط كتف عسكري بار', en:'Overhead Military Press', sets:'4', reps:'6-8', rest:'90-120 ثا', tempo:'بطن مشدود وثبات جذع | RIR 2'},
+        {ar:'سحب أرضي بار / T-Bar', en:'Barbell / T-Bar Row', sets:'4', reps:'8-10', rest:'90 ثا', tempo:'سحب نحو السرة وعصر الظهر | RIR 1'},
+        {ar:'تجميع صدر مائل بالدامبلز', en:'Incline DB Chest Press', sets:'3', reps:'8-10', rest:'75 ثا', tempo:'Tempo 3-0-1-0 | RIR 1-2'},
+        {ar:'سحب كابل ضيق', en:'Chest Supported Row / Cable Row', sets:'3', reps:'10-12', rest:'60-75 ثا', tempo:'تمدد أمامي كامل للّانس'},
+        {ar:'سحب بالحبل للأكتاف الخلفية', en:'Face Pulls', sets:'4', reps:'12-15', rest:'60 ثا', tempo:'صحة الكتف ودوران خارجي ممتاز'},
+        {ar:'سوبرست ذراعين نهاية الحصة', en:'Incline DB Curl + Overhead Triceps Ext', sets:'3', reps:'10-12 لكل تمرين', rest:'60 ثا', tempo:'Superset'},
+      ]},
+    { day:'الخميس', isRest:false, title:'سفلي ب (Lower B)', focus:'التركيز: السلسلة الخلفية (Hamstrings/Glutes) والجذع', duration:'50 دقيقة',
+      exercises:[
+        {ar:'رفعة ميتة رومانية', en:'Romanian Deadlift (RDL)', sets:'4', reps:'8-10', rest:'90-120 ثا', tempo:'دفع الحوض للخلف وظهر مستقيم تماماً'},
+        {ar:'سكوات بلغاري بدامبلز', en:'Bulgarian Split Squat', sets:'3', reps:'8-10 عدات/رجل', rest:'75 ثا', tempo:'تركيز هائل على رباعية الرؤوس والأرداف'},
+        {ar:'تمديد أمامي بالجهاز', en:'Leg Extension', sets:'3', reps:'12-15', rest:'60 ثا', tempo:'عصر 1 ثانية بالقمة | Drop Set بآخر مجموعة'},
+        {ar:'سمانة جالس', en:'Seated Calf Raises', sets:'4', reps:'12-15', rest:'45 ثا', tempo:'استهداف عضلة Soleus الداخلية'},
+        {ar:'رفع أرجل + بلانك', en:'Hanging Leg Raises / Plank', sets:'3', reps:'12-15 عدة / 45 ثا', rest:'45 ثا', tempo:'تقوية جدار البطن وتثبيت العمود الفقري'},
+      ]},
+    { day:'الجمعة', isRest:true, title:'راحة تامة وإعداد أسبوعي (Meal Prep)', focus:'الاستشفاء والجاهزية البدنية', duration:'—',
+      restNotes:['راحة كاملة من التمرين', 'تجهيز أطعمة الأسبوع القادم (طبخ الدجاج والأرز مسبقاً في علب)'] },
+    { day:'السبت', isRest:true, title:'كارديو هوائي وإطالات حركية', focus:'مرونة الأوتار واستشفاء عام', duration:'—',
+      restNotes:['35 دقيقة مشي مائل أو دراجة ثابتة (Incline Treadmill)', '15 دقيقة إطالات شاملة لمرونة الأوتار', 'النوم المبكر'] },
+  ];
+
+  const defaultMealPlan = {
+    dailyCalories: '~2150 Kcal',
+    proteinTarget: '150g - 160g',
+    meals: [
+      { title:'وجبة الفطور الصباحي', titleEn:'Petit Déjeuner', kcal:420, p:28, c:48, f:13,
+        items:[
+          {label:'البيض', text:'3 حبات بيض (2 كاملة + 1 بياض) مطبوخ بمسحة زيت زيتون (أو مسلوق)'},
+          {label:'الشوفان', text:'60 غرام شوفان مطبوخ بالماء أو مع 100 مل حليب خالي الدسم + ملعقة صغيرة عسل طبيعي'},
+          {label:'الدهون والنشاط', text:'15-20 غرام فول سوداني غير مملح + فنجان قهوة سوداء بدون سكر'},
+        ]},
+      { title:'وجبة الغداء الرئيسية', titleEn:'Déjeuner', kcal:640, p:46, c:75, f:14,
+        items:[
+          {label:'البروتين', text:'160 غرام صدر دجاج طبيعي بتوابل، مطهو بمسحة زيت خفيفة'},
+          {label:'النشويات', text:'160 غرام أرز أبيض أو بسمتي مطبوخ (أو 230 غرام بطاطا مغلية/بالفرن)'},
+          {label:'الخضار والألياف', text:'صحن سلطة جزائرية (طماطم، خيار، فلفل حلو، فجل) + ملعقة صغيرة (5 مل) زيت زيتون وليمون'},
+        ]},
+      { title:'وجبة ما قبل التمرين', titleEn:'Pre-Workout Snack', kcal:220, p:8, c:45, f:1,
+        items:[
+          {label:'طاقة سريعة ومستدامة', text:'3 حبات تمر أو حبة موز متوسطة (لشحن مخازن الغليكوجين وتوفير البوتاسيوم)'},
+          {label:'الهضم والتركيز', text:'علبة زبادي طبيعي بدون سكر + فنجان قهوة مركزة (إسبريسو) بدون سكر لتعزيز الأداء والتركيز'},
+        ]},
+      { title:'وجبة العشاء والاستشفاء', titleEn:'Dîner', kcal:570, p:44, c:62, f:12,
+        items:[
+          {label:'البروتين', text:'علبة تونة مصفاة تماماً من الزيت أو بالماء، أو 150-180 غرام سردين مشوي (غني بالأوميغا 3)'},
+          {label:'الكارب البطيء', text:'120 غرام عدس مطهو أو حمص بدون دهون تجارية، أو 120 غرام كسكس قمح صلب'},
+          {label:'الخضار', text:'صحن خضار مسلوقة أو مبخّرة (لوبيا خضراء، جزر) لتعويض المعادن'},
+        ]},
+      { title:'وجبة ما قبل النوم', titleEn:'Night Snack', kcal:200, p:24, c:6, f:5,
+        items:[
+          {label:'كازين طبيعي', text:'180-200 غرام جبن أبيض طازج (ريجيم 0% أو منخفض الدسم / Fromage Blanc) لتغذية الألياف ببطء طوال النوم'},
+        ]},
+    ],
+    rules: [
+      {title:'مفهوم الـ RIR (Reps in Reserve)', text:'عندما يحدد التمرين RIR 1-2، هذا يعني اختيار وزن يجعلك تتوقف قبل الوصول إلى العجز التام بعدة أو عدتين فقط.'},
+      {title:'التحكم في الإيقاع (Tempo)', text:'النزول بالوزن (Eccentric) في 3 ثوانٍ يخلق تمزقات مجهرية ممتازة لتحفيز النمو العضلي؛ لا تدع الوزن يسقط بفعل الجاذبية.'},
+      {title:'الماء والأملاح', text:'استهلاك 3.2 إلى 3.5 لتر ماء يومياً أساسي لضخ الدم ونقل المغذيات؛ أضف رشة ملح بحري خفيفة لوجبة ما قبل التمرين لمنع الهبوط وضمان اكتمال الضخ (Pump).'},
+    ]
+  };
+
+  // ---------- Food database (per 100g) ----------
+  const FOOD_DB = [
+    {n:'أرز أبيض مطبوخ', kcal:130, p:2.7, c:28, f:0.3},
+    {n:'صدر دجاج مشوي', kcal:165, p:31, c:0, f:3.6},
+    {n:'بيضة مسلوقة', kcal:155, p:13, c:1.1, f:11},
+    {n:'خبز أبيض', kcal:265, p:9, c:49, f:3.2},
+    {n:'خبز أسمر', kcal:247, p:13, c:41, f:3.4},
+    {n:'زيت زيتون', kcal:884, p:0, c:0, f:100},
+    {n:'موز', kcal:89, p:1.1, c:23, f:0.3},
+    {n:'تفاح', kcal:52, p:0.3, c:14, f:0.2},
+    {n:'حليب كامل الدسم', kcal:61, p:3.2, c:4.8, f:3.3},
+    {n:'زبادي يوناني', kcal:59, p:10, c:3.6, f:0.4},
+    {n:'جبنة بيضاء', kcal:264, p:18, c:3, f:20},
+    {n:'تمر', kcal:282, p:2.5, c:75, f:0.4},
+    {n:'حمص', kcal:164, p:8, c:27, f:2.6},
+    {n:'فلافل', kcal:333, p:13, c:32, f:18},
+    {n:'شاورما دجاج', kcal:220, p:18, c:12, f:12},
+    {n:'عدس مطبوخ', kcal:116, p:9, c:20, f:0.4},
+    {n:'سلطة خضراء', kcal:20, p:1.2, c:3.6, f:0.2},
+    {n:'تونة معلبة', kcal:116, p:26, c:0, f:0.8},
+    {n:'سلمون مشوي', kcal:208, p:20, c:0, f:13},
+    {n:'شوفان نيء', kcal:389, p:17, c:66, f:7},
+    {n:'لوز', kcal:579, p:21, c:22, f:50},
+    {n:'زبدة فول سوداني', kcal:588, p:25, c:20, f:50},
+    {n:'أفوكادو', kcal:160, p:2, c:9, f:15},
+    {n:'بطاطا حلوة', kcal:86, p:1.6, c:20, f:0.1},
+    {n:'بطاطا مسلوقة', kcal:87, p:2, c:20, f:0.1},
+    {n:'معكرونة مطبوخة', kcal:131, p:5, c:25, f:1.1},
+    {n:'لحم بقري مشوي', kcal:250, p:26, c:0, f:17},
+    {n:'برتقال', kcal:47, p:0.9, c:12, f:0.1},
+    {n:'خيار', kcal:15, p:0.7, c:3.6, f:0.1},
+    {n:'طماطم', kcal:18, p:0.9, c:3.9, f:0.2},
+    {n:'عسل', kcal:304, p:0.3, c:82, f:0},
+    {n:'جبنة شيدر', kcal:402, p:25, c:1.3, f:33},
+    {n:'زيت جوز الهند', kcal:862, p:0, c:0, f:100},
+    {n:'كينوا مطبوخة', kcal:120, p:4.4, c:21, f:1.9},
+  ];
+
+  // ---------- Recipes ----------
+  const RECIPES = [
+    {id:'r1', emoji:'🥞', name:'Pancake Banana', time:'10 دقائق', kcal:600, p:25, c:70, f:18, goal:'gain', diff:'سهل',
+      ingredients:['بيضتان','موزة مهروسة','نصف كوب شوفان','ملعقة زبدة فول سوداني','ربع كوب حليب كامل الدسم'],
+      steps:['اخلط كل المكونات في وعاء حتى تصبح خليطًا ناعمًا.','اسكب الخليط على مقلاة دافئة قليلة الزيت.','اقلب البانكيك عند ظهور فقاعات على السطح.','قدّمه مع ملعقة عسل وشرائح موز إضافية.']},
+    {id:'r2', emoji:'🍗', name:'أرز بالدجاج والمكسرات', time:'25 دقيقة', kcal:750, p:45, c:80, f:22, goal:'gain', diff:'متوسط',
+      ingredients:['كوب أرز مطبوخ','قطعتا صدر دجاج مشوي','ملعقة لوز مقشر','ملعقة زيت زيتون','بهارات حسب الرغبة'],
+      steps:['اطهِ الأرز جانبًا.','قطّع الدجاج المشوي إلى مكعبات.','اقلِ اللوز خفيفًا بزيت الزيتون.','امزج كل شيء معًا وقدّمه ساخنًا.']},
+    {id:'r3', emoji:'🥑', name:'توست الأفوكادو بالبيض', time:'12 دقيقة', kcal:520, p:22, c:40, f:28, goal:'gain', diff:'سهل',
+      ingredients:['شريحتا خبز أسمر','نصف حبة أفوكادو','بيضتان مقليتان','رشة ملح وفلفل أسود'],
+      steps:['حمّص الخبز جيدًا.','اهرس الأفوكادو وافرده على الخبز.','ضع البيض المقلي فوق الأفوكادو.','رشّ الملح والفلفل وقدّمه فورًا.']},
+    {id:'r4', emoji:'🍝', name:'باستا باللحم المفروم', time:'30 دقيقة', kcal:820, p:40, c:95, f:26, goal:'gain', diff:'متوسط',
+      ingredients:['كوب باستا مطبوخة','150غ لحم مفروم','نصف كوب صلصة طماطم','ثوم وبصل','ملعقة زيت زيتون'],
+      steps:['اسلق الباستا حسب التعليمات.','حمّر اللحم المفروم مع الثوم والبصل.','أضف صلصة الطماطم واتركها تنضج 10 دقائق.','امزج الصلصة مع الباستا وقدّمها ساخنة.']},
+    {id:'r5', emoji:'🥗', name:'سلطة الدجاج المشوي', time:'15 دقيقة', kcal:320, p:35, c:15, f:10, goal:'loss', diff:'سهل',
+      ingredients:['قطعة صدر دجاج مشوي','خس وخيار وطماطم','ملعقة زيت زيتون','عصير ليمون'],
+      steps:['قطّع الخضار وضعها في وعاء.','قطّع الدجاج المشوي إلى شرائح.','أضف الدجاج فوق الخضار.','رشّ زيت الزيتون وعصير الليمون وقدّمها.']},
+    {id:'r6', emoji:'🐟', name:'سلمون مشوي مع خضار', time:'20 دقيقة', kcal:380, p:38, c:12, f:16, goal:'loss', diff:'متوسط',
+      ingredients:['قطعة سلمون طازجة','بروكلي وجزر مبخّر','ملعقة زيت زيتون','ثوم وليمون'],
+      steps:['تبّل السلمون بالملح والثوم والليمون.','اشوِ السلمون 15 دقيقة على حرارة متوسطة.','بخّر الخضار جانبًا.','قدّم السلمون مع الخضار المبخّر.']},
+    {id:'r7', emoji:'🍲', name:'شوربة العدس', time:'25 دقيقة', kcal:250, p:15, c:35, f:4, goal:'loss', diff:'سهل',
+      ingredients:['كوب عدس أحمر','بصلة وجزرة مقطعة','ملعقة كمون','رشة ملح'],
+      steps:['اغسل العدس جيدًا.','اطبخ العدس مع الخضار والماء حتى ينضج.','اهرس الخليط حتى يصبح ناعمًا.','أضف الكمون والملح وقدّمها ساخنة.']},
+    {id:'r8', emoji:'🥚', name:'أومليت الخضار', time:'10 دقائق', kcal:220, p:18, c:8, f:12, goal:'loss', diff:'سهل',
+      ingredients:['بيضتان','فلفل وبصل وطماطم مقطع','رشة ملح وفلفل أسود'],
+      steps:['اخفق البيض في وعاء.','أضف الخضار المقطعة إلى البيض.','اسكب الخليط في مقلاة غير لاصقة.','اطهِه على نار هادئة حتى ينضج ثم قدّمه.']},
+  ];
+
+  // ---------- i18n ----------
+  const I18N = {
+    ar: {
+      brand:'LHTA', footerText:'LHTA',
+      settingsTitle:'الإعدادات', langLabel:'اللغة / Language / Langue',
+      aboutLabel:'عن LHTA', aboutText:'LHTA منصتك الكاملة للتمارين والتغذية وحساب السعرات — بروح الأبطال، لتصل لهدفك بانضباط بطل.',
+      createAccount:'إنشاء حساب', google:'Google', facebook:'Facebook', instagram:'Instagram', orDivider:'أو باستخدام الإيميل',
+      nameLabel:'الاسم', emailLabel:'الإيميل', passLabel:'كلمة المرور', cancel:'إلغاء', register:'تسجيل',
+      haveAccount:'عندك حساب؟', loginLink:'سجّل دخول', loginTitle:'تسجيل الدخول', login:'دخول',
+      noAccount:'ما عندك حساب؟', registerLink:'أنشئ واحد',
+      welcomeChamp:'أهلاً أيها البطل 🔥', heroTitle:'برنامجك من <em>تمارين وتغذية</em>، بخطة واضحة كل يوم',
+      heroSub:'سجّل حساب مجاني وشوف برنامج الأسبوع الكامل، احسب سعراتك، واكتشف وصفات الأبطال — كل هذا في مكان واحد.',
+      tabWorkout:'التمارين', tabNutrition:'التغذية', tabCalc:'الحاسبة الغذائية', tabRecipes:'الوصفات',
+      lockTitle:'سجّل حساب مجاني لتشوف برنامج الأسبوع كامل', unlockBtn:'سجّل الآن',
+      searchFood:'ابحث عن طعام... (أرز، دجاج، بيض...)', yourLog:'سجلّك الغذائي اليوم', logEmpty:'لسا ما أضفت أي طعام. دوّر بالبحث وأضف!',
+      kcalLabel:'سعرة', proteinLabel:'بروتين', carbsLabel:'كارب', fatLabel:'دهون', gramsUnit:'غ',
+      goalGain:'زيادة الوزن', goalLoss:'خسارة الوزن', ingredientsTitle:'المكونات', quickRecipeTitle:'طريقة سريعة',
+      difficultyTitle:'الصعوبة', showDetails:'عرض التفاصيل', hideDetails:'إخفاء التفاصيل',
+      loginBtn:'دخول', registerBtn:'سجّل الآن', logoutBtn:'تسجيل خروج', adminMode:'وضع المشرف',
+    },
+    en: {
+      brand:'LHTA', footerText:'LHTA',
+      settingsTitle:'Settings', langLabel:'اللغة / Language / Langue',
+      aboutLabel:'About LHTA', aboutText:'LHTA is your full platform for training, nutrition, and calorie tracking — with a champion spirit, to help you reach your goal.',
+      createAccount:'Create account', google:'Google', facebook:'Facebook', instagram:'Instagram', orDivider:'or continue with email',
+      nameLabel:'Name', emailLabel:'Email', passLabel:'Password', cancel:'Cancel', register:'Sign up',
+      haveAccount:'Already have an account?', loginLink:'Log in', loginTitle:'Log in', login:'Log in',
+      noAccount:"Don't have an account?", registerLink:'Create one',
+      welcomeChamp:'Welcome, Champion 🔥', heroTitle:'Your full <em>training and nutrition</em> plan, clear every single day',
+      heroSub:'Create a free account to unlock your full week plan, track your calories, and discover champion recipes — all in one place.',
+      tabWorkout:'Workout', tabNutrition:'Nutrition', tabCalc:'Calorie Calculator', tabRecipes:'Recipes',
+      lockTitle:'Sign up for free to see your full week plan', unlockBtn:'Sign up now',
+      searchFood:'Search a food... (rice, chicken, egg...)', yourLog:"Today's food log", logEmpty:'No food added yet. Search and add something!',
+      kcalLabel:'kcal', proteinLabel:'protein', carbsLabel:'carbs', fatLabel:'fat', gramsUnit:'g',
+      goalGain:'Weight Gain', goalLoss:'Weight Loss', ingredientsTitle:'Ingredients', quickRecipeTitle:'Quick Recipe',
+      difficultyTitle:'Difficulty', showDetails:'Show details', hideDetails:'Hide details',
+      loginBtn:'Log in', registerBtn:'Sign up', logoutBtn:'Log out', adminMode:'Admin mode',
+    },
+    fr: {
+      brand:'LHTA', footerText:'LHTA',
+      settingsTitle:'Paramètres', langLabel:'اللغة / Language / Langue',
+      aboutLabel:'À propos de LHTA', aboutText:"LHTA est ta plateforme complète pour l'entraînement, la nutrition et le suivi des calories — avec un esprit de champion, pour atteindre ton objectif.",
+      createAccount:'Créer un compte', google:'Google', facebook:'Facebook', instagram:'Instagram', orDivider:'ou avec ton email',
+      nameLabel:'Nom', emailLabel:'Email', passLabel:'Mot de passe', cancel:'Annuler', register:"S'inscrire",
+      haveAccount:'Tu as déjà un compte ?', loginLink:'Se connecter', loginTitle:'Connexion', login:'Connexion',
+      noAccount:"Pas encore de compte ?", registerLink:'Créer un compte',
+      welcomeChamp:'Bienvenue, champion 🔥', heroTitle:'Ton programme complet d\'<em>entraînement et nutrition</em>, clair chaque jour',
+      heroSub:'Crée un compte gratuit pour débloquer ton programme de la semaine, suivre tes calories et découvrir des recettes de champion — le tout au même endroit.',
+      tabWorkout:'Entraînement', tabNutrition:'Nutrition', tabCalc:'Calculatrice de calories', tabRecipes:'Recettes',
+      lockTitle:'Inscris-toi gratuitement pour voir le programme complet', unlockBtn:"S'inscrire",
+      searchFood:'Rechercher un aliment... (riz, poulet, œuf...)', yourLog:'Ton journal alimentaire du jour', logEmpty:"Aucun aliment ajouté. Cherche et ajoute quelque chose !",
+      kcalLabel:'kcal', proteinLabel:'protéines', carbsLabel:'glucides', fatLabel:'lipides', gramsUnit:'g',
+      goalGain:'Prise de poids', goalLoss:'Perte de poids', ingredientsTitle:'Ingrédients', quickRecipeTitle:'Recette rapide',
+      difficultyTitle:'Difficulté', showDetails:'Voir les détails', hideDetails:'Masquer les détails',
+      loginBtn:'Connexion', registerBtn:"S'inscrire", logoutBtn:'Déconnexion', adminMode:'Mode admin',
+    }
+  };
+
+  let currentUser = null;
+  let isAdmin = false;
+  let activeTab = 'workout';       // public tabs: workout | nutrition | calculator | recipes
+  let activeAdminTab = 'members';  // admin tabs: members | workout | nutrition
+  let activeRecipeGoal = 'gain';   // gain | loss
+  let currentLang = localStorage.getItem('lhta-lang') || 'ar';
+  let calcLog = [];                // {n, kcal, p, c, f, grams}
+  let expandedRecipe = null;
+
+  function t(key){ return (I18N[currentLang] && I18N[currentLang][key]) || I18N.ar[key] || key; }
+
+  function applyLangDirection(){
+    document.documentElement.lang = currentLang;
+    document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+  }
+
+  // ---------- الاتصال بالخادم الحقيقي ----------
+  const API_BASE = 'https://lhta-backend.onrender.com';
+  let adminPassword = localStorage.getItem('lhta-admin-pass') || '';
+
+  async function apiGet(path){
+    const res = await fetch(`${API_BASE}${path}`);
+    return res.json();
+  }
+  async function apiPost(path, body, adminHeader){
+    const headers = { 'Content-Type': 'application/json' };
+    if(adminHeader) headers['x-admin-password'] = adminPassword;
+    const res = await fetch(`${API_BASE}${path}`, { method:'POST', headers, body: JSON.stringify(body || {}) });
+    const data = await res.json().catch(() => ({}));
+    return { ok: res.ok, data };
+  }
+
+  async function loadPlan(){
+    try{
+      const { plan } = await apiGet('/api/plan');
+      return plan || { workout: defaultWorkoutPlan, nutrition: defaultMealPlan, summary: PLAN_SUMMARY };
+    }catch(e){
+      return { workout: defaultWorkoutPlan, nutrition: defaultMealPlan, summary: PLAN_SUMMARY };
+    }
+  }
+  async function savePlan(plan){
+    const { ok, data } = await apiPost('/api/plan', { plan }, true);
+    if(!ok) alert(data.error || 'تعذر الحفظ - تحقق من كلمة مرور المشرف');
+    return ok;
+  }
+  async function fetchAdminMembers(){
+    try{
+      const res = await fetch(`${API_BASE}/api/admin/members`, { headers: { 'x-admin-password': adminPassword } });
+      if(!res.ok) return [];
+      const data = await res.json();
+      return data.members || [];
+    }catch(e){ return []; }
+  }
+  async function loadFavorites(){
+    const email = currentUser ? currentUser.email : 'guest';
+    try{
+      const { favorites } = await apiGet(`/api/plan/favorites/${encodeURIComponent(email)}`);
+      return favorites || [];
+    }catch(e){ return []; }
+  }
+  async function toggleFavorite(recipeId){
+    const email = currentUser ? currentUser.email : 'guest';
+    try{
+      const { data } = await apiPost('/api/plan/favorites/toggle', { email, recipeId });
+      return data.favorites || [];
+    }catch(e){ return []; }
+  }
+
+  function exercisesToText(exArr){ return (exArr||[]).map(e => [e.ar,e.en,e.sets,e.reps,e.rest,e.tempo||''].join('|')).join('\n'); }
+  function textToExercises(text){
+    return text.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
+      const p = l.split('|').map(s => s.trim());
+      return { ar:p[0]||'', en:p[1]||'', sets:p[2]||'', reps:p[3]||'', rest:p[4]||'', tempo:p[5]||'' };
+    });
+  }
+  function itemsToText(items){ return (items||[]).map(it => `${it.label}|${it.text}`).join('\n'); }
+  function textToItems(text){
+    return text.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
+      const idx = l.indexOf('|');
+      return idx === -1 ? { label:l, text:'' } : { label:l.slice(0,idx).trim(), text:l.slice(idx+1).trim() };
+    });
+  }
+  function notesToText(notes){ return (notes||[]).join('\n'); }
+  function textToNotes(text){ return text.split('\n').map(l => l.trim()).filter(Boolean); }
+
+  function escapeHtml(str){
+    const d = document.createElement('div');
+    d.textContent = str == null ? '' : str;
+    return d.innerHTML;
+  }
+
+  // ---------- topbar ----------
+  function renderTopbar(){
+    const el = document.getElementById('topActions');
+    el.innerHTML = '';
+    if(isAdmin){
+      const badge = document.createElement('span');
+      badge.textContent = t('adminMode');
+      badge.style.cssText = 'color:var(--blue2); font-size:0.85rem;';
+      const out = document.createElement('button');
+      out.className = 'btn small ghost'; out.textContent = t('logoutBtn');
+      out.onclick = () => { isAdmin = false; adminPassword = ''; localStorage.removeItem('lhta-admin-pass'); renderApp(); };
+      el.appendChild(out); el.appendChild(badge);
+    } else if(currentUser){
+      const name = document.createElement('span');
+      name.textContent = (currentLang==='ar' ? 'أهلاً، ' : 'Hi, ') + currentUser.name;
+      name.style.cssText = 'color:var(--ink-dim); font-size:0.85rem;';
+      const out = document.createElement('button');
+      out.className = 'btn small ghost'; out.textContent = t('logoutBtn');
+      out.onclick = () => { currentUser = null; localStorage.removeItem('lhta-user'); renderApp(); };
+      el.appendChild(out); el.appendChild(name);
+    } else {
+      const login = document.createElement('button');
+      login.className = 'btn small ghost'; login.textContent = t('loginBtn');
+      login.onclick = () => openModal('loginBackdrop');
+      const register = document.createElement('button');
+      register.className = 'btn small primary'; register.textContent = t('registerBtn');
+      register.onclick = () => openModal('registerBackdrop');
+      el.appendChild(login); el.appendChild(register);
+    }
+  }
+
+  // ---------- public view ----------
+  async function renderPublicView(){
+    const main = document.getElementById('mainView');
+    main.innerHTML = `
+      <section class="hero">
+        <div class="welcome-champ">${t('welcomeChamp')}</div>
+        <span class="eyebrow">${currentLang==='ar' ? 'خطة أسبوعية كاملة' : (currentLang==='en' ? 'Your full weekly plan' : 'Ton programme hebdomadaire')}</span>
+        <h1>${t('heroTitle')}</h1>
+        <p>${t('heroSub')}</p>
+        <div class="gym-logos" aria-hidden="true">
+          <span>🛡️</span><span>🏋️</span><span>⭐</span><span>🥊</span><span>💪</span>
+        </div>
+      </section>
+      <div class="tabs">
+        <button class="tab-btn ${activeTab==='workout'?'active':''}" data-tab="workout">${t('tabWorkout')}</button>
+        <button class="tab-btn ${activeTab==='nutrition'?'active':''}" data-tab="nutrition">${t('tabNutrition')}</button>
+        <button class="tab-btn ${activeTab==='calculator'?'active':''}" data-tab="calculator">${t('tabCalc')}</button>
+        <button class="tab-btn ${activeTab==='recipes'?'active':''}" data-tab="recipes">${t('tabRecipes')}</button>
+      </div>
+      <div class="content-wrap" id="planArea"></div>
+    `;
+    main.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.onclick = () => { activeTab = btn.dataset.tab; renderPublicView(); };
+    });
+    await renderPlanArea();
+  }
+
+  async function renderPlanArea(){
+    const area = document.getElementById('planArea');
+
+    if(activeTab === 'calculator'){ renderCalculator(area); return; }
+    if(activeTab === 'recipes'){ await renderRecipes(area); return; }
+
+    const unlocked = !!currentUser || isAdmin;
+    if(!unlocked){
+      area.innerHTML = `
+        <div class="lock-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="1.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+          <p>${t('lockTitle')}</p>
+          <button class="btn primary" id="unlockBtn">${t('unlockBtn')}</button>
+        </div>
+      `;
+      document.getElementById('unlockBtn').onclick = () => openModal('registerBackdrop');
+      return;
+    }
+    const plan = await loadPlan();
+    if(activeTab === 'workout'){
+      const s = plan.summary || PLAN_SUMMARY;
+      area.innerHTML = `
+        <div class="summary-bar">
+          <div class="summary-item"><span class="slabel">التردد الأسبوعي</span><span class="sval">${escapeHtml(s.frequency)}</span></div>
+          <div class="summary-item"><span class="slabel">نظام الجهد</span><span class="sval">${escapeHtml(s.rirTarget)}</span></div>
+          <div class="summary-item"><span class="slabel">التقسيم</span><span class="sval">${escapeHtml(s.splitName)}</span></div>
+          <div class="summary-item"><span class="slabel">السعرات اليومية</span><span class="sval kcal">${escapeHtml(s.dailyCalories)}</span></div>
+        </div>
+        <div class="week-list">${plan.workout.map(d => renderWorkoutDay(d)).join('')}</div>
+      `;
+    } else {
+      const n = plan.nutrition;
+      area.innerHTML = `
+        <div class="summary-bar">
+          <div class="summary-item"><span class="slabel">السعرات اليومية</span><span class="sval kcal">${escapeHtml(n.dailyCalories)}</span></div>
+          <div class="summary-item"><span class="slabel">البروتين المستهدف</span><span class="sval">${escapeHtml(n.proteinTarget)}</span></div>
+        </div>
+        <div class="meal-grid">${n.meals.map((m,i) => renderMealCard(m,i)).join('')}</div>
+        <div class="rules-box">
+          <h3>قواعد التدريب والتحول الفيزيائي الصارمة</h3>
+          <ul>${n.rules.map(r => `<li><b>${escapeHtml(r.title)}:</b> ${escapeHtml(r.text)}</li>`).join('')}</ul>
+        </div>
+      `;
+    }
+  }
+
+  function renderWorkoutDay(d){
+    if(d.isRest){
+      return `
+        <div class="day-card rest-card">
+          <div class="day-head">
+            <div class="day-name">${escapeHtml(d.day)} <span class="day-type rest">${escapeHtml(d.title)}</span></div>
+          </div>
+          <div class="desc">${escapeHtml(d.focus)}</div>
+          <ul class="rest-notes">${d.restNotes.map(n => `<li>${escapeHtml(n)}</li>`).join('')}</ul>
+        </div>
+      `;
+    }
+    return `
+      <div class="day-card">
+        <div class="day-head">
+          <div class="day-name">${escapeHtml(d.day)} <span class="day-type">${escapeHtml(d.title)}</span></div>
+          <span class="duration-tag">⏱ ${escapeHtml(d.duration)}</span>
+        </div>
+        <div class="desc">${escapeHtml(d.focus)}</div>
+        <div class="exercise-table-wrap">
+          <table class="exercise-table">
+            <thead><tr><th>التمرين</th><th>مجموعات</th><th>عدات</th><th>راحة</th><th>Tempo / RIR</th></tr></thead>
+            <tbody>
+              ${d.exercises.map(ex => `
+                <tr>
+                  <td><b>${escapeHtml(ex.ar)}</b><span class="ex-en">${escapeHtml(ex.en)}</span></td>
+                  <td>${escapeHtml(ex.sets)}</td>
+                  <td>${escapeHtml(ex.reps)}</td>
+                  <td>${escapeHtml(ex.rest)}</td>
+                  <td class="ex-tempo">${escapeHtml(ex.tempo || '—')}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderMealCard(m, i){
+    return `
+      <div class="meal-card">
+        <div class="meal-head">
+          <span class="meal-num">${i+1}</span>
+          <div>
+            <div class="meal-title">${escapeHtml(m.title)}</div>
+            <div class="meal-title-en">${escapeHtml(m.titleEn)}</div>
+          </div>
+        </div>
+        <div class="meal-macros">
+          <span class="mkcal">${m.kcal} Kcal</span>
+          <span>${m.p}g Pro</span>
+          <span>${m.c}g Carb</span>
+          <span>${m.f}g Fat</span>
+        </div>
+        <ul class="meal-items">
+          ${m.items.map(it => `<li><b>${escapeHtml(it.label)}:</b> ${escapeHtml(it.text)}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+  }
+
+  // ---------- calculator ----------
+  function renderCalculator(area){
+    area.innerHTML = `
+      <div class="calc-grid">
+        <div>
+          <input class="calc-search" id="foodSearch" placeholder="${t('searchFood')}">
+          <div class="food-list" id="foodList"></div>
+        </div>
+        <div class="log-panel">
+          <h3 style="margin-bottom:14px; font-size:1.05rem;">${t('yourLog')}</h3>
+          <div id="logList"></div>
+          <div class="totals-box" id="totalsBox"></div>
+        </div>
+      </div>
+    `;
+    const searchInput = document.getElementById('foodSearch');
+    searchInput.oninput = () => renderFoodList(searchInput.value);
+    renderFoodList('');
+    renderLog();
+  }
+
+  function renderFoodList(query){
+    const list = document.getElementById('foodList');
+    const q = (query || '').trim();
+    const filtered = q ? FOOD_DB.filter(f => f.n.includes(q)) : FOOD_DB;
+    if(filtered.length === 0){
+      list.innerHTML = `<div class="log-empty">${currentLang==='ar' ? 'ما لقينا نتائج' : 'No results found'}</div>`;
+      return;
+    }
+    list.innerHTML = filtered.map((f,i) => `
+      <div class="food-item" data-idx="${FOOD_DB.indexOf(f)}">
+        <div>
+          <div class="fname">${escapeHtml(f.n)}</div>
+          <div class="fmeta">${f.kcal} ${t('kcalLabel')} / 100${t('gramsUnit')} · ${t('proteinLabel')} ${f.p}${t('gramsUnit')}</div>
+        </div>
+        <div class="fadd">+</div>
+      </div>
+    `).join('');
+    list.querySelectorAll('.food-item').forEach(el => {
+      el.onclick = () => {
+        const food = FOOD_DB[+el.dataset.idx];
+        calcLog.push({ n: food.n, kcal: food.kcal, p: food.p, c: food.c, f: food.f, grams: 100 });
+        renderLog();
+      };
+    });
+  }
+
+  function renderLog(){
+    const logList = document.getElementById('logList');
+    const totalsBox = document.getElementById('totalsBox');
+    if(calcLog.length === 0){
+      logList.innerHTML = `<div class="log-empty">${t('logEmpty')}</div>`;
+    } else {
+      logList.innerHTML = calcLog.map((item, i) => `
+        <div class="log-row">
+          <span class="lname">${escapeHtml(item.n)}</span>
+          <input type="number" class="lgrams" min="1" value="${item.grams}" data-i="${i}">
+          <span class="lkcal">${Math.round(item.kcal * item.grams / 100)} ${t('kcalLabel')}</span>
+          <button class="lremove" data-i="${i}" aria-label="remove">✕</button>
+        </div>
+      `).join('');
+      logList.querySelectorAll('.lgrams').forEach(inp => {
+        inp.onchange = () => {
+          const i = +inp.dataset.i;
+          calcLog[i].grams = Math.max(1, +inp.value || 1);
+          renderLog();
+        };
+      });
+      logList.querySelectorAll('.lremove').forEach(btn => {
+        btn.onclick = () => { calcLog.splice(+btn.dataset.i, 1); renderLog(); };
+      });
+    }
+    const totals = calcLog.reduce((acc, item) => {
+      const ratio = item.grams / 100;
+      acc.kcal += item.kcal * ratio; acc.p += item.p * ratio; acc.c += item.c * ratio; acc.f += item.f * ratio;
+      return acc;
+    }, { kcal:0, p:0, c:0, f:0 });
+    totalsBox.innerHTML = `
+      <div><div class="tval kcal">${Math.round(totals.kcal)}</div><div class="tlabel">${t('kcalLabel')}</div></div>
+      <div><div class="tval protein">${Math.round(totals.p)}${t('gramsUnit')}</div><div class="tlabel">${t('proteinLabel')}</div></div>
+      <div><div class="tval carbs">${Math.round(totals.c)}${t('gramsUnit')}</div><div class="tlabel">${t('carbsLabel')}</div></div>
+      <div><div class="tval fat">${Math.round(totals.f)}${t('gramsUnit')}</div><div class="tlabel">${t('fatLabel')}</div></div>
+    `;
+  }
+
+  // ---------- recipes ----------
+  async function renderRecipes(area){
+    const favorites = await loadFavorites();
+    area.innerHTML = `
+      <div class="recipe-subtabs">
+        <button class="${activeRecipeGoal==='gain'?'active gain':''}" data-goal="gain">💪 ${t('goalGain')}</button>
+        <button class="${activeRecipeGoal==='loss'?'active loss':''}" data-goal="loss">🔥 ${t('goalLoss')}</button>
+      </div>
+      <div class="recipe-grid" id="recipeGrid"></div>
+    `;
+    area.querySelectorAll('[data-goal]').forEach(btn => {
+      btn.onclick = () => { activeRecipeGoal = btn.dataset.goal; expandedRecipe = null; renderRecipes(area); };
+    });
+    const grid = document.getElementById('recipeGrid');
+    const filtered = RECIPES.filter(r => r.goal === activeRecipeGoal);
+    grid.innerHTML = filtered.map(r => {
+      const isSaved = favorites.includes(r.id);
+      const isOpen = expandedRecipe === r.id;
+      return `
+      <div class="recipe-card">
+        <div class="recipe-top">
+          <button class="fav-btn ${isSaved?'saved':''}" data-fav="${r.id}" aria-label="save">${isSaved ? '❤️' : '🤍'}</button>
+          <span class="recipe-emoji">${r.emoji}</span>
+          <div class="recipe-name">${escapeHtml(r.name)}</div>
+          <div class="recipe-meta">
+            <span>⏱ ${escapeHtml(r.time)}</span>
+            <span>🔥 ${r.kcal} ${t('kcalLabel')}</span>
+            <span>🥩 ${r.p}${t('gramsUnit')} ${t('proteinLabel')}</span>
+          </div>
+          <span class="recipe-goal ${r.goal}">${r.goal==='gain' ? t('goalGain') : t('goalLoss')}</span>
+        </div>
+        <div class="recipe-macros">
+          <span>${t('carbsLabel')}: <b>${r.c}${t('gramsUnit')}</b></span>
+          <span>${t('fatLabel')}: <b>${r.f}${t('gramsUnit')}</b></span>
+          <span class="diff-tag">${t('difficultyTitle')}: ${escapeHtml(r.diff)}</span>
+        </div>
+        <div class="recipe-details ${isOpen?'open':''}" id="details-${r.id}">
+          <h4>${t('ingredientsTitle')}</h4>
+          <ul>${r.ingredients.map(i => `<li>${escapeHtml(i)}</li>`).join('')}</ul>
+          <h4>${t('quickRecipeTitle')}</h4>
+          <ul>${r.steps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ul>
+        </div>
+        <div class="recipe-toggle" data-toggle="${r.id}">${isOpen ? t('hideDetails') : t('showDetails')}</div>
+      </div>
+    `;}).join('');
+
+    grid.querySelectorAll('[data-fav]').forEach(btn => {
+      btn.onclick = async () => {
+        await toggleFavorite(btn.dataset.fav);
+        renderRecipes(area);
+      };
+    });
+    grid.querySelectorAll('[data-toggle]').forEach(el => {
+      el.onclick = () => { expandedRecipe = expandedRecipe === el.dataset.toggle ? null : el.dataset.toggle; renderRecipes(area); };
+    });
+  }
+
+  // ---------- admin view ----------
+  async function renderAdminView(){
+    const main = document.getElementById('mainView');
+    main.innerHTML = `
+      <div class="admin-panel">
+        <div class="admin-tabs">
+          <button class="tab-btn ${activeAdminTab==='members'?'active':''}" data-atab="members">الأعضاء</button>
+          <button class="tab-btn ${activeAdminTab==='workout'?'active':''}" data-atab="workout">تعديل التمارين</button>
+          <button class="tab-btn ${activeAdminTab==='nutrition'?'active':''}" data-atab="nutrition">تعديل التغذية</button>
+        </div>
+        <div id="adminArea"></div>
+      </div>
+    `;
+    main.querySelectorAll('[data-atab]').forEach(btn => {
+      btn.onclick = () => { activeAdminTab = btn.dataset.atab; renderAdminView(); };
+    });
+    const area = document.getElementById('adminArea');
+
+    if(activeAdminTab === 'members'){
+      const list = await fetchAdminMembers();
+      area.innerHTML = `
+        <h2 style="margin-bottom:18px;">الأعضاء المسجّلون (${list.length})</h2>
+        <table>
+          <thead><tr><th>الاسم</th><th>الإيميل</th><th>كلمة المرور</th><th>طريقة التسجيل</th><th>تاريخ التسجيل</th></tr></thead>
+          <tbody id="adminTbody"></tbody>
+        </table>
+      `;
+      const tbody = document.getElementById('adminTbody');
+      if(list.length === 0){
+        tbody.innerHTML = `<tr class="empty-row"><td colspan="5">ما في أحد مسجّل لسا</td></tr>`;
+      } else {
+        list.slice().reverse().forEach(r => {
+          const tr = document.createElement('tr');
+          const passDisplay = r.password ? escapeHtml(r.password) : '(دخول عبر ' + escapeHtml(r.provider || 'Email') + ')';
+          tr.innerHTML = `<td>${escapeHtml(r.name)}</td><td>${escapeHtml(r.email)}</td><td>${passDisplay}</td><td>${escapeHtml(r.provider || 'Email')}</td><td>${new Date(r.created_at).toLocaleString('ar-EG')}</td>`;
+          tbody.appendChild(tr);
+        });
+      }
+    } else if(activeAdminTab === 'workout'){
+      const plan = await loadPlan();
+      const s = plan.summary || PLAN_SUMMARY;
+      area.innerHTML = `
+        <div class="edit-day">
+          <div class="day-title">ملخص الخطة (يظهر أعلى صفحة التمارين)</div>
+          <div class="edit-grid">
+            <div class="field"><label>اسم التقسيم</label><input id="sumSplit" value="${escapeHtml(s.splitName)}"></div>
+            <div class="field"><label>التردد الأسبوعي</label><input id="sumFreq" value="${escapeHtml(s.frequency)}"></div>
+            <div class="field"><label>نظام الجهد (RIR)</label><input id="sumRir" value="${escapeHtml(s.rirTarget)}"></div>
+            <div class="field"><label>السعرات اليومية</label><input id="sumKcal" value="${escapeHtml(s.dailyCalories)}"></div>
+          </div>
+        </div>
+      ` + plan.workout.map((d,i) => `
+        <div class="edit-day">
+          <div class="day-title">${escapeHtml(d.day)}</div>
+          <div class="edit-grid">
+            <div class="field"><label>عنوان اليوم</label><input data-i="${i}" data-f="title" value="${escapeHtml(d.title)}"></div>
+            <div class="field"><label>المدة</label><input data-i="${i}" data-f="duration" value="${escapeHtml(d.duration)}"></div>
+            <div class="field">
+              <label>نوع اليوم</label>
+              <select data-i="${i}" data-f="isRest">
+                <option value="false" ${!d.isRest?'selected':''}>يوم تمرين</option>
+                <option value="true" ${d.isRest?'selected':''}>يوم راحة</option>
+              </select>
+            </div>
+          </div>
+          <div class="field"><label>التركيز</label><input data-i="${i}" data-f="focus" value="${escapeHtml(d.focus)}"></div>
+          ${d.isRest ? `
+          <div class="field"><label>ملاحظات الراحة — سطر لكل ملاحظة</label><textarea data-i="${i}" data-f="restNotes" rows="4">${escapeHtml(notesToText(d.restNotes))}</textarea></div>
+          ` : `
+          <div class="field"><label>التمارين — سطر لكل تمرين بالصيغة: عربي|إنجليزي|مجموعات|عدات|راحة|Tempo/RIR</label><textarea data-i="${i}" data-f="exercises" rows="6">${escapeHtml(exercisesToText(d.exercises))}</textarea></div>
+          `}
+        </div>
+      `).join('') + `<button class="btn primary" id="saveWorkout">حفظ التعديلات</button>`;
+
+      document.getElementById('saveWorkout').onclick = async () => {
+        plan.summary = {
+          splitName: document.getElementById('sumSplit').value,
+          frequency: document.getElementById('sumFreq').value,
+          tempoSystem: s.tempoSystem,
+          rirTarget: document.getElementById('sumRir').value,
+          proteinTarget: s.proteinTarget,
+          dailyCalories: document.getElementById('sumKcal').value,
+        };
+        area.querySelectorAll('[data-i]').forEach(el => {
+          const i = +el.dataset.i, f = el.dataset.f;
+          if(f === 'isRest'){ plan.workout[i].isRest = el.value === 'true'; }
+          else if(f === 'restNotes'){ plan.workout[i].restNotes = textToNotes(el.value); }
+          else if(f === 'exercises'){ plan.workout[i].exercises = textToExercises(el.value); }
+          else{ plan.workout[i][f] = el.value; }
+        });
+        await savePlan(plan);
+        alert('تم الحفظ');
+      };
+    } else if(activeAdminTab === 'nutrition'){
+      const plan = await loadPlan();
+      const n = plan.nutrition;
+      area.innerHTML = `
+        <div class="edit-day">
+          <div class="day-title">الإعدادات العامة</div>
+          <div class="edit-grid">
+            <div class="field"><label>السعرات اليومية</label><input id="nutKcal" value="${escapeHtml(n.dailyCalories)}"></div>
+            <div class="field"><label>البروتين المستهدف</label><input id="nutProtein" value="${escapeHtml(n.proteinTarget)}"></div>
+          </div>
+        </div>
+      ` + n.meals.map((m,i) => `
+        <div class="edit-day">
+          <div class="day-title">وجبة ${i+1}: ${escapeHtml(m.title)}</div>
+          <div class="edit-grid">
+            <div class="field"><label>اسم الوجبة (عربي)</label><input data-mi="${i}" data-mf="title" value="${escapeHtml(m.title)}"></div>
+            <div class="field"><label>اسم الوجبة (En/Fr)</label><input data-mi="${i}" data-mf="titleEn" value="${escapeHtml(m.titleEn)}"></div>
+            <div class="field"><label>سعرات (kcal)</label><input data-mi="${i}" data-mf="kcal" type="number" value="${m.kcal}"></div>
+            <div class="field"><label>بروتين (غ)</label><input data-mi="${i}" data-mf="p" type="number" value="${m.p}"></div>
+            <div class="field"><label>كارب (غ)</label><input data-mi="${i}" data-mf="c" type="number" value="${m.c}"></div>
+            <div class="field"><label>دهون (غ)</label><input data-mi="${i}" data-mf="f" type="number" value="${m.f}"></div>
+          </div>
+          <div class="field"><label>عناصر الوجبة — سطر لكل عنصر بالصيغة: التسمية|التفاصيل</label><textarea data-mi="${i}" data-mf="items" rows="4">${escapeHtml(itemsToText(m.items))}</textarea></div>
+        </div>
+      `).join('') + `
+        <div class="edit-day">
+          <div class="day-title">قواعد عامة (تظهر أسفل صفحة التغذية)</div>
+          <div class="field"><label>سطر لكل قاعدة بالصيغة: العنوان|النص</label><textarea id="nutRules" rows="4">${escapeHtml((n.rules||[]).map(r => r.title+'|'+r.text).join('\n'))}</textarea></div>
+        </div>
+      ` + `<button class="btn primary" id="saveNutrition">حفظ التعديلات</button>`;
+
+      document.getElementById('saveNutrition').onclick = async () => {
+        n.dailyCalories = document.getElementById('nutKcal').value;
+        n.proteinTarget = document.getElementById('nutProtein').value;
+        area.querySelectorAll('[data-mi]').forEach(el => {
+          const i = +el.dataset.mi, f = el.dataset.mf;
+          if(f === 'items'){ n.meals[i].items = textToItems(el.value); }
+          else if(f === 'kcal' || f === 'p' || f === 'c' || f === 'f'){ n.meals[i][f] = +el.value || 0; }
+          else{ n.meals[i][f] = el.value; }
+        });
+        n.rules = document.getElementById('nutRules').value.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
+          const idx = l.indexOf('|');
+          return idx === -1 ? { title:l, text:'' } : { title:l.slice(0,idx).trim(), text:l.slice(idx+1).trim() };
+        });
+        await savePlan(plan);
+        alert('تم الحفظ');
+      };
+    }
+  }
+
+  // ---------- static text translation ----------
+  function applyStaticI18n(){
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.dataset.i18n;
+      el.innerHTML = t(key);
+    });
+  }
+
+  // ---------- dispatcher ----------
+  function renderApp(){
+    applyLangDirection();
+    renderTopbar();
+    applyStaticI18n();
+    if(isAdmin) renderAdminView();
+    else renderPublicView();
+  }
+
+  // ---------- hidden admin trigger (اضغط 3 مرات على LA) ----------
+  let laClickCount = 0, laClickTimer = null;
+  document.getElementById('adminLA').onclick = () => {
+    laClickCount++;
+    clearTimeout(laClickTimer);
+    laClickTimer = setTimeout(() => { laClickCount = 0; }, 900);
+    if(laClickCount >= 3){
+      laClickCount = 0;
+      openModal('adminBackdrop');
+    }
+  };
+
+  // ---------- modal helpers ----------
+  function openModal(id){ document.getElementById(id).classList.add('open'); }
+  function closeModal(id){
+    document.getElementById(id).classList.remove('open');
+    const err = document.getElementById(id).querySelector('.error');
+    if(err) err.textContent = '';
+  }
+  document.getElementById('regCancel').onclick = () => closeModal('registerBackdrop');
+  document.getElementById('logCancel').onclick = () => closeModal('loginBackdrop');
+  document.getElementById('adminCancel').onclick = () => closeModal('adminBackdrop');
+  document.getElementById('toLogin').onclick = () => { closeModal('registerBackdrop'); openModal('loginBackdrop'); };
+  document.getElementById('toRegister').onclick = () => { closeModal('loginBackdrop'); openModal('registerBackdrop'); };
+  ['registerBackdrop','loginBackdrop','adminBackdrop'].forEach(id => {
+    document.getElementById(id).addEventListener('click', (e) => { if(e.target.id === id) closeModal(id); });
+  });
+
+  // ---------- settings drawer ----------
+  document.getElementById('settingsBtn').onclick = () => {
+    document.getElementById('settingsBackdrop').classList.add('open');
+    document.getElementById('settingsDrawer').classList.add('open');
+    document.querySelectorAll('.lang-options button').forEach(b => b.classList.toggle('active', b.dataset.lang === currentLang));
+  };
+  function closeDrawer(){
+    document.getElementById('settingsDrawer').classList.remove('open');
+    setTimeout(() => document.getElementById('settingsBackdrop').classList.remove('open'), 300);
+  }
+  document.getElementById('settingsClose').onclick = closeDrawer;
+  document.getElementById('settingsBackdrop').addEventListener('click', (e) => {
+    if(e.target.id === 'settingsBackdrop') closeDrawer();
+  });
+  document.querySelectorAll('.lang-options button').forEach(btn => {
+    btn.onclick = () => {
+      currentLang = btn.dataset.lang;
+      localStorage.setItem('lhta-lang', currentLang);
+      document.querySelectorAll('.lang-options button').forEach(b => b.classList.toggle('active', b === btn));
+      renderApp();
+    };
+  });
+
+  function persistUser(user){
+    currentUser = user;
+    localStorage.setItem('lhta-user', JSON.stringify(user));
+  }
+
+  // استرجاع جلسة المستخدم المحفوظة محليًا (إن وجدت)
+  try{
+    const savedUser = localStorage.getItem('lhta-user');
+    if(savedUser) currentUser = JSON.parse(savedUser);
+  }catch(e){}
+
+  // ---------- تسجيل حساب جديد بالإيميل ----------
+  document.getElementById('regSubmit').onclick = async () => {
+    const name = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim().toLowerCase();
+    const pass = document.getElementById('regPass').value;
+    const errEl = document.getElementById('regError');
+    if(!name || !email || !pass){ errEl.textContent = 'عبّي كل الحقول من فضلك'; return; }
+    const { ok, data } = await apiPost('/api/auth/register', { name, email, password: pass });
+    if(!ok){ errEl.textContent = data.error || 'تعذر التسجيل، حاول مرة أخرى'; return; }
+    persistUser(data.user);
+    document.getElementById('regName').value = '';
+    document.getElementById('regEmail').value = '';
+    document.getElementById('regPass').value = '';
+    closeModal('registerBackdrop');
+    renderApp();
+  };
+
+  // ---------- تسجيل الدخول بالإيميل ----------
+  document.getElementById('logSubmit').onclick = async () => {
+    const email = document.getElementById('logEmail').value.trim().toLowerCase();
+    const pass = document.getElementById('logPass').value;
+    const errEl = document.getElementById('logError');
+    const { ok, data } = await apiPost('/api/auth/login', { email, password: pass });
+    if(!ok){ errEl.textContent = data.error || 'الإيميل أو كلمة المرور غير صحيحة'; return; }
+    persistUser(data.user);
+    document.getElementById('logEmail').value = '';
+    document.getElementById('logPass').value = '';
+    closeModal('loginBackdrop');
+    renderApp();
+  };
+
+  // ---------- دخول المشرف (حقيقي عبر الخادم) ----------
+  document.getElementById('adminSubmit').onclick = async () => {
+    const pass = document.getElementById('adminPass').value;
+    const errEl = document.getElementById('adminError');
+    const res = await fetch(`${API_BASE}/api/admin/login`, {
+      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ password: pass })
+    });
+    if(!res.ok){ errEl.textContent = 'كلمة مرور غير صحيحة'; return; }
+    adminPassword = pass;
+    localStorage.setItem('lhta-admin-pass', pass);
+    isAdmin = true;
+    document.getElementById('adminPass').value = '';
+    closeModal('adminBackdrop');
+    renderApp();
+  };
+
+  renderApp();
+</script>
+
+</body>
+</html>
