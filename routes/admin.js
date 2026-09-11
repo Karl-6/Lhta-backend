@@ -28,4 +28,19 @@ router.get('/members', checkAdmin, async (req, res) => {
   res.json({ members: result.rows });
 });
 
+// حذف عضو معيّن حسب الـ id
+router.delete('/members/:id', checkAdmin, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query('DELETE FROM members WHERE id = $1 RETURNING id', [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'العضو غير موجود' });
+    }
+    res.json({ ok: true, deletedId: id });
+  } catch (err) {
+    console.error('فشل حذف العضو:', err);
+    res.status(500).json({ error: 'حدث خطأ أثناء الحذف' });
+  }
+});
+
 module.exports = router;
