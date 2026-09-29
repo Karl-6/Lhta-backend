@@ -28,18 +28,19 @@ router.get('/members', checkAdmin, async (req, res) => {
   res.json({ members: result.rows });
 });
 
-// حذف عضو معيّن حسب الـ id
+// حذف عضو (مع مفضلاته)
 router.delete('/members/:id', checkAdmin, async (req, res) => {
-  const { id } = req.params;
+  const id = parseInt(req.params.id, 10);
+  if (!Number.isInteger(id)) return res.status(400).json({ error: 'رقم غير صالح' });
   try {
-    const result = await pool.query('DELETE FROM members WHERE id = $1 RETURNING id', [id]);
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'العضو غير موجود' });
-    }
-    res.json({ ok: true, deletedId: id });
+    const found = await pool.query('SELECT email FROM members WHERE id = $1', [id]);
+    if (found.rows.length === 0) return res.status(404).json({ error: 'العضو غير موجود' });
+    await pool.query('DELETE FROM favorites WHERE email = $1', [found.rows[0].email]);
+    await pool.query('DELETE FROM members WHERE id = $1', [id]);
+    res.json({ ok: true });
   } catch (err) {
-    console.error('فشل حذف العضو:', err);
-    res.status(500).json({ error: 'حدث خطأ أثناء الحذف' });
+    console.error(err);
+    res.status(500).json({ error: 'خطأ بالخادم' });
   }
 });
 
