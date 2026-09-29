@@ -243,6 +243,18 @@
   .exercise-table .ex-en{ display:block; font-size:0.72rem; color:var(--ink-dim); direction:ltr; text-align:right; }
   .exercise-table .ex-tempo{ color: var(--gold); font-size:0.76rem; }
 
+  /* ---------- exercise images ---------- */
+  .exercise-table .ex-img{ display:block; width:96px; max-width:100%; height:auto; margin-top:8px; border-radius:8px; border:1px solid var(--line); cursor:zoom-in; background:#fff; }
+  .lhta-lightbox{ position:fixed; inset:0; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:9999; padding:20px; cursor:zoom-out; }
+  .lhta-lightbox img{ max-width:100%; max-height:100%; border-radius:10px; background:#fff; }
+  .ex-img-manager{ margin-top:14px; }
+  .ex-img-row{ display:flex; align-items:center; gap:12px; padding:8px 0; border-top:1px solid var(--line); flex-wrap:wrap; }
+  .ex-img-thumb{ width:64px; height:64px; border-radius:8px; border:1px dashed var(--line); display:flex; align-items:center; justify-content:center; overflow:hidden; font-size:0.65rem; color:var(--ink-dim); flex-shrink:0; }
+  .ex-img-thumb img{ width:100%; height:100%; object-fit:cover; }
+  .ex-img-name{ flex:1; min-width:120px; font-size:0.85rem; }
+  .ex-img-btn{ cursor:pointer; }
+  .del-member-btn{ color:var(--danger) !important; border-color:var(--danger) !important; }
+
   /* ---------- Pro Blueprint: nutrition ---------- */
   .meal-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:16px; margin-bottom: 26px; }
   .meal-card{ background: var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px 20px; }
@@ -825,6 +837,68 @@
       return data.members || [];
     }catch(e){ return []; }
   }
+  // ---------- صور التمارين ----------
+  function exImgUrl(id){ return `${API_BASE}/api/plan/image/${id}`; }
+
+  function compressImage(file){
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onerror = () => resolve(file);
+      reader.onload = () => {
+        const img = new Image();
+        img.onerror = () => resolve(file);
+        img.onload = () => {
+          const max = 1000;
+          const ratio = Math.min(1, max / Math.max(img.width, img.height));
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.round(img.width * ratio);
+          canvas.height = Math.round(img.height * ratio);
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          canvas.toBlob(b => resolve(b || file), 'image/jpeg', 0.82);
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+  async function uploadExerciseImage(file){
+    const blob = await compressImage(file);
+    const res = await fetch(`${API_BASE}/api/plan/image`, {
+      method: 'POST',
+      headers: { 'Content-Type': blob.type || 'image/jpeg', 'x-admin-password': adminPassword },
+      body: blob
+    });
+    const data = await res.json().catch(() => ({}));
+    if(!res.ok || !data.id) throw new Error(data.error || 'تعذر رفع الصورة');
+    return data.id;
+  }
+  async function deleteExerciseImage(id){
+    try{ await fetch(`${API_BASE}/api/plan/image/${id}`, { method:'DELETE', headers:{ 'x-admin-password': adminPassword } }); }catch(e){}
+  }
+  // يحافظ على صور التمارين عند تعديل نص التمارين
+  function mergeExerciseImages(oldArr, newArr){
+    const used = new Set();
+    (newArr || []).forEach((ne, k) => {
+      let idx = (oldArr || []).findIndex((oe, j) => !used.has(j) && oe.imgId && (oe.ar||'').trim() === (ne.ar||'').trim());
+      if(idx === -1 && oldArr && oldArr[k] && !used.has(k) && oldArr[k].imgId && !ne.ar.trim()) idx = k;
+      if(idx !== -1){ used.add(idx); ne.imgId = oldArr[idx].imgId; }
+    });
+    return newArr;
+  }
+  function openLightbox(src){
+    const box = document.createElement('div');
+    box.className = 'lhta-lightbox';
+    box.innerHTML = `<img src="${src}" alt="">`;
+    box.onclick = () => box.remove();
+    document.body.appendChild(box);
+  }
+  document.addEventListener('click', (e) => {
+    const im = e.target.closest && e.target.closest('.ex-img');
+    if(im) openLightbox(im.src);
+  });
+
   async function loadFavorites(){
     const email = currentUser ? currentUser.email : 'guest';
     try{
@@ -992,7 +1066,7 @@
             <tbody>
               ${d.exercises.map(ex => `
                 <tr>
-                  <td><b>${escapeHtml(ex.ar)}</b><span class="ex-en">${escapeHtml(ex.en)}</span></td>
+                  <td><b>${escapeHtml(ex.ar)}</b><span class="ex-en">${escapeHtml(ex.en)}</span>${ex.imgId ? `<img class="ex-img" loading="lazy" src="${exImgUrl(ex.imgId)}" alt="${escapeHtml(ex.en || ex.ar)}">` : ''}</td>
                   <td>${escapeHtml(ex.sets)}</td>
                   <td>${escapeHtml(ex.reps)}</td>
                   <td>${escapeHtml(ex.rest)}</td>
@@ -1194,18 +1268,31 @@
       area.innerHTML = `
         <h2 style="margin-bottom:18px;">الأعضاء المسجّلون (${list.length})</h2>
         <table>
-          <thead><tr><th>الاسم</th><th>الإيميل</th><th>كلمة المرور</th><th>طريقة التسجيل</th><th>تاريخ التسجيل</th></tr></thead>
+          <thead><tr><th>الاسم</th><th>الإيميل</th><th>كلمة المرور</th><th>طريقة التسجيل</th><th>تاريخ التسجيل</th><th>حذف</th></tr></thead>
           <tbody id="adminTbody"></tbody>
         </table>
       `;
       const tbody = document.getElementById('adminTbody');
       if(list.length === 0){
-        tbody.innerHTML = `<tr class="empty-row"><td colspan="5">ما في أحد مسجّل لسا</td></tr>`;
+        tbody.innerHTML = `<tr class="empty-row"><td colspan="6">ما في أحد مسجّل لسا</td></tr>`;
       } else {
         list.slice().reverse().forEach(r => {
           const tr = document.createElement('tr');
           const passDisplay = r.password ? escapeHtml(r.password) : '(دخول عبر ' + escapeHtml(r.provider || 'Email') + ')';
-          tr.innerHTML = `<td>${escapeHtml(r.name)}</td><td>${escapeHtml(r.email)}</td><td>${passDisplay}</td><td>${escapeHtml(r.provider || 'Email')}</td><td>${new Date(r.created_at).toLocaleString('ar-EG')}</td>`;
+          tr.innerHTML = `<td>${escapeHtml(r.name)}</td><td>${escapeHtml(r.email)}</td><td>${passDisplay}</td><td>${escapeHtml(r.provider || 'Email')}</td><td>${new Date(r.created_at).toLocaleString('ar-EG')}</td><td></td>`;
+          const delBtn = document.createElement('button');
+          delBtn.className = 'btn small ghost del-member-btn';
+          delBtn.type = 'button';
+          delBtn.textContent = 'حذف';
+          delBtn.onclick = async () => {
+            if(!confirm('هل تريد حذف العضو «' + (r.name || r.email) + '» نهائياً؟')) return;
+            try{
+              const res = await fetch(`${API_BASE}/api/admin/members/${r.id}`, { method:'DELETE', headers:{ 'x-admin-password': adminPassword } });
+              if(!res.ok){ alert('تعذر حذف العضو'); return; }
+            }catch(e){ alert('تعذر الاتصال بالخادم'); return; }
+            renderAdminView();
+          };
+          tr.lastElementChild.appendChild(delBtn);
           tbody.appendChild(tr);
         });
       }
@@ -1241,6 +1328,17 @@
           <div class="field"><label>ملاحظات الراحة — سطر لكل ملاحظة</label><textarea data-i="${i}" data-f="restNotes" rows="4">${escapeHtml(notesToText(d.restNotes))}</textarea></div>
           ` : `
           <div class="field"><label>التمارين — سطر لكل تمرين بالصيغة: عربي|إنجليزي|مجموعات|عدات|راحة|Tempo/RIR</label><textarea data-i="${i}" data-f="exercises" rows="6">${escapeHtml(exercisesToText(d.exercises))}</textarea></div>
+          <div class="field ex-img-manager">
+            <label>صور التمارين — ارفع صورة لأي تمرين (تظهر للأعضاء بجانب التمرين). ملاحظة: احفظ التعديلات أولاً إن أضفت تمريناً جديداً.</label>
+            ${(d.exercises||[]).map((ex,j) => `
+              <div class="ex-img-row" data-di="${i}" data-ej="${j}">
+                <div class="ex-img-thumb">${ex.imgId ? `<img src="${exImgUrl(ex.imgId)}" alt="">` : 'لا صورة'}</div>
+                <div class="ex-img-name">${escapeHtml(ex.ar)}</div>
+                <label class="btn small ghost ex-img-btn">${ex.imgId ? 'تغيير الصورة' : 'رفع صورة'}<input type="file" accept="image/*" hidden></label>
+                ${ex.imgId ? `<button type="button" class="btn small ghost ex-img-del">حذف الصورة</button>` : ''}
+              </div>
+            `).join('')}
+          </div>
           `}
         </div>
       `).join('') + `<button class="btn primary" id="saveWorkout">حفظ التعديلات</button>`;
@@ -1258,12 +1356,47 @@
           const i = +el.dataset.i, f = el.dataset.f;
           if(f === 'isRest'){ plan.workout[i].isRest = el.value === 'true'; }
           else if(f === 'restNotes'){ plan.workout[i].restNotes = textToNotes(el.value); }
-          else if(f === 'exercises'){ plan.workout[i].exercises = textToExercises(el.value); }
+          else if(f === 'exercises'){ plan.workout[i].exercises = mergeExerciseImages(plan.workout[i].exercises, textToExercises(el.value)); }
           else{ plan.workout[i][f] = el.value; }
         });
         await savePlan(plan);
         alert('تم الحفظ');
+        renderAdminView();
       };
+
+      area.querySelectorAll('.ex-img-row').forEach(row => {
+        const di = +row.dataset.di, ej = +row.dataset.ej;
+        const ex = plan.workout[di].exercises[ej];
+        const input = row.querySelector('input[type=file]');
+        input.onchange = async () => {
+          const file = input.files && input.files[0];
+          if(!file) return;
+          const thumb = row.querySelector('.ex-img-thumb');
+          thumb.textContent = '...';
+          try{
+            const newId = await uploadExerciseImage(file);
+            const oldId = ex.imgId;
+            ex.imgId = newId;
+            const ok = await savePlan(plan);
+            if(!ok){ throw new Error('save'); }
+            if(oldId) deleteExerciseImage(oldId);
+            renderAdminView();
+          }catch(err){
+            alert('تعذر رفع الصورة: ' + (err.message || ''));
+            thumb.textContent = ex.imgId ? '' : 'لا صورة';
+            if(ex.imgId) thumb.innerHTML = `<img src="${exImgUrl(ex.imgId)}" alt="">`;
+          }
+        };
+        const del = row.querySelector('.ex-img-del');
+        if(del) del.onclick = async () => {
+          if(!confirm('حذف صورة هذا التمرين؟')) return;
+          const oldId = ex.imgId;
+          delete ex.imgId;
+          const ok = await savePlan(plan);
+          if(ok){ deleteExerciseImage(oldId); renderAdminView(); }
+          else { ex.imgId = oldId; }
+        };
+      });
     } else if(activeAdminTab === 'nutrition'){
       const plan = await loadPlan();
       const n = plan.nutrition;
