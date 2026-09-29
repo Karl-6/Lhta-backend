@@ -35,6 +35,16 @@ async function initDb() {
       PRIMARY KEY (email, recipe_id)
     );
   `);
+
+  // صور التمارين (يرفعها المشرف)
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS exercise_images (
+      id SERIAL PRIMARY KEY,
+      mime TEXT NOT NULL,
+      data BYTEA NOT NULL,
+      created_at TIMESTAMP NOT NULL DEFAULT now()
+    );
+  `);
 }
 
 module.exports = { pool, initDb };
