@@ -28,6 +28,44 @@ router.post('/', checkAdmin, async (req, res) => {
   res.json({ ok: true });
 });
 
+// ---------- صور التمارين ----------
+// رفع صورة (المشرف فقط) - تُرسل كملف خام (image/jpeg مثلاً) وليس JSON
+router.post('/image', checkAdmin, express.raw({ type: 'image/*', limit: '8mb' }), async (req, res) => {
+  try {
+    if (!Buffer.isBuffer(req.body) || req.body.length === 0) {
+      return res.status(400).json({ error: 'لا توجد صورة' });
+    }
+    const mime = (req.header('content-type') || 'image/jpeg').split(';')[0];
+    const result = await pool.query(
+      'INSERT INTO exercise_images (mime, data) VALUES ($1,$2) RETURNING id',
+      [mime, req.body]
+    );
+    res.json({ id: result.rows[0].id });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'خطأ بالخادم' });
+  }
+});
+
+// عرض الصورة (للجميع - تظهر داخل خطة التمارين)
+router.get('/image/:id', async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (!Number.isInteger(id)) return res.status(400).end();
+  const result = await pool.query('SELECT mime, data FROM exercise_images WHERE id = $1', [id]);
+  if (result.rows.length === 0) return res.status(404).end();
+  res.set('Content-Type', result.rows[0].mime);
+  res.set('Cache-Control', 'public, max-age=31536000, immutable');
+  res.send(result.rows[0].data);
+});
+
+// حذف صورة (المشرف فقط)
+router.delete('/image/:id', checkAdmin, async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (!Number.isInteger(id)) return res.status(400).json({ error: 'رقم غير صالح' });
+  await pool.query('DELETE FROM exercise_images WHERE id = $1', [id]);
+  res.json({ ok: true });
+});
+
 // المفضلات (الوصفات المحفوظة) لكل مستخدم
 router.get('/favorites/:email', async (req, res) => {
   const result = await pool.query('SELECT recipe_id FROM favorites WHERE email = $1', [req.params.email]);
