@@ -694,6 +694,28 @@
   .hb-day{ flex:1; text-align:center; font-size:.7rem; color:var(--ink-dim); }
   .hb-day i{ display:block; width:22px; height:22px; border-radius:50%; margin:0 auto 4px; background:var(--panel-2); border:1px solid var(--line); }
   .hb-day i.on{ background:#3ddc84; border-color:#3ddc84; }
+
+  /* ---------- v3 extras: voice, water, favorites, generator ---------- */
+  .vm-back{ position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:9999; display:flex; align-items:center; justify-content:center; padding:16px; }
+  .vm-box{ background:var(--panel-solid); border:1px solid var(--line); border-radius:18px; padding:22px; width:min(420px,100%); text-align:center; }
+  .vm-box h3{ margin:0 0 14px; font-size:1.05rem; }
+  .vm-time{ font-family:'Tajawal',sans-serif; font-size:2.2rem; font-weight:900; font-variant-numeric:tabular-nums; margin:6px 0 14px; }
+  .vm-rec{ width:72px; height:72px; border-radius:50%; border:none; background:var(--red2); color:#fff; font-size:1.6rem; cursor:pointer; }
+  .vm-rec.live{ animation:vmp 1s infinite; }
+  @keyframes vmp{ 0%,100%{ box-shadow:0 0 0 0 rgba(255,60,80,.6); } 50%{ box-shadow:0 0 0 14px rgba(255,60,80,0); } }
+  .vm-box audio{ width:100%; margin:12px 0; }
+  .vm-act{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:10px; }
+  .vm-note{ font-size:.72rem; color:var(--ink-dim); margin-top:12px; line-height:1.6; }
+  .wt-card{ background:var(--panel-solid); border:1px solid var(--line); border-radius:16px; padding:18px; margin-bottom:22px; }
+  .wt-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px; }
+  .wt-btns{ display:flex; gap:8px; align-items:center; }
+  .wt-btns button{ width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:var(--panel); color:var(--ink); font-size:1.2rem; cursor:pointer; }
+  .wt-card .pg-bar i{ background:#4aa8ff; }
+  .fav-btn{ background:none; border:none; font-size:1.15rem; cursor:pointer; color:var(--ink-dim); padding:0; margin-inline-start:auto; }
+  .fav-btn.on{ color:var(--gold); }
+  .lib-head{ display:flex; align-items:flex-start; gap:8px; }
+  .gen-box{ background:var(--panel-solid); border:1px solid var(--gold); border-radius:14px; padding:14px; margin-bottom:16px; }
+  .gen-box ol{ margin:8px 0 0; padding-inline-start:20px; font-size:.88rem; line-height:2; }
 </style>
 </head>
 <body>
@@ -1506,6 +1528,27 @@
     draw();
   }
 
+  // ---------- v3: member voice inbox ----------
+  async function vipVoiceCard(host){
+    let list = [];
+    try{ list = (await (await fetch(`${API_BASE}/api/plan/vip/voice/list/${encodeURIComponent(currentUser.email)}`)).json()).voices || []; }catch(e){}
+    if(!list.length) return;
+    const T = { ar:['رسائل المدرب الصوتية', 'استماع'], en:['Voice messages from your coach', 'Play'], fr:['Messages vocaux du coach', 'Écouter'] }[currentLang] || ['رسائل المدرب الصوتية', 'استماع'];
+    const card = document.createElement('div'); card.className = 'vip-card';
+    card.innerHTML = `<h3 class="vip-h">🎙️ ${T[0]}</h3>` + list.map(v => `<div class="ai-row"><span>${new Date(v.created_at).toLocaleString(currentLang === 'ar' ? 'ar-EG' : currentLang)}<br><small>${Math.floor((v.duration || 0) / 60)}:${String((v.duration || 0) % 60).padStart(2, '0')}</small></span><span data-v="${v.id}"><button type="button" class="btn small primary vplay">▶ ${T[1]}</button></span></div>`).join('');
+    card.addEventListener('click', async ev => {
+      const b = ev.target.closest('.vplay'); if(!b) return;
+      b.disabled = true;
+      try{
+        const rs = await fetch(`${API_BASE}/api/plan/vip/voice/${b.parentElement.dataset.v}`, { headers:{ 'x-member-email': currentUser.email } });
+        if(!rs.ok) throw new Error('x');
+        const au = document.createElement('audio'); au.controls = true; au.autoplay = true; au.style.width = '100%'; au.src = URL.createObjectURL(await rs.blob());
+        b.parentElement.replaceWith(au);
+      }catch(e){ b.disabled = false; }
+    });
+    host.before(card);
+  }
+
   async function renderVip(area){
     const L = VT[currentLang] || VT.ar;
     let mine = null;
@@ -1578,7 +1621,7 @@
     };
     if(!accepted) return;
     if(mine.program){ const bx = document.createElement('div'); area.querySelector('.vip-h').closest('.vip-card').after(bx); vipLog(bx, mine.program, currentUser.email); }
-    const xb = document.createElement('div'); document.getElementById('ckSend').closest('.vip-card').after(xb); vipExtras(xb, mine);
+    const xb = document.createElement('div'); document.getElementById('ckSend').closest('.vip-card').after(xb); vipExtras(xb, mine); vipVoiceCard(xb);
     const vb = document.createElement('div'); vb.className = 'vip-card'; xb.before(vb); voiceInit(vb, currentUser.email, 'member');
     document.getElementById('ckSend').onclick = async () => {
       const weight = document.getElementById('ckW').value.trim();
@@ -1674,7 +1717,67 @@
     VX.concat(LIB_EXTRA).forEach(x => { const k = x[3].toLowerCase(); if(!seen.has(k)){ seen.add(k); out.push(x); } });
     return out;
   }
+  // ---------- v3: admin voice messages ----------
+  function openVoice(name, phone, reqId){
+    let rec = null, blobRef = null, chunks = [], stream = null, timer = null, sec = 0, file = null, url = '';
+    const wrap = document.createElement('div'); wrap.className = 'vm-back';
+    wrap.innerHTML = `<div class="vm-box" role="dialog" aria-modal="true"><h3>🎙️ رسالة صوتية إلى ${escapeHtml(name)}</h3><div class="vm-time" id="vmT">0:00</div><button type="button" class="vm-rec" id="vmR" aria-label="تسجيل">●</button><div id="vmP"></div><div class="vm-act"><button type="button" class="btn small ghost" id="vmX">إغلاق</button></div><p class="vm-note">اضغط للتسجيل ثم اضغط للإيقاف (حتى 3 دقائق). الإرسال عبر واتساب من هاتفك، أو احفظ الملف وأرسله يدوياً.</p></div>`;
+    document.body.appendChild(wrap);
+    const q = id => wrap.querySelector(id), fmt = n => Math.floor(n / 60) + ':' + String(n % 60).padStart(2, '0');
+    const close = () => { clearInterval(timer); try{ if(rec && rec.state !== 'inactive') rec.stop(); }catch(e){} if(stream) stream.getTracks().forEach(t => t.stop()); if(url) URL.revokeObjectURL(url); wrap.remove(); };
+    q('#vmX').onclick = close; wrap.onclick = ev => { if(ev.target === wrap) close(); };
+    q('#vmR').onclick = async () => {
+      if(rec && rec.state === 'recording'){ rec.stop(); return; }
+      if(!navigator.mediaDevices || !window.MediaRecorder){ alert('المتصفح لا يدعم التسجيل الصوتي'); return; }
+      try{ stream = await navigator.mediaDevices.getUserMedia({ audio:true }); }catch(e){ alert('لم يُسمح باستخدام الميكروفون'); return; }
+      const mt = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm'].find(m => MediaRecorder.isTypeSupported(m)) || '';
+      rec = new MediaRecorder(stream, mt ? { mimeType: mt } : undefined); chunks = []; sec = 0; q('#vmP').innerHTML = '';
+      rec.ondataavailable = ev => { if(ev.data.size) chunks.push(ev.data); };
+      rec.onstop = () => {
+        clearInterval(timer); stream.getTracks().forEach(t => t.stop()); q('#vmR').classList.remove('live');
+        const type = rec.mimeType || 'audio/webm', ext = type.includes('mp4') ? 'm4a' : 'webm';
+        const blob = new Blob(chunks, { type }); blobRef = blob; if(url) URL.revokeObjectURL(url); url = URL.createObjectURL(blob);
+        file = new File([blob], 'voice-' + Date.now() + '.' + ext, { type });
+        q('#vmP').innerHTML = `<audio controls src="${url}"></audio><div class="vm-act">${reqId ? '<button type="button" class="btn small primary" id="vmW">إرسال داخل الموقع</button>' : ''}<button type="button" class="btn small ghost" id="vmS">واتساب</button><button type="button" class="btn small ghost" id="vmD">حفظ الملف</button></div>`;
+        q('#vmD').onclick = () => { const a = document.createElement('a'); a.href = url; a.download = file.name; document.body.appendChild(a); a.click(); a.remove(); };
+        const W = q('#vmW');
+        if(W) W.onclick = async () => {
+          W.disabled = true; W.textContent = '...';
+          try{
+            const rs = await fetch(`${API_BASE}/api/plan/vip/${reqId}/voice?d=${sec}`, { method:'POST', headers:{ 'Content-Type': blobRef.type || 'audio/webm', 'x-admin-password': adminPassword }, body: blobRef });
+            if(!rs.ok) throw new Error('x');
+            W.textContent = 'تم الإرسال ✓';
+          }catch(e){ W.disabled = false; W.textContent = 'إرسال داخل الموقع'; alert('تعذر الإرسال. تأكد من تفعيل مسار الصوت في الخادم.'); }
+        };
+        q('#vmS').onclick = async () => {
+          try{ if(navigator.canShare && navigator.canShare({ files:[file] })){ await navigator.share({ files:[file], text:'LHT+' }); return; } }catch(e){ if(e && e.name === 'AbortError') return; }
+          q('#vmD').click(); if(phone) window.open(waLink(phone), '_blank', 'noopener'); else alert('تم حفظ الملف، أرسله يدوياً');
+        };
+      };
+      rec.start(); q('#vmR').classList.add('live');
+      timer = setInterval(() => { sec++; q('#vmT').textContent = fmt(sec); if(sec >= 180) rec.stop(); }, 1000);
+    };
+  }
+  document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('.vvoice'); if(b) openVoice(b.dataset.n, b.dataset.p, b.dataset.id); });
+
+  // ---------- v3: water tracker ----------
+  function renderWater(box){
+    const T = tgLoad(), goal = Math.max(6, Math.ceil((T ? T.water : 2.5) * 4)), key = 'lhta-water-' + new Date().toISOString().slice(0, 10);
+    const L = { ar:['شرب الماء اليوم', 'كوب (250 مل)'], en:['Water today', 'glasses (250 ml)'], fr:['Eau aujourd\'hui', 'verres (250 ml)'] }[currentLang] || ['شرب الماء اليوم', 'كوب (250 مل)'];
+    let n = parseInt(localStorage.getItem(key)) || 0;
+    const w = document.createElement('div'); w.className = 'wt-card';
+    const draw = () => { w.innerHTML = `<div class="wt-row"><b>💧 ${L[0]}</b><div class="wt-btns"><button type="button" id="wM" aria-label="-">−</button><b dir="ltr">${n} / ${goal}</b><button type="button" id="wP" aria-label="+">+</button></div></div><div class="pg-bar"><i style="width:${Math.min(100, n / goal * 100)}%"></i></div><p class="vx-note">${L[1]}</p>`;
+      w.querySelector('#wM').onclick = () => { n = Math.max(0, n - 1); try{ localStorage.setItem(key, n); }catch(e){} draw(); };
+      w.querySelector('#wP').onclick = () => { n++; try{ localStorage.setItem(key, n); }catch(e){} draw(); }; };
+    draw(); box.after(w);
+  }
+
+  // ---------- v3: library favorites + session generator ----------
+  function libFavs(){ try{ return new Set(JSON.parse(localStorage.getItem('lhta-fav') || '[]')); }catch(e){ return new Set(); } }
+  function libToggleFav(n){ const f = libFavs(); if(f.has(n)) f.delete(n); else f.add(n); try{ localStorage.setItem('lhta-fav', JSON.stringify([...f])); }catch(e){} }
+
   function renderLibrary(area){
+    const FV = { ar:'المفضلة', en:'Favorites', fr:'Favoris' }, GN = { ar:['ولّد لي تمرين اليوم', 'جلسة مقترحة', '3×10-12'], en:['Generate today\'s workout', 'Suggested session', '3×10-12'], fr:['Génère ma séance', 'Séance suggérée', '3×10-12'] };
     const T = LB[currentLang] || LB.ar, mi = currentLang === 'en' ? 1 : currentLang === 'fr' ? 2 : 0;
     const mn = k => (VM[k] || [k, k, k])[mi];
     let fm = 'all', fe = 'all', fq = '';
@@ -1689,20 +1792,28 @@
     area.innerHTML = `<div class="lib-top"><div class="lib-map">${map}</div><div>
       <p class="lib-count" style="margin-top:0">${T.sub}</p>
       <div class="lib-chips">${chip('all', T.all, 'm')}${Object.keys(VM).map(k => chip(k, mn(k), 'm')).join('')}</div>
-      <div class="lib-chips">${chip('all', T.eqAll, 'e')}${chip('b', T.home, 'e')}${chip('g', T.gym, 'e')}</div>
+      <div class="lib-chips">${chip('all', T.eqAll, 'e')}${chip('b', T.home, 'e')}${chip('g', T.gym, 'e')}${chip('fav', '⭐ ' + FV[currentLang], 'e')}</div><button type="button" class="btn small primary" id="libGen">🎲 ${GN[currentLang][0]}</button>
       <input class="calc-search" id="libQ" placeholder="${T.search}" style="margin-bottom:0"></div></div>
-      <p class="lib-count" id="libCount" aria-live="polite"></p><div class="lib-grid" id="libGrid"></div><p class="lib-count" style="margin-top:18px">${T.note}</p>`;
+      <div id="libGenOut"></div><p class="lib-count" id="libCount" aria-live="polite"></p><div class="lib-grid" id="libGrid"></div><p class="lib-count" style="margin-top:18px">${T.note}</p>`;
     function draw(){
-      const all = libAll(), q = fq.trim().toLowerCase();
-      const res = all.filter(x => (fm === 'all' || x[0] === fm) && (fe === 'all' || x[1] === fe) && (!q || (x[2] + ' ' + x[3]).toLowerCase().includes(q)));
+      const all = libAll(), q = fq.trim().toLowerCase(), favs = libFavs();
+      const res = all.filter(x => (fm === 'all' || x[0] === fm) && (fe === 'all' || (fe === 'fav' ? favs.has(x[3]) : x[1] === fe)) && (!q || (x[2] + ' ' + x[3]).toLowerCase().includes(q)));
       area.querySelectorAll('.lib-chip').forEach(c => c.classList.toggle('on', c.dataset.v === (c.dataset.g === 'm' ? fm : fe)));
       area.querySelectorAll('.bz').forEach(z => z.classList.toggle('on', z.dataset.m === fm));
       document.getElementById('libCount').textContent = res.length + ' ' + T.n;
-      document.getElementById('libGrid').innerHTML = res.length ? res.map(x => `<div class="lib-card"><b>${escapeHtml(currentLang === 'ar' ? x[2] : x[3])}</b>${currentLang === 'ar' ? `<span class="en">${escapeHtml(x[3])}</span>` : ''}<div class="lib-tags"><span>${escapeHtml(mn(x[0]))}</span><span>${x[1] === 'g' ? T.gym : T.both}</span></div><a href="https://www.youtube.com/results?search_query=${encodeURIComponent(x[3] + ' exercise form')}" target="_blank" rel="noopener noreferrer">${T.video}</a></div>`).join('') : `<div class="log-empty">${T.empty}</div>`;
+      document.getElementById('libGrid').innerHTML = res.length ? res.map(x => `<div class="lib-card"><div class="lib-head"><b>${escapeHtml(currentLang === 'ar' ? x[2] : x[3])}</b><button type="button" class="fav-btn${favs.has(x[3]) ? ' on' : ''}" data-fav="${escapeHtml(x[3])}" aria-pressed="${favs.has(x[3])}" aria-label="${FV[currentLang]}">${favs.has(x[3]) ? '★' : '☆'}</button></div>${currentLang === 'ar' ? `<span class="en">${escapeHtml(x[3])}</span>` : ''}<div class="lib-tags"><span>${escapeHtml(mn(x[0]))}</span><span>${x[1] === 'g' ? T.gym : T.both}</span></div><a href="https://www.youtube.com/results?search_query=${encodeURIComponent(x[3] + ' exercise form')}" target="_blank" rel="noopener noreferrer">${T.video}</a></div>`).join('') : `<div class="log-empty">${T.empty}</div>`;
     }
     area.querySelectorAll('.lib-chip').forEach(c => c.onclick = () => { if(c.dataset.g === 'm') fm = c.dataset.v; else fe = c.dataset.v; draw(); });
     area.querySelectorAll('.bz').forEach(z => { const pick = () => { fm = fm === z.dataset.m ? 'all' : z.dataset.m; draw(); }; z.onclick = pick; z.onkeydown = ev => { if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); pick(); } }; });
     document.getElementById('libQ').oninput = ev => { fq = ev.target.value; draw(); };
+    document.getElementById('libGrid').onclick = ev => { const b = ev.target.closest('.fav-btn'); if(b){ libToggleFav(b.dataset.fav); draw(); } };
+    document.getElementById('libGen').onclick = () => {
+      const pool = libAll().filter(x => fe === 'all' || fe === 'fav' ? true : x[1] === fe), pick = a => a[Math.floor(Math.random() * a.length)];
+      const muscles = fm === 'all' ? ['chest', 'back', 'quads', 'shoulders', 'hams', 'core'] : null, out = [];
+      if(muscles) muscles.forEach(m => { const c = pool.filter(x => x[0] === m); if(c.length) out.push(pick(c)); });
+      else { const c = pool.filter(x => x[0] === fm).slice(); while(out.length < 5 && c.length) out.push(c.splice(Math.floor(Math.random() * c.length), 1)[0]); }
+      document.getElementById('libGenOut').innerHTML = `<div class="gen-box"><b>🎲 ${GN[currentLang][1]}</b><ol>${out.map(x => `<li>${escapeHtml(currentLang === 'ar' ? x[2] : x[3])} · ${GN[currentLang][2]}</li>`).join('')}</ol></div>`;
+    };
     draw();
   }
 
@@ -1919,6 +2030,7 @@
       try{ localStorage.setItem('lhta-target', JSON.stringify(tgCompute(x))); }catch(e){}
       renderTarget(); renderLog();
     };
+    renderWater(box);
   }
 
   function renderCalculator(area){
@@ -2501,7 +2613,7 @@
           الهدف: ${G[d.goal] || ''} · ${escapeHtml(d.days)} أيام/أسبوع · الشدة: ${I[d.intensity] || ''}<br>
           السعرات: <b>${escapeHtml(d.kcal)}</b> · بروتين ${escapeHtml(d.protein)}غ · نوم ${escapeHtml(d.sleep)} ساعات<br>${d.med === 'y' ? `⚠️ <b style="color:#ff4757">إصابة/حالة طبية — راجع قبل الاعتماد</b>${d.inj ? ': ' + escapeHtml(d.inj) : ''}${(d.parq || []).length ? ' · PAR-Q: ' + d.parq.map(Number).join('،') : ''}<br>` : ''}${d.bf ? 'دهون تقديرية ~' + escapeHtml(d.bf) + '% · ' : ''}${(d.weak || []).length ? 'أولوية: ' + d.weak.map(w => escapeHtml((VM[w] || [w])[0])).join('، ') : ''}<br>` : ''}
           <b>${S[r.status]}</b>${r.note ? ' — ' + escapeHtml(r.note) : ''}
-          ${accBlock(r)}<textarea class="calc-search vcn" data-id="${r.id}" rows="2" placeholder="ملاحظة خاصة بالمدرب (لا يراها العضو)" style="margin:10px 0 0">${escapeHtml(localStorage.getItem('lhta-cnote:' + r.id) || '')}</textarea>${r.status === 'pending' ? `<div style="margin-top:8px"><input class="calc-search vnote" placeholder="رسالة للعضو (اختياري)" style="margin-bottom:8px">
+          ${accBlock(r)}${r.status === 'accepted' ? `<button type="button" class="btn small ghost vvoice" data-n="${escapeHtml(r.name)}" data-p="${escapeHtml((r.data || {}).phone || '')}" data-id="${r.id}" style="margin-top:10px">🎙️ رسالة صوتية</button>` : ''}<textarea class="calc-search vcn" data-id="${r.id}" rows="2" placeholder="ملاحظة خاصة بالمدرب (لا يراها العضو)" style="margin:10px 0 0">${escapeHtml(localStorage.getItem('lhta-cnote:' + r.id) || '')}</textarea>${r.status === 'pending' ? `<div style="margin-top:8px"><input class="calc-search vnote" placeholder="رسالة للعضو (اختياري)" style="margin-bottom:8px">
             <button class="btn small primary vdec" data-s="accepted">قبول</button> <button class="btn small ghost vdec" data-s="rejected">رفض</button></div>` : ''}
         </div>`; }).join('') : '<div class="log-empty">لا توجد طلبات بعد</div>');
       area.querySelectorAll('.vsaveprog').forEach(btn => {
