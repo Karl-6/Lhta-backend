@@ -45,6 +45,25 @@ async function initDb() {
       created_at TIMESTAMP NOT NULL DEFAULT now()
     );
   `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS vip_requests (
+      id SERIAL PRIMARY KEY,
+      member_id INTEGER NOT NULL,
+      data JSONB NOT NULL,
+      status TEXT NOT NULL DEFAULT 'pending',
+      note TEXT,
+      created_at TIMESTAMP NOT NULL DEFAULT now()
+    );
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS progress_logs (
+      email TEXT NOT NULL,
+      day DATE NOT NULL,
+      weight NUMERIC(5,1) NOT NULL,
+      PRIMARY KEY (email, day)
+    );
+  `);
 }
 
 module.exports = { pool, initDb };
