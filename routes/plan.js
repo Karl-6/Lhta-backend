@@ -34,6 +34,17 @@ router.post('/', checkAdmin, async (req, res) => {
 // ---------- صور التمارين ----------
 // رفع صورة (المشرف فقط) - تُرسل كملف خام (image/jpeg مثلاً) وليس JSON
 router.post('/image', checkAdmin, express.raw({ type: 'image/*', limit: '8mb' }), async (req, res) => {
+  try {
+    if (!Buffer.isBuffer(req.body) || req.body.length === 0) {
+      return res.status(400).json({ error: 'لا توجد صورة' });
+    }
+    const mime = (req.header('content-type') || 'image/jpeg').split(';')[0];
+    const result = await pool.query(
+      'INSERT INTO exercise_images (mime, data) VALUES ($1,$2) RETURNING id',
+      [mime, req.body]
+    );
+    res.json({ id: result.rows[0].id });
+  } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'خطأ بالخادم' });
   }
