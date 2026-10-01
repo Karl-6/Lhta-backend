@@ -1182,9 +1182,9 @@
         }
         const r = await fetch(`${API_BASE}/api/plan/vip/request`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email: currentUser.email, data: { phone, sender, receipt } }) });
         const j = await r.json().catch(() => ({}));
-        if(!r.ok){ alert(j.error || 'error'); return; }
+        if(!r.ok){ alert(j.error || ('HTTP ' + r.status)); return; }
         alert(L.sent); renderVip(area);
-      }catch(e){ alert('error'); }
+      }catch(e){ alert('error: ' + (e && e.message ? e.message : e)); }
     };
     if(!accepted) return;
     const d0 = mine.data || {};
