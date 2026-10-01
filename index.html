@@ -1200,6 +1200,7 @@
   }
   const VM = {chest:['الصدر','Chest','Pectoraux'],back:['الظهر','Back','Dos'],shoulders:['الأكتاف','Shoulders','Épaules'],quads:['الفخذ الأمامي','Quads','Quadriceps'],hams:['الفخذ الخلفي والأرداف','Hamstrings & glutes','Ischios & fessiers'],biceps:['الذراع الأمامي','Biceps','Biceps'],triceps:['الذراع الخلفي','Triceps','Triceps'],calves:['السمانة','Calves','Mollets'],core:['البطن','Core','Abdos']};
   const VN = {lvl:['مستواك','Level','Niveau'],lv1:['مبتدئ','Beginner','Débutant'],lv2:['متوسط','Intermediate','Intermédiaire'],lv3:['متقدم','Advanced','Avancé'],eq:['مكان التمرين','Where you train','Lieu'],eq1:['نادٍ','Gym','Salle'],eq2:['المنزل','Home','Maison'],weak:['عضلات تريد تقويتها (حتى 2)','Muscles to prioritize (up to 2)','Muscles à prioriser (max 2)'],none:['— بدون —','— none —','— aucun —'],neck:['محيط الرقبة (سم)','Neck (cm)','Cou (cm)'],waist:['محيط الخصر (سم)','Waist (cm)','Taille (cm)'],hip:['محيط الورك (سم) — للإناث','Hips (cm) — women','Hanches (cm) — femmes'],med:['هل لديك إصابة أو حالة طبية؟','Any injury or medical condition?','Blessure ou condition médicale ?'],no:['لا','No','Non'],yes:['نعم، سيراجعها المدرب','Yes, the coach will review','Oui, le coach vérifiera'],inj:['وصفها باختصار (اختياري)','Describe briefly (optional)','Décris brièvement (facultatif)'],bfat:['نسبة الدهون (تقدير)','Body fat (estimate)','Masse grasse (estim.)']};
+  Object.assign(VN,{profT:['بيانات برنامجك','Your program details','Infos pour ton programme'],profS:['املأ بياناتك مرة واحدة ثم اضغط حفظ، ليجهّز المدرب برنامجك.','Fill this in once and press save so your coach can prepare your program.','Remplis une seule fois puis enregistre pour que le coach prépare ton programme.'],profEdit:['✅ بياناتك محفوظة — اضغط للتعديل','✅ Details saved — tap to edit','✅ Infos enregistrées — touche pour modifier']});
   const vn = k => VN[k][({ar:0,en:1,fr:2})[currentLang] ?? 0], vmu = k => VM[k][({ar:0,en:1,fr:2})[currentLang] ?? 0];
   // قاعدة التمارين: [العضلة، g=نادٍ فقط / b=نادٍ ومنزل، عربي، إنجليزي]
   const VX = [['chest','g','ضغط بنش بالبار','Barbell Bench Press'],['chest','b','ضغط دامبل مائل','Incline Dumbbell Press'],['chest','b','تمرين الضغط','Push-up'],['chest','g','فلاي كابل','Cable Fly'],
@@ -1304,7 +1305,8 @@
     const faq = `<div class="vip-card vip-faq"><h3 class="vip-h">${L.faqT}</h3>${[1,2,3].map(n => `<details><summary>${L['q' + n]}</summary><p>${L['a' + n]}</p></details>`).join('')}</div>`;
     const loginCard = `<div class="vip-card vip-pay"><div class="vip-paylabel">${L.loginNeed}</div><button type="button" class="btn vip-btn" id="vipLogin" style="width:auto">${L.loginBtn}</button></div>`;
     const opt = (v, txt) => `<option value="${v}">${txt}</option>`;
-    const form = `<div class="vip-card"><div class="vip-form">
+    const saved = !!(mine && mine.data && mine.data.h);
+    const form = `<div class="vip-card"><h3 class="vip-h">📝 ${vn('profT')}</h3><p class="vip-sub" style="margin:0 0 12px">${vn('profS')}</p><div class="vip-form">
       <label>${L.h}<input class="calc-search" id="vh" type="number" min="100" max="250"></label>
       <label>${L.w}<input class="calc-search" id="vw" type="number" min="30" max="300"></label>
       <label>${L.age}<input class="calc-search" id="va" type="number" min="14" max="90"></label>
@@ -1323,7 +1325,7 @@
       <label class="full">${vn('ram')}<select class="calc-search" id="vr">${opt('n', vn('no'))}${opt('y', vn('yesS'))}</select></label>
     </div><div class="vip-res" id="vipRes"></div>
     <button type="button" class="btn vip-btn" id="vipSave" style="margin-top:14px">${L.save}</button></div>`;
-    area.innerHTML = accepted ? status + extra + form : status + head + cmp + (mine && mine.status === 'pending' ? '' : !currentUser ? loginCard : `<div class="vip-card"><h3 class="vip-h">${L.formT}</h3><div class="vip-form"><label>${L.phone}<input class="calc-search" id="vp" type="tel"></label><label>${L.sender}<input class="calc-search" id="vn"></label><label class="full">${L.receipt}<input type="file" accept="image/*" id="vr" class="calc-search"></label></div><button type="button" class="btn vip-btn" id="vipAsk" style="margin-top:14px">${L.send}</button></div>`) + faq;
+    area.innerHTML = accepted ? status + extra + (saved ? `<details style="margin-bottom:14px"><summary class="btn vip-btn" style="display:block;text-align:center">${vn('profEdit')}</summary>${form}</details>` : form) : status + head + cmp + (mine && mine.status === 'pending' ? '' : !currentUser ? loginCard : `<div class="vip-card"><h3 class="vip-h">${L.formT}</h3><div class="vip-form"><label>${L.phone}<input class="calc-search" id="vp" type="tel"></label><label>${L.sender}<input class="calc-search" id="vn"></label><label class="full">${L.receipt}<input type="file" accept="image/*" id="vr" class="calc-search"></label></div><button type="button" class="btn vip-btn" id="vipAsk" style="margin-top:14px">${L.send}</button></div>`) + faq;
     const copy = document.getElementById('vipCopy');
     if(copy) copy.onclick = () => { try{ navigator.clipboard.writeText(VIP_CCP); }catch(e){} copy.textContent = L.copied; setTimeout(() => { copy.textContent = L.copy; }, 1500); };
     const lg = document.getElementById('vipLogin'); if(lg) lg.onclick = () => openModal('loginBackdrop');
@@ -1376,7 +1378,7 @@
         const r = await fetch(`${API_BASE}/api/plan/vip/profile`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email: currentUser.email, data }) });
         const j = await r.json().catch(() => ({}));
         if(!r.ok){ vipToast(j.error || L.err, 1); return; }
-        vipToast(L.saved);
+        vipToast(L.saved); renderVip(area);
       }catch(e){ vipToast(L.err, 1); }
     };
   }
