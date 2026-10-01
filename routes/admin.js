@@ -44,4 +44,16 @@ router.delete('/members/:id', checkAdmin, async (req, res) => {
   }
 });
 
+// إحصائيات سريعة للمشرف
+router.get('/stats', checkAdmin, async (req, res) => {
+  const n = async (sql) => +(await pool.query(sql)).rows[0].n;
+  res.json({
+    members: await n('SELECT COUNT(*) n FROM members'),
+    week: await n("SELECT COUNT(*) n FROM members WHERE created_at > now() - interval '7 days'"),
+    pending: await n("SELECT COUNT(*) n FROM vip_requests WHERE status = 'pending'"),
+    accepted: await n("SELECT COUNT(*) n FROM vip_requests WHERE status = 'accepted'"),
+    total: await n('SELECT COUNT(*) n FROM vip_requests'),
+  });
+});
+
 module.exports = router;
