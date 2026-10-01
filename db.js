@@ -14,7 +14,7 @@ async function initDb() {
       id SERIAL PRIMARY KEY,
       name TEXT NOT NULL,
       email TEXT UNIQUE NOT NULL,
-      password TEXT,               -- كلمة المرور نص عادي (فقط لمن يسجّل بالإيميل) - بقرار صاحب المنصة
+      password TEXT,
       provider TEXT NOT NULL DEFAULT 'Email',
       provider_id TEXT,
       created_at TIMESTAMP NOT NULL DEFAULT now()
@@ -28,9 +28,6 @@ async function initDb() {
     );
   `);
 
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS favorites (
-      email TEXT NOT NULL,
   await pool.query(`ALTER TABLE vip_requests ADD COLUMN IF NOT EXISTS program TEXT`);
   await pool.query(`ALTER TABLE vip_requests ADD COLUMN IF NOT EXISTS expires_at TIMESTAMPTZ`);
   await pool.query(`
