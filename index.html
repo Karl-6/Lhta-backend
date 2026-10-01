@@ -1820,6 +1820,22 @@
   async function renderPlanArea(){
     const area = document.getElementById('planArea');
 
+    // تبويبات تتطلب تسجيل الدخول (ما عدا تبويب VIP الذي يعرض الباقة فقط)
+    const unlockedNow = !!currentUser || isAdmin;
+    if(!unlockedNow && activeTab !== 'vip'){
+      area.innerHTML = `
+        <div class="lock-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="1.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+          <p>${t('lockTitle')}</p>
+          <button class="btn primary" id="unlockBtn">${t('unlockBtn')}</button>
+          <button class="btn ghost" id="unlockLoginBtn" style="margin-top:10px">${t('loginBtn')}</button>
+        </div>
+      `;
+      document.getElementById('unlockBtn').onclick = () => openModal('registerBackdrop');
+      document.getElementById('unlockLoginBtn').onclick = () => openModal('loginBackdrop');
+      return;
+    }
+
     if(activeTab === 'calculator'){ renderCalculator(area); return; }
     if(activeTab === 'recipes'){ await renderRecipes(area); return; }
     if(activeTab === 'library'){ renderLibrary(area); return; }
@@ -2597,7 +2613,7 @@
           ${r.expires_at ? `⏳ ينتهي: <b>${fd(r.expires_at)}</b> <span class="vip-days ${dl(r) <= 5 ? 'warn' : ''}">${dl(r) > 0 ? 'متبقي ' + dl(r) + ' يوم' : 'منتهي'}</span>` : ''}
           <div class="vv" data-email="${escapeHtml(r.email)}"></div><div class="vt-row"><select class="calc-search vtpl">${tplOpts()}</select><button type="button" class="btn small ghost vtplsave">حفظ كقالب</button><button type="button" class="btn small ghost vtpldel">حذف قالب</button></div><textarea class="calc-search vprog" rows="5" placeholder="اكتب برنامج العضو هنا (التمارين، المجموعات، العدات...)" style="margin:8px 0">${escapeHtml(r.program || '')}</textarea>
           <button class="btn small ghost vgen">⚡ توليد مسودة تلقائية</button> <button class="btn small primary vsaveprog">حفظ البرنامج</button>
-          ${vipProgress(r.checkins || [], VT.ar, (r.data || {}).goal)}${(r.checkins || []).map(c => `<div style="margin-top:10px">📈 ${fd(c.created_at)} · <b>${escapeHtml(c.weight)} كغ</b>${c.note ? ' — ' + escapeHtml(c.note) : ''}<br>
+          ${vipProgress(r.checkins || [], VT.ar, (r.data || {}).goal)}${(r.checkins || []).map(c => `<div style="margin-top:10px">📈 ${fd(c.created_at)} · <b>${escapeHtml(c.weight)} كغ</b>${c.note ? ' — ' + escapeHtml(c.note) : ''} <button type="button" class="btn small ghost vcdel" data-c="${c.id}" style="margin-inline-start:6px;color:#ff4757">🗑</button><br>
             ${localStorage.getItem('lhta-rlog:' + c.id) ? `<small class="rlog" style="color:var(--ink-dim)">ردّيت: ${new Date(localStorage.getItem('lhta-rlog:' + c.id)).toLocaleString('ar-EG')}</small><br>` : ''}<input class="calc-search vrep" data-c="${c.id}" placeholder="ردك على المتابعة" value="${escapeHtml(c.reply || '')}" style="margin:6px 0"><button class="btn small ghost vrepbtn" data-c="${c.id}">إرسال الرد</button><div class="vq-row" style="margin-top:6px">${QR.map(x => `<button type="button" class="vq">${x}</button>`).join('')}</div></div>`).join('')}
         </div>`;
       const ord = {pending:0, accepted:1, rejected:2};
@@ -2606,7 +2622,7 @@
       const bar = `<div class="vip-filter">${[].concat([['all','الكل',reqs.length],['pending','⏳ قيد المراجعة',cnt('pending')],['accepted','✅ مقبول',cnt('accepted')],['rejected','❌ مرفوض',cnt('rejected')]], adminFlagBtns(reqs)).map(f => `<button class="btn small ${f[0]==='all'?'on':''}" data-f="${f[0]}">${f[1]} (${f[2]})</button>`).join('')}</div><button type="button" class="btn small ghost" id="vCsv" style="margin-bottom:12px">تصدير CSV</button><input class="calc-search" id="vFilterQ" placeholder="بحث بالاسم أو الإيميل" style="margin-bottom:12px">`;
       area.innerHTML = (reqs.length ? bar : '') + (reqs.length ? reqs.map(r => { const d = r.data || {}; return `
         <div class="vip-req" data-id="${r.id}" data-status="${r.status}" data-flags="${adminFlags(r)}" data-q="${escapeHtml((r.name + ' ' + r.email).toLowerCase())}">
-          <b>${escapeHtml(r.name)}</b> · ${escapeHtml(r.email)} · ${new Date(r.created_at).toLocaleString('ar-EG')}<br>
+          <b>${escapeHtml(r.name)}</b> · ${escapeHtml(r.email)} · ${new Date(r.created_at).toLocaleString('ar-EG')} <button type="button" class="btn small ghost vreqdel" data-id="${r.id}" style="margin-inline-start:8px;color:#ff4757">🗑 حذف</button><br>
           📞 ${escapeHtml(d.phone)} · 💳 ${escapeHtml(d.sender)}${d.receipt ? ` · <a href="#" class="vrec" data-r="${d.receipt}" style="color:var(--gold)">🧾 الوصل</a>` : ''}
           <a class="btn small primary" href="${waLink(d.phone)}" target="_blank" rel="noopener" style="margin-inline-start:8px">واتساب</a><br>
           ${d.h ? `الطول ${escapeHtml(d.h)} · الوزن ${escapeHtml(d.w)} · العمر ${escapeHtml(d.age)} · ${d.sex === 'm' ? 'ذكر' : 'أنثى'}<br>
@@ -2642,6 +2658,18 @@
           await fetch(`${API_BASE}/api/plan/vip/${box.dataset.id}/decision`, { method:'POST', headers:{ 'Content-Type':'application/json', 'x-admin-password': adminPassword }, body: JSON.stringify({ status: btn.dataset.s, note: box.querySelector('.vnote').value }) });
           renderAdminView();
         };
+      });
+      area.querySelectorAll('.vreqdel').forEach(btn => btn.onclick = async () => {
+        if(!confirm('حذف هذا المشترك وكل بياناته (المتابعات، سجل التمارين، وصل الدفع) نهائياً؟')) return;
+        let rs; try{ rs = await fetch(`${API_BASE}/api/plan/vip/${btn.dataset.id}`, { method:'DELETE', headers:{ 'x-admin-password': adminPassword } }); }catch(e){}
+        if(!rs || !rs.ok){ alert('تعذر الحذف'); return; }
+        renderAdminView();
+      });
+      area.querySelectorAll('.vcdel').forEach(btn => btn.onclick = async () => {
+        if(!confirm('حذف هذه المتابعة؟')) return;
+        let rs; try{ rs = await fetch(`${API_BASE}/api/plan/vip/checkin/${btn.dataset.c}`, { method:'DELETE', headers:{ 'x-admin-password': adminPassword } }); }catch(e){}
+        if(!rs || !rs.ok){ alert('تعذر الحذف'); return; }
+        renderAdminView();
       });
       area.querySelectorAll('.vrec').forEach(a => a.onclick = async ev => {
         ev.preventDefault(); const w = window.open('', '_blank');
