@@ -12,6 +12,9 @@ function checkAdmin(req, res, next) {
 }
 
 // أي زائر يقدر يقرأ الخطة (تظهر فقط للمسجّلين من واجهة الموقع)
+// فحص حياة الخادم (لخدمات مثل UptimeRobot): GET /api/plan/health
+router.get('/health', (req, res) => res.json({ ok: true }));
+
 router.get('/', async (req, res) => {
   const result = await pool.query('SELECT data FROM plan_data WHERE id = 1');
   res.json({ plan: result.rows[0] ? result.rows[0].data : null });
@@ -31,17 +34,6 @@ router.post('/', checkAdmin, async (req, res) => {
 // ---------- صور التمارين ----------
 // رفع صورة (المشرف فقط) - تُرسل كملف خام (image/jpeg مثلاً) وليس JSON
 router.post('/image', checkAdmin, express.raw({ type: 'image/*', limit: '8mb' }), async (req, res) => {
-  try {
-    if (!Buffer.isBuffer(req.body) || req.body.length === 0) {
-      return res.status(400).json({ error: 'لا توجد صورة' });
-    }
-    const mime = (req.header('content-type') || 'image/jpeg').split(';')[0];
-    const result = await pool.query(
-      'INSERT INTO exercise_images (mime, data) VALUES ($1,$2) RETURNING id',
-      [mime, req.body]
-    );
-    res.json({ id: result.rows[0].id });
-  } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'خطأ بالخادم' });
   }
@@ -83,5 +75,23 @@ router.post('/favorites/toggle', async (req, res) => {
   const result = await pool.query('SELECT recipe_id FROM favorites WHERE email = $1', [email]);
   res.json({ favorites: result.rows.map(r => r.recipe_id) });
 });
+
+// متابعة وزن العضو
+router.get('/progress/:email', async (req, res) => {
+  const r = await pool.query("SELECT to_char(day,'YYYY-MM-DD') AS day, weight FROM progress_logs WHERE LOWER(email) = $1 ORDER BY day", [String(req.params.email).toLowerCase()]);
+  res.json({ entries: r.rows });
+});
+router.post('/progress', async (req, res) => {
+  const email = String((req.body || {}).email || '').trim().toLowerCase();
+  const weight = parseFloat((req.body || {}).weight);
+  const day = /^\d{4}-\d{2}-\d{2}$/.test((req.body || {}).day) ? req.body.day : new Date().toISOString().slice(0, 10);
+  if (!isFinite(weight) || weight < 20 || weight > 400) return res.status(400).json({ error: 'وزن غير صالح' });
+  const m = await pool.query('SELECT 1 FROM members WHERE LOWER(email) = $1', [email]);
+  if (!m.rows.length) return res.status(401).json({ error: 'سجّل دخولك أولاً' });
+  await pool.query('INSERT INTO progress_logs (email, day, weight) VALUES ($1,$2,$3) ON CONFLICT (email, day) DO UPDATE SET weight = $3', [email, day, weight]);
+  res.json({ ok: true });
+});
+
+router.use('/vip', require('./vip'));
 
 module.exports = router;
