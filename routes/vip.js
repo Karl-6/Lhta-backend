@@ -18,7 +18,8 @@ router.post('/request', async (req, res) => {
     const open = await pool.query("SELECT 1 FROM vip_requests WHERE member_id = $1 AND (status = 'pending' OR (status = 'accepted' AND (expires_at IS NULL OR expires_at > now())))", [m.rows[0].id]);
     if (open.rows.length) return res.status(409).json({ error: 'لديك طلب قائم بالفعل' });
     const d = (req.body || {}).data || {};
-    const info = { phone: String(d.phone || '').slice(0, 40), sender: String(d.sender || '').slice(0, 100), receipt: parseInt(d.receipt, 10) || null };
+    if (d.consent !== true) return res.status(400).json({ error: 'يجب الموافقة على الإقرار (18 سنة فأكثر، وليس استشارة طبية)' });
+    const info = { phone: String(d.phone || '').slice(0, 40), sender: String(d.sender || '').slice(0, 100), receipt: parseInt(d.receipt, 10) || null, consent: true, consent_at: new Date().toISOString() };
     if (!info.phone || !info.sender) return res.status(400).json({ error: 'اكتب هاتفك واسم صاحب الحوالة' });
     await pool.query('INSERT INTO vip_requests (member_id, data) VALUES ($1, $2)', [m.rows[0].id, JSON.stringify(info)]);
     res.json({ ok: true });
@@ -33,10 +34,21 @@ router.post('/receipt', express.raw({ type: 'image/*', limit: '6mb' }), async (r
     if (!m.rows.length) return res.status(401).json({ error: 'سجّل دخولك أولاً' });
     if (!Buffer.isBuffer(req.body) || !req.body.length) return res.status(400).json({ error: 'لا توجد صورة' });
     const mime = (req.header('content-type') || 'image/jpeg').split(';')[0];
-    const r = await pool.query('INSERT INTO exercise_images (mime, data) VALUES ($1,$2) RETURNING id', [mime, req.body]);
+    if (!/^image\/(jpeg|png|webp)$/.test(mime)) return res.status(400).json({ error: 'صيغة الصورة غير مدعومة' });
+    const r = await pool.query('INSERT INTO vip_receipts (mime, data) VALUES ($1,$2) RETURNING id', [mime, req.body]);
     res.json({ id: r.rows[0].id });
   } catch (e) { console.error(e); res.status(500).json({ error: 'خطأ بالخادم' }); }
 });
+
+// المشرف فقط: عرض صورة الوصل
+router.get('/receipt/:id', checkAdmin, wrap(async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (!Number.isInteger(id)) return res.status(400).end();
+  const r = await pool.query('SELECT mime, data FROM vip_receipts WHERE id = $1', [id]);
+  if (!r.rows.length) return res.status(404).end();
+  res.set({ 'Content-Type': r.rows[0].mime, 'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': 'sandbox' });
+  res.send(r.rows[0].data);
+}));
 
 // بعد القبول: العضو يحفظ بياناته (الطول، الوزن، المستوى، العضلات...) ليراها المدرب
 router.post('/profile', async (req, res) => {
@@ -44,6 +56,7 @@ router.post('/profile', async (req, res) => {
     const email = String((req.body || {}).email || '').trim().toLowerCase();
     const data = (req.body || {}).data;
     if (!data || typeof data !== 'object') return res.status(400).json({ error: 'بيانات ناقصة' });
+    if (data.age !== undefined && !(+data.age >= 18)) return res.status(400).json({ error: 'العمر الأدنى 18 سنة' });
     const js = JSON.stringify(data);
     if (js.length > 4000) return res.status(400).json({ error: 'بيانات كبيرة جداً' }); // بدل القص الذي كان يكسر الـ JSON
     const r = await pool.query(
