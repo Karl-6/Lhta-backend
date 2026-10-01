@@ -31,32 +31,6 @@ async function initDb() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS favorites (
       email TEXT NOT NULL,
-      recipe_id TEXT NOT NULL,
-      PRIMARY KEY (email, recipe_id)
-    );
-  `);
-
-  // صور التمارين (يرفعها المشرف)
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS exercise_images (
-      id SERIAL PRIMARY KEY,
-      mime TEXT NOT NULL,
-      data BYTEA NOT NULL,
-      created_at TIMESTAMP NOT NULL DEFAULT now()
-    );
-  `);
-
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS vip_requests (
-      id SERIAL PRIMARY KEY,
-      member_id INTEGER NOT NULL,
-      data JSONB NOT NULL,
-      status TEXT NOT NULL DEFAULT 'pending',
-      note TEXT,
-      created_at TIMESTAMP NOT NULL DEFAULT now()
-    );
-  `);
-  // أعمدة وجداول يعتمد عليها vip.js (آمنة: لا تغيّر شيئًا إن كانت موجودة)
   await pool.query(`ALTER TABLE vip_requests ADD COLUMN IF NOT EXISTS program TEXT`);
   await pool.query(`ALTER TABLE vip_requests ADD COLUMN IF NOT EXISTS expires_at TIMESTAMPTZ`);
   await pool.query(`
@@ -81,6 +55,22 @@ async function initDb() {
     );
   `);
   await pool.query(`CREATE INDEX IF NOT EXISTS vip_logs_req_idx ON vip_logs (request_id, created_at)`);
+
+  // وصولات الدفع: جدول خاص (لا يُعرض علنًا مثل صور التمارين)
+  await pool.query(`CREATE TABLE IF NOT EXISTS vip_receipts (id SERIAL PRIMARY KEY, mime TEXT NOT NULL, data BYTEA NOT NULL, created_at TIMESTAMP NOT NULL DEFAULT now())`);
+  await pool.query(`CREATE TABLE IF NOT EXISTS app_flags (k TEXT PRIMARY KEY)`);
+  // ترحيل الوصولات القديمة من exercise_images مرة واحدة فقط، ثم حذفها من الجدول العلني
+  const mig = await pool.query(`SELECT 1 FROM app_flags WHERE k = 'receipts_migrated'`);
+  if (!mig.rows.length) {
+    await pool.query(`INSERT INTO vip_receipts (id, mime, data, created_at)
+      SELECT i.id, i.mime, i.data, i.created_at FROM exercise_images i
+      WHERE i.id IN (SELECT (data->>'receipt')::int FROM vip_requests WHERE data->>'receipt' ~ '^[0-9]+$')
+      ON CONFLICT (id) DO NOTHING`);
+    await pool.query(`SELECT setval(pg_get_serial_sequence('vip_receipts','id'),
+      GREATEST((SELECT COALESCE(MAX(id),0) FROM vip_receipts), (SELECT COALESCE(MAX(id),0) FROM exercise_images)) + 1, false)`);
+    await pool.query(`DELETE FROM exercise_images WHERE id IN (SELECT id FROM vip_receipts)`);
+    await pool.query(`INSERT INTO app_flags (k) VALUES ('receipts_migrated')`);
+  }
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS progress_logs (
