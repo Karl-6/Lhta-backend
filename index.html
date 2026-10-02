@@ -1694,6 +1694,7 @@
   };
 
   // ---------- نشاط التمرين: سلسلة أيام، تحدي 30 يوماً، شارات، لوحة صدارة ----------
+  let recipeMaxTime = 0;
   const ymd = d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
   async function renderActivity(area){
     if(!currentUser) return;
@@ -2291,13 +2292,34 @@
         <button class="${activeRecipeGoal==='gain'?'active gain':''}" data-goal="gain">💪 ${t('goalGain')}</button>
         <button class="${activeRecipeGoal==='loss'?'active loss':''}" data-goal="loss">🔥 ${t('goalLoss')}</button>
       </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin:10px 0" id="rcTools">
+        ${[[0,'الكل'],[15,'⏱ حتى 15 د'],[30,'⏱ حتى 30 د']].map(x => `<button type="button" class="btn small ${recipeMaxTime===x[0]?'primary':'ghost'}" data-mt="${x[0]}" style="width:auto">${x[1]}</button>`).join('')}
+        <button type="button" class="btn small ghost" id="shopBtn" style="width:auto">🛒 قائمة التسوق</button>
+      </div>
       <div class="recipe-grid" id="recipeGrid"></div>
     `;
     area.querySelectorAll('[data-goal]').forEach(btn => {
       btn.onclick = () => { activeRecipeGoal = btn.dataset.goal; expandedRecipe = null; renderRecipes(area); };
     });
+    area.querySelectorAll('[data-mt]').forEach(b => b.onclick = () => { recipeMaxTime = +b.dataset.mt; renderRecipes(area); });
+    area.querySelector('#shopBtn').onclick = () => {
+      const items = []; RECIPES.filter(r => favorites.includes(r.id)).forEach(r => (r.ingredients || []).forEach(i => { if(!items.includes(i)) items.push(i); }));
+      const ov = document.createElement('div');
+      ov.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:16px';
+      ov.innerHTML = `<div style="background:#0b1530;border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:16px;max-width:420px;width:100%;max-height:80vh;overflow:auto;color:#fff">
+        <b>🛒 قائمة التسوق (من وصفاتك المفضلة)</b>
+        ${items.length ? items.map(i => `<label style="display:block;margin:8px 0"><input type="checkbox"> ${escapeHtml(i)}</label>`).join('') : '<p style="opacity:.7">احفظ وصفات بالقلب 🤍 أولاً لتظهر مكوّناتها هنا.</p>'}
+        <div style="display:flex;gap:8px;margin-top:12px">${items.length ? '<button type="button" class="btn small primary" id="shopCopy" style="width:auto">نسخ</button><button type="button" class="btn small ghost" id="shopWa" style="width:auto">واتساب</button>' : ''}<button type="button" class="btn small ghost" id="shopX" style="width:auto">إغلاق</button></div></div>`;
+      document.body.appendChild(ov);
+      const txt = () => '🛒 قائمة التسوق:\n' + items.map(i => '• ' + i).join('\n');
+      ov.querySelector('#shopX').onclick = () => ov.remove();
+      if(items.length){
+        ov.querySelector('#shopCopy').onclick = () => { try{ navigator.clipboard.writeText(txt()); }catch(e){} };
+        ov.querySelector('#shopWa').onclick = () => window.open('https://wa.me/?text=' + encodeURIComponent(txt()), '_blank');
+      }
+    };
     const grid = document.getElementById('recipeGrid');
-    const filtered = RECIPES.filter(r => r.goal === activeRecipeGoal);
+    const filtered = RECIPES.filter(r => r.goal === activeRecipeGoal && (!recipeMaxTime || (parseInt(r.time) || 0) <= recipeMaxTime));
     grid.innerHTML = filtered.map(r => {
       const isSaved = favorites.includes(r.id);
       const isOpen = expandedRecipe === r.id;
@@ -2570,6 +2592,14 @@
             }catch(e){ alert('تعذر الاتصال بالخادم'); return; }
             renderAdminView();
           };
+          const giftBtn = document.createElement('button');
+          giftBtn.className = 'btn small ghost'; giftBtn.type = 'button'; giftBtn.textContent = '🎁 VIP 7 أيام'; giftBtn.style.marginInlineEnd = '6px';
+          giftBtn.onclick = async () => {
+            if(!confirm('منح «' + (r.name || r.email) + '» تجربة VIP لمدة 7 أيام؟')) return;
+            let rs; try{ rs = await fetch(`${API_BASE}/api/activity/grant`, { method:'POST', headers:{ 'Content-Type':'application/json', 'x-admin-password': adminPassword }, body: JSON.stringify({ memberId: r.id, days: 7 }) }); }catch(e){}
+            alert(rs && rs.ok ? 'تم منح التجربة' : 'تعذر المنح (قد يملك اشتراكاً قائماً)');
+          };
+          tr.lastElementChild.appendChild(giftBtn);
           tr.lastElementChild.appendChild(delBtn);
           tbody.appendChild(tr);
         });
@@ -2702,7 +2732,7 @@
       const bar = `<div class="vip-filter">${[].concat([['all','الكل',reqs.length],['pending','⏳ قيد المراجعة',cnt('pending')],['accepted','✅ مقبول',cnt('accepted')],['rejected','❌ مرفوض',cnt('rejected')]], adminFlagBtns(reqs)).map(f => `<button class="btn small ${f[0]==='all'?'on':''}" data-f="${f[0]}">${f[1]} (${f[2]})</button>`).join('')}</div><button type="button" class="btn small ghost" id="vCsv" style="margin-bottom:12px">تصدير CSV</button><input class="calc-search" id="vFilterQ" placeholder="بحث بالاسم أو الإيميل" style="margin-bottom:12px">`;
       area.innerHTML = (reqs.length ? bar : '') + (reqs.length ? reqs.map(r => { const d = r.data || {}; return `
         <div class="vip-req" data-id="${r.id}" data-status="${r.status}" data-flags="${adminFlags(r)}" data-q="${escapeHtml((r.name + ' ' + r.email).toLowerCase())}">
-          <b>${escapeHtml(r.name)}</b> · ${escapeHtml(r.email)} · ${new Date(r.created_at).toLocaleString('ar-EG')} <button type="button" class="btn small ghost vreqdel" data-id="${r.id}" style="margin-inline-start:8px;color:#ff4757">🗑 حذف</button><br>
+          <b>${escapeHtml(r.name)}</b> · ${escapeHtml(r.email)} · ${new Date(r.created_at).toLocaleString('ar-EG')} <button type="button" class="btn small ghost vext" data-id="${r.id}" style="margin-inline-start:8px">➕ 30 يوم</button> <button type="button" class="btn small ghost vreqdel" data-id="${r.id}" style="margin-inline-start:8px;color:#ff4757">🗑 حذف</button><br>
           📞 ${escapeHtml(d.phone)} · 💳 ${escapeHtml(d.sender)}${d.receipt ? ` · <a href="#" class="vrec" data-r="${d.receipt}" style="color:var(--gold)">🧾 الوصل</a>` : ''}
           <a class="btn small primary" href="${waLink(d.phone)}" target="_blank" rel="noopener" style="margin-inline-start:8px">واتساب</a><br>
           ${d.h ? `الطول ${escapeHtml(d.h)} · الوزن ${escapeHtml(d.w)} · العمر ${escapeHtml(d.age)} · ${d.sex === 'm' ? 'ذكر' : 'أنثى'}<br>
@@ -2738,6 +2768,12 @@
           await fetch(`${API_BASE}/api/plan/vip/${box.dataset.id}/decision`, { method:'POST', headers:{ 'Content-Type':'application/json', 'x-admin-password': adminPassword }, body: JSON.stringify({ status: btn.dataset.s, note: box.querySelector('.vnote').value }) });
           renderAdminView();
         };
+      });
+      area.querySelectorAll('.vext').forEach(btn => btn.onclick = async () => {
+        if(!confirm('تمديد الاشتراك 30 يوماً؟')) return;
+        let rs; try{ rs = await fetch(`${API_BASE}/api/activity/extend`, { method:'POST', headers:{ 'Content-Type':'application/json', 'x-admin-password': adminPassword }, body: JSON.stringify({ id: +btn.dataset.id, days: 30 }) }); }catch(e){}
+        if(!rs || !rs.ok){ alert('تعذر التمديد'); return; }
+        renderAdminView();
       });
       area.querySelectorAll('.vreqdel').forEach(btn => btn.onclick = async () => {
         if(!confirm('حذف هذا المشترك وكل بياناته (المتابعات، سجل التمارين، وصل الدفع) نهائياً؟')) return;
