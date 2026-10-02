@@ -1756,22 +1756,6 @@
     };
   }
 
-  // ---------- مؤقت الراحة العائم ----------
-  (function(){
-    const w = document.createElement('div');
-    w.style.cssText = 'position:fixed;bottom:16px;left:16px;z-index:9999;font-family:inherit';
-    w.innerHTML = '<button type="button" id="rtBtn" style="width:48px;height:48px;border-radius:50%;border:1px solid #ffd700;background:#0b1530;color:#ffd700;font-size:20px">⏱</button><div id="rtPanel" style="display:none;margin-bottom:8px;padding:10px;border-radius:12px;background:#0b1530;border:1px solid rgba(255,255,255,.15);color:#fff;text-align:center"><div id="rtShow" style="font-size:1.6rem;margin-bottom:6px">00:00</div><div style="display:flex;gap:6px"><button type="button" data-s="45">45</button><button type="button" data-s="60">60</button><button type="button" data-s="90">90</button><button type="button" data-s="120">120</button></div></div>';
-    w.insertBefore(w.querySelector('#rtPanel'), w.querySelector('#rtBtn'));
-    document.body.appendChild(w);
-    let t = null;
-    const show = n => w.querySelector('#rtShow').textContent = String(Math.floor(n/60)).padStart(2,'0') + ':' + String(n%60).padStart(2,'0');
-    w.querySelector('#rtBtn').onclick = () => { const p = w.querySelector('#rtPanel'); p.style.display = p.style.display === 'none' ? 'block' : 'none'; };
-    w.querySelectorAll('[data-s]').forEach(b => b.onclick = () => {
-      clearInterval(t); let n = +b.dataset.s; show(n);
-      t = setInterval(() => { n--; show(n); if(n <= 0){ clearInterval(t); try{ navigator.vibrate && navigator.vibrate([300,100,300]); const c = new (window.AudioContext||window.webkitAudioContext)(), o = c.createOscillator(); o.connect(c.destination); o.start(); setTimeout(() => o.stop(), 400); }catch(e){} } }, 1000);
-    });
-  })();
-
   // ---------- PWA: تسجيل service worker وبطاقة تثبيت متكاملة ----------
   if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
   (function(){
@@ -1788,8 +1772,43 @@
       if(onGo) c.querySelector('#instGo').onclick = () => { onGo(); c.remove(); };
     }
     let ev = null;
-    window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); ev = e; card('يفتح بملء الشاشة كتطبيق حقيقي، وأسرع من المتصفح.', () => ev.prompt()); });
-    window.addEventListener('appinstalled', () => { const c = document.getElementById('instCard'); if(c) c.remove(); });
+    const INST = 'lht-installed';
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const IT = {
+      ar:{ btn:'ثبّت التطبيق', t:'تثبيت LHT+ على هاتفك', ios:'اضغط زر المشاركة ⬆️ في Safari، ثم اختر «إضافة إلى الشاشة الرئيسية».', and:'افتح قائمة المتصفح ⋮ ثم اختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية». إن فتحت الرابط من فيسبوك أو تلغرام فافتحه أولاً في Chrome.', ok:'حسناً' },
+      en:{ btn:'Install app', t:'Install LHT+ on your phone', ios:'Tap the Share button ⬆️ in Safari, then choose “Add to Home Screen”.', and:'Open the browser menu ⋮ then choose “Install app” or “Add to Home screen”. If you opened this link from Facebook or Telegram, open it in Chrome first.', ok:'OK' },
+      fr:{ btn:'Installer l\'app', t:'Installer LHT+ sur ton téléphone', ios:'Touche le bouton Partager ⬆️ dans Safari, puis « Sur l\'écran d\'accueil ».', and:'Ouvre le menu du navigateur ⋮ puis « Installer l\'application » ou « Ajouter à l\'écran d\'accueil ». Si tu as ouvert le lien depuis Facebook ou Telegram, ouvre-le d\'abord dans Chrome.', ok:'OK' }
+    };
+    const IL = () => IT[(typeof currentLang !== 'undefined' && IT[currentLang]) ? currentLang : 'ar'];
+    function instHelp(){
+      if(document.getElementById('instHelp')) return;
+      const L = IL(), o = document.createElement('div'); o.id = 'instHelp';
+      o.style.cssText = 'position:fixed;inset:0;z-index:10002;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:20px';
+      o.innerHTML = `<div style="max-width:380px;width:100%;padding:20px;border-radius:16px;background:#0b1530;border:1px solid #ffd700;color:#fff;text-align:center"><div style="font-size:2rem">📲</div><b style="display:block;margin:6px 0 10px">${L.t}</b><div style="font-size:.9rem;line-height:1.7;opacity:.9">${isIOS ? L.ios : L.and}</div><button type="button" class="btn small primary" style="width:auto;margin-top:14px">${L.ok}</button></div>`;
+      o.onclick = e => { if(e.target === o || e.target.tagName === 'BUTTON') o.remove(); };
+      document.body.appendChild(o);
+    }
+    function doInstall(){
+      if(ev){
+        const e = ev; ev = null;
+        try{ e.prompt(); e.userChoice && e.userChoice.then(r => { if(r && r.outcome === 'accepted') removeFab(); }); return; }catch(_){}
+      }
+      instHelp();
+    }
+    function removeFab(){ const f = document.getElementById('instFab'); if(f) f.remove(); }
+    function ensureFab(){
+      if(document.getElementById('instFab')) return;
+      const f = document.createElement('button'); f.type = 'button'; f.id = 'instFab';
+      f.style.cssText = 'position:fixed;bottom:16px;right:16px;z-index:9999;height:34px;padding:0 12px;border-radius:17px;border:1px solid #ffd700;background:#0b1530;color:#ffd700;font-family:inherit;font-size:.75rem;font-weight:600;display:flex;align-items:center;gap:4px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.45)';
+      f.innerHTML = '<span style="font-size:14px">📲</span><span id="instFabT">' + IL().btn + '</span>';
+      f.onclick = doInstall;
+      document.body.appendChild(f);
+    }
+    document.addEventListener('click', e => { if(e.target.closest && e.target.closest('.lang-options button')) setTimeout(() => { const t = document.getElementById('instFabT'); if(t) t.textContent = IL().btn; }, 0); });
+    let wasInstalled = false; try{ wasInstalled = !!localStorage.getItem(INST); }catch(_){}
+    if(!wasInstalled) ensureFab();
+    window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); ev = e; try{ localStorage.removeItem(INST); }catch(_){} ensureFab(); card('يفتح بملء الشاشة كتطبيق حقيقي، وأسرع من المتصفح.', doInstall); });
+    window.addEventListener('appinstalled', () => { try{ localStorage.setItem(INST, '1'); }catch(_){} removeFab(); const c = document.getElementById('instCard'); if(c) c.remove(); });
     if(/iphone|ipad|ipod/i.test(navigator.userAgent)) setTimeout(() => card('اضغط زر المشاركة ⬆️ ثم «إضافة إلى الشاشة الرئيسية».', null), 2500);
   })();
 
@@ -3025,6 +3044,295 @@
   };
 
   renderApp();
+</script>
+
+<style>
+@media print{ .topbar,.tabs,.tab-btn,.rest-timer,#instFab,#instCard,.drawer,.vip-toast,.wk-reset,#lxRep,.rest-btn,.lx-w{display:none!important} html,body{background:#fff!important;color:#000!important} .day-card{break-inside:avoid;border:1px solid #999!important;background:#fff!important;color:#000!important} }
+.lx-w{display:inline-block;margin-top:6px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--gold);font:inherit;font-size:.78rem;cursor:pointer}
+#lxRep,#lxRem{margin:14px 0;padding:14px;border-radius:14px;border:1px solid var(--line);background:var(--panel)}
+#lxRep h3,#lxRem h3{font-size:1rem;margin-bottom:8px}
+.lx-g{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.lx-g>div{flex:1;min-width:90px;text-align:center;padding:8px;border-radius:10px;background:rgba(255,255,255,.05)}.lx-g b{display:block;font-size:1.3rem;color:var(--gold)}
+.lx-r button{font-size:1.6rem;background:none;border:0;cursor:pointer;padding:4px 8px}
+#lxRem label{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0;font-size:.9rem}
+</style>
+<script>
+(function(){
+  const LS = (k, d) => { try{ const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; }catch(e){ return d; } };
+  const SV = (k, v) => { try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
+  const L = () => { const l = typeof currentLang !== 'undefined' ? currentLang : (localStorage.getItem('lhta-lang') || 'ar'); return D[l] ? l : 'ar'; };
+  const D = {
+    ar:{ wl:'⚖️ سجّل وزنك', ask:'كم وزنك اليوم لهذا التمرين (كغ)؟', last:'آخر', best:'أفضل', pr:'🏆 رقم قياسي جديد! أحسنت', saved:'تم الحفظ ✓', vid:'شرح',
+      rem:'🔔 التنبيهات', on:'تفعيل الإشعارات', off:'إيقاف', train:'تذكير بالتمرين', water:'شرب الماء (كل ساعتين نهاراً)', weigh:'قياس الوزن (كل جمعة)', den:'الإشعارات محظورة، فعّلها من إعدادات المتصفح', note:'تصلك التنبيهات أثناء فتح التطبيق أو بقائه في الخلفية.', tTrain:'حان وقت التمرين 💪', bTrain:'لا تؤجّل، حصتك تنتظرك في LHT+', tWater:'اشرب كوب ماء 💧', bWater:'حافظ على ترطيب جسمك', tWeigh:'وقت قياس وزنك ⚖️', bWeigh:'سجّل وزنك لنتابع تقدمك',
+      rep:'📊 تقريرك الأسبوعي', dd:'أيام التمرين', gd:'أيام الالتزام', wa:'ماء/يوم', st:'سلسلة', m1:'ممتاز! التزامك رائع 🔥', m2:'جيد، كمّل بنفس الوتيرة 💪', m3:'ابدأ بخطوة صغيرة اليوم، وستعود بسرعة 🌱', rate:'كيف كان أسبوعك؟', thx:'شكراً على تقييمك 🙏', share:'📤 شارك إنجازك', sh:'سلسلتي في LHT+ هي', days:'يوم 🔥', pdf:'🖨️ تصدير الخطة PDF' },
+    en:{ wl:'⚖️ Log weight', ask:'Weight you used today for this exercise (kg)?', last:'Last', best:'Best', pr:'🏆 New personal record! Well done', saved:'Saved ✓', vid:'Demo',
+      rem:'🔔 Reminders', on:'Enable notifications', off:'Turn off', train:'Workout reminder', water:'Drink water (every 2 h by day)', weigh:'Weigh-in (every Friday)', den:'Notifications are blocked, enable them in browser settings', note:'Reminders arrive while the app is open or running in the background.', tTrain:'Workout time 💪', bTrain:'Don\'t postpone, your session is waiting on LHT+', tWater:'Drink a glass of water 💧', bWater:'Stay hydrated', tWeigh:'Weigh-in time ⚖️', bWeigh:'Log your weight so we can track progress',
+      rep:'📊 Your weekly report', dd:'Workout days', gd:'On-track days', wa:'Water/day', st:'Streak', m1:'Excellent! Great consistency 🔥', m2:'Good, keep the pace 💪', m3:'Start with one small step today 🌱', rate:'How was your week?', thx:'Thanks for your feedback 🙏', share:'📤 Share your win', sh:'My LHT+ streak is', days:'days 🔥', pdf:'🖨️ Export plan as PDF' },
+    fr:{ wl:'⚖️ Noter ta charge', ask:'Charge utilisée aujourd\'hui pour cet exercice (kg) ?', last:'Dernière', best:'Record', pr:'🏆 Nouveau record ! Bravo', saved:'Enregistré ✓', vid:'Démo',
+      rem:'🔔 Rappels', on:'Activer les notifications', off:'Désactiver', train:'Rappel d\'entraînement', water:'Boire de l\'eau (toutes les 2 h le jour)', weigh:'Pesée (chaque vendredi)', den:'Notifications bloquées, active-les dans les réglages du navigateur', note:'Les rappels arrivent quand l\'app est ouverte ou en arrière-plan.', tTrain:'C\'est l\'heure de s\'entraîner 💪', bTrain:'Ne reporte pas, ta séance t\'attend sur LHT+', tWater:'Bois un verre d\'eau 💧', bWater:'Reste hydraté', tWeigh:'C\'est l\'heure de la pesée ⚖️', bWeigh:'Note ton poids pour suivre ta progression',
+      rep:'📊 Ton bilan de la semaine', dd:'Jours d\'entraînement', gd:'Jours réussis', wa:'Eau/jour', st:'Série', m1:'Excellent ! Belle régularité 🔥', m2:'Bien, garde le rythme 💪', m3:'Commence par un petit pas aujourd\'hui 🌱', rate:'Comment était ta semaine ?', thx:'Merci pour ton avis 🙏', share:'📤 Partager ta réussite', sh:'Ma série LHT+ :', days:'jours 🔥', pdf:'🖨️ Exporter le programme en PDF' }
+  };
+  const T = () => D[L()];
+  const toast = m => { document.querySelectorAll('.vip-toast').forEach(e => e.remove()); const t = document.createElement('div'); t.className = 'vip-toast'; t.textContent = m; document.body.appendChild(t); setTimeout(() => t.remove(), 3200); };
+  const dk = o => { const d = new Date(); d.setDate(d.getDate() - (o || 0)); return d.toLocaleDateString('en-CA'); };
+
+  // ---- 1) شرح التمرين + سجل الأوزان والأرقام القياسية ----
+  const wlLabel = n => { const a = LS('lht-wlog', {})[n] || [], t = T(); if(!a.length) return t.wl; return '⚖️ ' + a[a.length-1].w + ' ' + (L()==='ar'?'كغ':'kg') + ' · 🏆 ' + Math.max(...a.map(x => x.w)); };
+  function enhanceRows(){
+    document.querySelectorAll('.exercise-table tbody tr:not([data-lx])').forEach(tr => {
+      tr.dataset.lx = 1; const c = tr.cells[0]; if(!c) return;
+      const n = ((c.querySelector('.ex-en') || c.querySelector('b') || {}).textContent || '').trim(); if(!n) return;
+      if(!c.querySelector('.ex-vid-link')){ const a = document.createElement('a'); a.className = 'ex-vid-link'; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.href = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(n + ' exercise form'); a.textContent = '▶ ' + T().vid; a.style.marginInlineStart = '6px'; c.appendChild(a); }
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'lx-w'; b.dataset.n = n; b.textContent = wlLabel(n); c.appendChild(document.createElement('br')); c.appendChild(b);
+    });
+  }
+  document.addEventListener('click', e => {
+    const b = e.target.closest && e.target.closest('.lx-w'); if(!b) return;
+    const v = parseFloat(String(prompt(T().ask) || '').replace(',', '.')); if(!(v > 0)) return;
+    const all = LS('lht-wlog', {}), n = b.dataset.n, a = all[n] || [], pr = a.length && v > Math.max(...a.map(x => x.w));
+    a.push({ d: dk(0), w: v }); all[n] = a.slice(-30); SV('lht-wlog', all); b.textContent = wlLabel(n); toast(pr ? T().pr : T().saved);
+  });
+
+  // ---- 2) التقرير الأسبوعي + تقييم + مشاركة ----
+  function enhanceReport(){
+    const strip = document.querySelector('.hb-strip'); if(!strip || document.getElementById('lxRep')) return;
+    const card = strip.closest('.tg-card'); if(!card) return;
+    const m = LS('lhta-habits', {}), sc = e => { e = e || {}; return (e.w >= 8 ? 1 : 0) + (e.s ? 1 : 0) + (e.z ? 1 : 0) + (e.t ? 1 : 0); };
+    let tr = 0, gd = 0, w = 0; for(let i = 0; i < 7; i++){ const e = m[dk(i)] || {}; if(e.t) tr++; if(sc(e) >= 3) gd++; w += e.w || 0; }
+    let st = 0, o = sc(m[dk(0)]) >= 3 ? 0 : 1; while(sc(m[dk(o)]) >= 3){ st++; o++; }
+    const t = T(), wk = dk(new Date().getDay()), rated = LS('lht-rate', {})[wk];
+    const box = document.createElement('div'); box.id = 'lxRep';
+    box.innerHTML = `<h3>${t.rep}</h3><div class="lx-g"><div><b>${tr}</b>${t.dd}</div><div><b>${gd}/7</b>${t.gd}</div><div><b>${(w/7).toFixed(1)}</b>${t.wa}</div><div><b>${st}</b>${t.st}</div></div><p style="margin:6px 0">${gd >= 5 ? t.m1 : gd >= 3 ? t.m2 : t.m3}</p><div class="lx-r">${rated ? t.thx : t.rate + '<br>' + ['😞','😐','😀'].map((x, i) => `<button type="button" data-r="${i+1}">${x}</button>`).join('')}</div><button type="button" class="btn small primary" id="lxSh" style="width:auto;margin-top:8px">${t.share}</button>`;
+    card.after(box);
+    box.querySelectorAll('[data-r]').forEach(b => b.onclick = () => { const r = LS('lht-rate', {}); r[wk] = +b.dataset.r; SV('lht-rate', r); b.parentNode.textContent = t.thx; });
+    box.querySelector('#lxSh').onclick = () => { const txt = t.sh + ' ' + st + ' ' + t.days + ' ' + location.origin; if(navigator.share) navigator.share({ text: txt }).catch(() => {}); else window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank'); };
+  }
+
+  // ---- 3) التنبيهات + تصدير PDF داخل الإعدادات ----
+  function drawRem(){
+    const dr = document.getElementById('settingsDrawer'); if(!dr) return;
+    let box = document.getElementById('lxRem'); if(!box){ box = document.createElement('div'); box.id = 'lxRem'; dr.appendChild(box); }
+    const s = Object.assign({ on:false, train:'18:00', water:true, weigh:true }, LS('lht-rem', {})), t = T();
+    box.innerHTML = `<h3>${t.rem}</h3><button type="button" class="btn small ${s.on ? 'ghost' : 'primary'}" id="lxOn" style="width:auto">${s.on ? t.off : t.on}</button><label>${t.train}<input type="time" id="lxTr" value="${s.train}"></label><label>${t.water}<input type="checkbox" id="lxWa" ${s.water ? 'checked' : ''}></label><label>${t.weigh}<input type="checkbox" id="lxWe" ${s.weigh ? 'checked' : ''}></label><p style="font-size:.78rem;opacity:.7">${t.note}</p><button type="button" class="btn small ghost" id="lxPdf" style="width:auto;margin-top:6px">${t.pdf}</button>`;
+    const save = () => { s.train = box.querySelector('#lxTr').value || '18:00'; s.water = box.querySelector('#lxWa').checked; s.weigh = box.querySelector('#lxWe').checked; SV('lht-rem', s); };
+    box.querySelectorAll('input').forEach(i => i.onchange = save);
+    box.querySelector('#lxOn').onclick = async () => {
+      if(s.on){ s.on = false; SV('lht-rem', s); return drawRem(); }
+      let p = window.Notification ? Notification.permission : 'denied';
+      if(p === 'default') p = await Notification.requestPermission();
+      if(p !== 'granted'){ toast(t.den); return; }
+      s.on = true; save(); drawRem();
+    };
+    box.querySelector('#lxPdf').onclick = () => window.print();
+  }
+  function notify(title, body){
+    try{ if(navigator.serviceWorker && navigator.serviceWorker.getRegistration) navigator.serviceWorker.getRegistration().then(r => r ? r.showNotification(title, { body, icon:'/icon-192.png' }) : new Notification(title, { body })); else new Notification(title, { body }); }catch(e){}
+  }
+  setInterval(() => {
+    const s = LS('lht-rem', {}); if(!s.on || !window.Notification || Notification.permission !== 'granted') return;
+    const d = new Date(), hm = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0'), last = LS('lht-rem-last', {}), t = T();
+    const fire = (k, ti, bo) => { const key = dk(0) + hm; if(last[k] === key) return; last[k] = key; SV('lht-rem-last', last); notify(ti, bo); };
+    if(hm === s.train) fire('train', t.tTrain, t.bTrain);
+    if(s.water && d.getMinutes() === 0 && d.getHours() % 2 === 1 && d.getHours() >= 9 && d.getHours() <= 21) fire('water', t.tWater, t.bWater);
+    if(s.weigh && d.getDay() === 5 && hm === '09:00') fire('weigh', t.tWeigh, t.bWeigh);
+  }, 30000);
+  document.addEventListener('click', e => { if(e.target.closest && e.target.closest('#settingsBtn, .lang-options button')) setTimeout(drawRem, 30); });
+
+  // ---- مراقبة الواجهة لإضافة العناصر بعد كل رسم ----
+  let q = false;
+  new MutationObserver(() => { if(q) return; q = true; requestAnimationFrame(() => { q = false; enhanceRows(); enhanceReport(); }); }).observe(document.body, { childList:true, subtree:true });
+  drawRem(); enhanceRows(); enhanceReport();
+})();
+</script>
+
+<style>
+#lxWiz{position:fixed;inset:0;z-index:10003;background:rgba(0,0,0,.7);display:flex;align-items:flex-start;justify-content:center;padding:16px;overflow:auto}
+#lxWiz .box{max-width:420px;width:100%;margin:auto;padding:18px;border-radius:16px;background:#0b1530;border:1px solid var(--gold);color:#fff}
+#lxWiz label{display:block;margin:10px 0 4px;font-size:.85rem;opacity:.85}
+#lxWiz select,#lxWiz input{width:100%;padding:10px;border-radius:8px;border:1px solid var(--line);background:var(--panel-solid);color:var(--ink);font:inherit}
+#lxWiz .row{display:flex;gap:8px}#lxWiz .row>div{flex:1}
+.lx-mac{display:flex;gap:8px;margin:12px 0}.lx-mac>div{flex:1;text-align:center;padding:10px 4px;border-radius:12px;background:var(--panel);border:1px solid var(--line);font-size:.78rem}.lx-mac b{display:block;font-size:1.15rem;color:var(--gold)}
+.lx-tips{margin:12px 0;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--panel);font-size:.88rem;line-height:1.8}
+</style>
+<script>
+(function(){
+  const LS = (k, d) => { try{ const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; }catch(e){ return d; } };
+  const SV = (k, v) => { try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
+  const li = () => { const l = typeof currentLang !== 'undefined' ? currentLang : 'ar'; return l === 'en' ? 1 : l === 'fr' ? 2 : 0; };
+  const x = s => { const a = s.split('|'); return a[li()] || a[0]; };
+  const K = 'lht-myplan';
+
+  const EX = {
+    chest:{ gym:[['ضغط بنش بالبار','Barbell Bench Press'],['ضغط دمبل مائل','Incline Dumbbell Press'],['فتح كابل','Cable Fly'],['ضغط آلة الصدر','Machine Chest Press']], home:[['ضغط عادي','Push-Up'],['ضغط بقدمين مرفوعتين','Feet-Elevated Push-Up'],['ضغط ضيق','Close-Grip Push-Up'],['ضغط بطيء','Tempo Push-Up']] },
+    back:{ gym:[['سحب أمامي','Lat Pulldown'],['تجديف كابل جالس','Seated Cable Row'],['تجديف دمبل بذراع','One-Arm Dumbbell Row'],['تجديف بار','Barbell Row']], home:[['تجديف بحقيبة ظهر','Backpack Row'],['تجديف تحت طاولة','Inverted Table Row'],['سوبرمان','Superman Hold'],['تجديف بمنشفة','Towel Row']] },
+    shoulders:{ gym:[['ضغط أكتاف دمبل','Dumbbell Shoulder Press'],['رفرفة جانبية','Lateral Raise'],['سحب الوجه','Face Pull'],['ضغط أكتاف بالبار','Overhead Press']], home:[['ضغط بايك','Pike Push-Up'],['رفرفة جانبية بقوارير','Bottle Lateral Raise'],['رفرفة خلفية','Rear Delt Raise'],['ضغط أكتاف بحقيبة','Backpack Press']] },
+    quads:{ gym:[['سكوات بالبار','Barbell Squat'],['ضغط أرجل','Leg Press'],['طعنات مشي','Walking Lunge'],['تمديد أرجل','Leg Extension']], home:[['سكوات بوزن الجسم','Bodyweight Squat'],['سكوات بلغاري','Bulgarian Split Squat'],['طعنات خلفية','Reverse Lunge'],['سكوات قفز','Jump Squat']] },
+    ham:{ gym:[['رفعة رومانية','Romanian Deadlift'],['ثني أرجل','Leg Curl'],['دفع الورك','Hip Thrust'],['صباح الخير','Good Morning']], home:[['جسر الأرداف','Glute Bridge'],['رفعة رومانية بساق','Single-Leg RDL'],['دفع الورك على أريكة','Couch Hip Thrust'],['ثني أرجل بمنشفة','Towel Leg Curl']] },
+    bi:{ gym:[['كيرل بار','Barbell Curl'],['كيرل مطرقة','Hammer Curl']], home:[['كيرل بحقيبة','Backpack Curl'],['كيرل مطرقة بقوارير','Bottle Hammer Curl']] },
+    tri:{ gym:[['سحب ترايسبس كابل','Triceps Pushdown'],['ترايسبس فوق الرأس','Overhead Triceps Extension']], home:[['غطس على كرسي','Bench Dips'],['ضغط ألماسي','Diamond Push-Up']] },
+    core:{ gym:[['بلانك','Plank'],['رفع الركبتين معلقاً','Hanging Knee Raise'],['كراكنش كابل','Cable Crunch']], home:[['بلانك','Plank'],['دد بق','Dead Bug'],['رفع الساقين','Leg Raise']] }
+  };
+  const AD = (g, pl, l) => EX[g][pl].push(...l);
+  AD('chest','gym',[['ضغط دمبل مسطح','Flat Dumbbell Press'],['غطس متوازي','Chest Dips']]); AD('chest','home',[['ضغط مائل (يدان على كرسي)','Incline Push-Up']]);
+  AD('back','gym',[['سحب ضيق','Close-Grip Pulldown'],['سحب بذراع واحدة','Single-Arm Pulldown']]); AD('back','home',[['رفع الذراعين بوضعية Y','Prone Y-Raise']]);
+  AD('shoulders','gym',[['رفرفة جانبية كابل','Cable Lateral Raise'],['رفرفة خلفية آلة','Reverse Pec Deck']]);
+  AD('quads','gym',[['سكوات هاك','Hack Squat'],['سكوات أمامي','Front Squat']]); AD('ham','gym',[['رفعة رومانية دمبل','Dumbbell RDL'],['ثني أرجل جالساً','Seated Leg Curl']]);
+  AD('bi','gym',[['كيرل مائل دمبل','Incline Dumbbell Curl'],['كيرل كابل','Cable Curl']]); AD('tri','gym',[['ضغط ضيق بالبار','Close-Grip Bench Press'],['كيكباك دمبل','Dumbbell Kickback']]);
+  AD('core','gym',[['رفع الساقين معلقاً','Hanging Leg Raise']]); AD('core','home',[['ماونتن كلايمبر','Mountain Climber']]);
+  EX.calves = { gym:[['رفع سمانة واقفاً','Standing Calf Raise'],['رفع سمانة جالساً','Seated Calf Raise']], home:[['رفع سمانة','Bodyweight Calf Raise'],['رفع سمانة بساق واحدة','Single-Leg Calf Raise']] };
+  const BIG = ['chest','back','quads','ham','shoulders'];
+  let SEL = null, ND = null;
+  const SES = { full:[['chest',1],['back',1],['quads',1],['ham',1],['shoulders',1],['core',1]], up:[['chest',2],['back',2],['shoulders',2],['bi',1],['tri',1]], low:[['quads',2],['ham',2],['calves',1],['core',1]], push:[['chest',2],['shoulders',2],['tri',2]], pull:[['back',3],['bi',2],['core',1]], leg:[['quads',2],['ham',2],['calves',2],['core',1]] };
+  const SPLIT = { 3:['full','full','full'], 4:['up','low','up','low'], 5:['push','pull','leg','up','low'], 6:['push','pull','leg','push','pull','leg'] };
+  const DIDX = { 3:[0,2,4], 4:[0,1,3,4], 5:[0,1,2,4,5], 6:[0,1,2,3,4,5] };
+  const DN = ['السبت|Saturday|Samedi','الأحد|Sunday|Dimanche','الإثنين|Monday|Lundi','الثلاثاء|Tuesday|Mardi','الأربعاء|Wednesday|Mercredi','الخميس|Thursday|Jeudi','الجمعة|Friday|Vendredi'];
+  const TT = { full:'جسم كامل|Full Body|Corps entier', up:'علوي|Upper|Haut du corps', low:'سفلي|Lower|Bas du corps', push:'دفع|Push|Push', pull:'سحب|Pull|Pull', leg:'أرجل|Legs|Jambes' };
+
+  function build(p, wk){ wk = wk || 0;
+    const lv = { b:0, m:1, a:2 }[p.level], S0 = lv === 0 ? (p.days >= 5 ? 2 : 3) : lv === 1 ? 3 : 4, S = wk === 3 ? Math.max(2, Math.round(S0 * 0.6)) : wk === 2 ? Math.min(5, S0 + 1) : S0, cnt = {}, kinds = SPLIT[p.days], idx = DIDX[p.days];
+    const sec = x('ثانية|s|s'), mn = x('د|min|min');
+    const week = DN.map((n, di) => {
+      const name = x(n) + '\u200B', k = idx.indexOf(di);
+      if(k < 0) return { day:name, title:x('راحة|Rest|Repos'), isRest:true, focus:x('تعافٍ نشط يبني العضلات|Active recovery builds muscle|Récupération active'), restNotes:[x('مشي خفيف 20-30 دقيقة|Easy 20-30 min walk|Marche légère 20-30 min'), x('إطالات 10 دقائق|10 min stretching|10 min d\'étirements'), x('نوم 7-9 ساعات وماء كافٍ|Sleep 7-9 h and drink enough water|Dors 7-9 h et bois assez')] };
+      const kind = kinds[k], off = cnt[kind] = (cnt[kind] === undefined ? 0 : cnt[kind] + 1), exs = [];
+      SES[kind].forEach(([g, c]) => { const pool = EX[g][p.place]; for(let j = 0; j < c; j++){ const e = pool[(j + off) % pool.length], big = BIG.includes(g) && j === 0;
+        exs.push({ g, ar:e[0], en:e[1], sets:S, reps: e[1] === 'Plank' ? '30-45 ' + sec : big ? (p.goal === 'muscle' ? '6-10' : p.goal === 'fat' ? '10-12' : '8-12') : (p.goal === 'fat' ? '12-15' : p.goal === 'muscle' ? '10-12' : '12-15'), rest: (big ? (p.goal === 'muscle' ? 120 : 90) : 60) + ' ' + sec, tempo:'3-1-1 / RIR ' + (wk === 3 ? '4' : wk === 2 ? ['2','1-2','1'][lv] : ['3','2','1-2'][lv]) }); } });
+      if(p.goal === 'fat') exs.push({ ar: p.place === 'gym' ? 'مشي مائل / كارديو خفيف' : 'مشي سريع أو قفز حبل', en: p.place === 'gym' ? 'Incline Walk / Light Cardio' : 'Brisk Walk / Jump Rope', sets:1, reps:'15-20 ' + mn, rest:'—', tempo:'Zone 2' });
+      const dur = Math.round((exs.length * S * 2 + 8) / 5) * 5;
+      return { day:name, title:x(TT[kind]), focus:x('🔥 إحماء 5-8 دقائق أولاً، ثم أنهِ بإطالة خفيفة|🔥 Warm up 5-8 min first, finish with light stretching|🔥 Échauffe-toi 5-8 min, termine par des étirements'), duration:dur + ' ' + mn, exercises:exs };
+    });
+    const vol = {}; week.forEach(d => !d.isRest && d.exercises.forEach(e => { if(e.g) vol[e.g] = (vol[e.g] || 0) + e.sets; })); const w = +p.w, bmr = 10 * w + 6.25 * +p.h - 5 * +p.age + (p.sex === 'm' ? 5 : -161), act = p.days <= 3 ? 1.375 : p.days === 4 ? 1.45 : 1.55;
+    let kcal = bmr * act * (p.goal === 'fat' ? 0.8 : p.goal === 'muscle' ? 1.1 : 1); kcal = Math.max(Math.round(kcal / 10) * 10, p.sex === 'm' ? 1500 : 1200);
+    const pro = Math.round(w * (p.goal === 'fat' ? 2.2 : p.goal === 'muscle' ? 2 : 1.6)), fat = Math.round(w * (p.goal === 'fat' ? 0.8 : 0.9));
+    return { week, vol, kcal, pro, fat, carb:Math.max(0, Math.round((kcal - pro * 4 - fat * 9) / 4)), water:(w * 0.035).toFixed(1) };
+  }
+
+  // ===== نظام غذائي بمكونات جزائرية (قيم لكل 100غ مطبوخاً/كما يؤكل، تقريبية ±10%) =====
+  const FD = {
+    chk:['دجاج مشوي (صدر)|Grilled chicken breast|Poulet grillé (blanc)',165,31,0,3.6], chkt:['دجاج (فخذ بدون جلد)|Chicken thigh, skinless|Poulet (cuisse sans peau)',209,26,0,10.9],
+    meat:['لحم غنم/بقر قليل الدهن|Lean lamb/beef|Viande maigre',215,27,0,11], sard:['سردين مشوي|Grilled sardines|Sardines grillées',185,24,0,9],
+    fish:['سمك أبيض مشوي (مرلان/دوراد)|Grilled white fish|Poisson blanc grillé',128,26,0,2.7], tuna:['تونة بالماء|Tuna in water|Thon au naturel',116,26,0,1],
+    egg:['بيض مسلوق|Boiled eggs|Œufs durs',155,13,1.1,11], jben:['جبن طري (جبن أبيض)|Fresh white cheese|Fromage frais',98,11,3.4,4.3],
+    yog:['زبادي طبيعي|Plain yogurt|Yaourt nature',61,3.5,4.7,3.3], lben:['لبن (رايب)|Lben|Lben',40,3.3,4.8,1],
+    cous:['كسكس مطبوخ|Cooked couscous|Couscous cuit',112,3.8,23.2,0.2], rice:['أرز مطبوخ|Cooked rice|Riz cuit',130,2.7,28,0.3],
+    pasta:['رشتة/معكرونة مطبوخة|Rechta / pasta, cooked|Rechta / pâtes',158,5.8,31,0.9], pot:['بطاطا مسلوقة|Boiled potatoes|Pommes de terre',87,1.9,20,0.1],
+    khob:['خبز كامل|Wholewheat bread|Pain complet',247,13,41,3.4], oat:['شوفان|Oats|Avoine',389,16.9,66,6.9],
+    chick:['حمص مطبوخ|Cooked chickpeas|Pois chiches',164,8.9,27,2.6], lent:['عدس مطبوخ|Cooked lentils|Lentilles',116,9,20,0.4],
+    bean:['لوبيا بيضاء مطبوخة|Cooked white beans|Haricots blancs',139,9.7,25,0.5], date:['تمر (دقلة نور)|Dates (Deglet Nour)|Dattes',282,2.5,75,0.4],
+    alm:['لوز|Almonds|Amandes',579,21,22,50], olv:['زيتون|Olives|Olives',115,0.8,6,11], oil:['زيت زيتون|Olive oil|Huile d\'olive',884,0,0,100],
+    sal:['سلطة طماطم وخيار وفلفل|Tomato-cucumber-pepper salad|Salade tomate-concombre-poivron',20,1,4,0.2], veg:['خضر مطبوخة (كوسة، جزر، لفت)|Cooked veg (zucchini, carrot, turnip)|Légumes cuits',30,1.2,6,0.3],
+    bana:['موز|Banana|Banane',89,1.1,23,0.3], oran:['برتقال|Orange|Orange',47,0.9,12,0.1], pep:['طماطم وفلفل مطبوخ (شكشوكة)|Cooked tomato & pepper|Tomate-poivron cuits',45,1.5,7,1.5]
+  };
+  const M = {
+    b:[['فطور بيض وخبز ولبن|Eggs, bread & lben|Œufs, pain et lben','egg','khob',[['lben',200],['olv',20]]], ['شكشوكة بالبيض|Egg shakshouka|Chakchouka aux œufs','egg','khob',[['pep',200]]], ['شوفان بالجبن والزبادي|Oats with fresh cheese & yogurt|Avoine, fromage frais, yaourt','jben','oat',[['yog',150],['date',16]]], ['جبن طري وخبز وتمر|Fresh cheese, bread & dates|Fromage frais, pain, dattes','jben','khob',[['date',16],['oran',150]]]],
+    l:[['كسكس بالدجاج والخضر|Couscous with chicken & vegetables|Couscous poulet-légumes','chk','cous',[['veg',200],['chick',60],['oil',8]]], ['طاجين عدس باللحم|Lentil stew with lean meat|Ragoût de lentilles','meat','lent',[['khob',50],['sal',150],['oil',8]]], ['دجاج بالحمص مع أرز|Chicken & chickpeas with rice|Poulet-pois chiches, riz','chkt','rice',[['chick',80],['sal',150],['oil',5]]], ['سردين مشوي وبطاطا|Grilled sardines & potatoes|Sardines grillées, pommes de terre','sard','pot',[['sal',200],['oil',8]]], ['سمك مشوي وكسكس|Grilled fish & couscous|Poisson grillé et couscous','fish','cous',[['sal',200],['oil',8]]], ['رشتة بالدجاج|Rechta with chicken|Rechta au poulet','chk','pasta',[['veg',150],['oil',8]]]],
+    s:[['جبن طري وتمر ولبن|Fresh cheese, dates & lben|Fromage frais, dattes, lben','jben','date',[['lben',250]]], ['جبن طري وموز وزبادي|Fresh cheese, banana & yogurt|Fromage frais, banane, yaourt','jben','bana',[['yog',150]]], ['ساندويتش تونة|Tuna sandwich|Sandwich au thon','tuna','khob',[['sal',100]]], ['بيض مسلوق وخبز ولوز|Boiled eggs, bread & almonds|Œufs, pain, amandes','egg','khob',[['alm',10]]]],
+    d:[['شربة بيضاء بالدجاج والحمص|White chicken soup with chickpeas|Chorba beida au poulet','chk','chick',[['veg',150],['khob',30]]], ['تونة وبطاطا وسلطة|Tuna, potatoes & salad|Thon, pommes de terre, salade','tuna','pot',[['sal',200],['oil',8]]], ['شوربة عدس وبيض|Lentil soup & eggs|Soupe de lentilles et œufs','egg','lent',[['veg',100],['khob',30]]], ['دجاج مشوي وأرز وسلطة|Grilled chicken, rice & salad|Poulet grillé, riz, salade','chk','rice',[['sal',200],['oil',8]]], ['لوبيا باللحم|White beans with lean meat|Loubia à la viande','meat','bean',[['khob',50],['sal',150],['oil',5]]]]
+  };
+  function meal(t, K, P){
+    const f = FD[t[1]], c = FD[t[2]]; let fk = 0, fp = 0;
+    t[3].forEach(([k, g]) => { fk += FD[k][1] * g / 100; fp += FD[k][2] * g / 100; });
+    let cg = 0, pg = 0;
+    for(let i = 0; i < 5; i++){ pg = Math.min(350, Math.max(0, (P - fp - c[2] * cg / 100) / (f[2] / 100))); cg = Math.min(['lent','bean','chick'].includes(t[2]) ? 300 : 450, Math.max(0, (K - fk - f[1] * pg / 100) / (c[1] / 100))); }
+    const r5 = v => Math.max(0, Math.round(v / 5) * 5);
+    pg = t[1] === 'egg' ? Math.max(100, Math.round(pg / 50) * 50) : Math.max(r5(pg), 30);
+    cg = t[2] === 'date' ? Math.round(cg / 16) * 16 : r5(cg);
+    const items = [{ k:t[1], g:pg }]; if(cg >= 10) items.push({ k:t[2], g:cg }); t[3].forEach(([k, g]) => items.push({ k, g }));
+    const gap = K - fk - f[1] * pg / 100 - c[1] * cg / 100;
+    if(gap > 100 && t[2] !== 'khob'){ const br = r5(Math.min(150, gap / 2.47)), ex = items.find(i => i.k === 'khob'); if(ex) ex.g += br; else if(br >= 20) items.push({ k:'khob', g:br }); }
+    let k = 0, pp = 0, cc = 0, ff = 0; items.forEach(i => { const d = FD[i.k]; k += d[1] * i.g / 100; pp += d[2] * i.g / 100; cc += d[3] * i.g / 100; ff += d[4] * i.g / 100; });
+    return { name:t[0], items, k:Math.round(k), p:Math.round(pp), c:Math.round(cc), f:Math.round(ff) };
+  }
+  const SL = { b:'🌅 فطور|🌅 Breakfast|🌅 Petit-déj.', l:'🍽️ غداء|🍽️ Lunch|🍽️ Déjeuner', s:'🥜 سناك|🥜 Snack|🥜 Collation', d:'🌙 عشاء|🌙 Dinner|🌙 Dîner' };
+  function dayMeals(pl, d){
+    const mo = LS('lht-mo', {}), sh = { b:.25, l:.35, s:.12, d:.28 }, ph = { b:.25, l:.30, s:.15, d:.30 }, a = { b:0, l:0, s:1, d:2 };
+    return ['b','l','s','d'].map(s => Object.assign({ s, d }, meal(M[s][(d + a[s] + (mo[d + s] || 0)) % M[s].length], pl.kcal * sh[s], pl.pro * ph[s])));
+  }
+  const fmtIt = it => { const n = x(FD[it.k][0]); return it.k === 'egg' ? Math.round(it.g / 50) + ' ' + x('بيضات|eggs|œufs') : it.k === 'date' ? Math.round(it.g / 8) + ' ' + x('تمرات|dates|dattes') : n + ' ' + it.g + x(' غ| g| g'); };
+  function drawNut(box, pl){
+    if(ND === null) ND = (new Date().getDay() + 1) % 7;
+    const ms = dayMeals(pl, ND), T = ms.reduce((a, m) => ({ k:a.k + m.k, p:a.p + m.p, c:a.c + m.c, f:a.f + m.f }), { k:0, p:0, c:0, f:0 });
+    box.innerHTML = `<h3 style="margin:20px 0 4px">${x('🍽️ نظامك الغذائي (مكونات جزائرية)|🍽️ Your meal plan (Algerian ingredients)|🍽️ Ton plan repas (ingrédients algériens)')}</h3>
+      <p style="font-size:.78rem;opacity:.7;margin:0 0 8px">${x('الأوزان للطعام مطبوخاً والقيم تقريبية (±10%). اضغط 🔄 لتبديل الوجبة.|Weights are cooked amounts; values are approximate (±10%). Tap 🔄 to swap a meal.|Poids cuits, valeurs approximatives (±10 %). Touche 🔄 pour changer de repas.')}</p>
+      <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">${DN.map((n, i) => `<button type="button" class="btn small ${i === ND ? 'primary' : 'ghost'}" data-nd="${i}" style="width:auto;flex:none">${x(n)}</button>`).join('')}</div>
+      ${ms.map(m => `<div class="lx-tips" style="margin:8px 0"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b>${x(SL[m.s])} · ${x(m.name)}</b><button type="button" class="btn small ghost" data-sw="${m.d}${m.s}" style="width:auto;padding:2px 10px">🔄</button></div><div style="opacity:.9">${m.items.map(fmtIt).join(' · ')}</div><small style="color:var(--gold)">${m.k} kcal · P ${m.p}g · C ${m.c}g · F ${m.f}g</small></div>`).join('')}
+      <div class="lx-mac"><div><b>${T.k}</b>/ ${pl.kcal} kcal</div><div><b>${T.p}g</b>/ ${pl.pro}g P</div><div><b>${T.c}g</b>/ ${pl.carb}g C</div><div><b>${T.f}g</b>/ ${pl.fat}g F</div></div>
+      <button type="button" class="btn small ghost" id="lxShop" style="width:auto">${x('🛒 قائمة التسوق الأسبوعية|🛒 Weekly shopping list|🛒 Liste de courses')}</button>
+      <p class="lx-tips" style="font-size:.8rem">${x('💧 اشرب|💧 Drink|💧 Bois')} ${pl.water}L ${x('ماء يومياً. ⚕️ إن كنت مصاباً بالسكري أو مرض مزمن فاستشر أخصائي تغذية.|water daily. ⚕️ With diabetes or a medical condition, consult a dietitian.| d\'eau par jour. ⚕️ En cas de diabète ou de maladie, consulte un diététicien.')}</p>`;
+    box.querySelectorAll('[data-nd]').forEach(b => b.onclick = () => { ND = +b.dataset.nd; drawNut(box, pl); });
+    box.querySelectorAll('[data-sw]').forEach(b => b.onclick = () => { const mo = LS('lht-mo', {}); mo[b.dataset.sw] = (mo[b.dataset.sw] || 0) + 1; SV('lht-mo', mo); drawNut(box, pl); });
+    box.querySelector('#lxShop').onclick = () => {
+      const tot = {}; for(let d = 0; d < 7; d++) dayMeals(pl, d).forEach(m => m.items.forEach(i => { tot[i.k] = (tot[i.k] || 0) + i.g; }));
+      const lines = Object.keys(tot).sort((a, b) => tot[b] - tot[a]).map(k => '• ' + x(FD[k][0]) + ': ' + (k === 'egg' ? Math.round(tot[k] / 50) : k === 'date' ? Math.round(tot[k] / 8) : tot[k] >= 1000 ? (tot[k] / 1000).toFixed(1) + ' kg' : Math.round(tot[k] / 10) * 10 + ' g'));
+      const txt = '🛒 LHT+\n' + lines.join('\n'), o = document.createElement('div');
+      o.style.cssText = 'position:fixed;inset:0;z-index:10004;background:rgba(0,0,0,.7);display:flex;padding:16px;overflow:auto';
+      o.innerHTML = `<div style="max-width:420px;width:100%;margin:auto;padding:18px;border-radius:16px;background:#0b1530;border:1px solid var(--gold);color:#fff"><b>${x('🛒 قائمة التسوق لأسبوع|🛒 Shopping list for a week|🛒 Courses pour une semaine')}</b><div style="margin:10px 0;line-height:1.9;font-size:.9rem">${lines.join('<br>')}</div><button type="button" class="btn primary" style="width:100%" id="slW">WhatsApp</button><button type="button" class="btn ghost" style="width:100%;margin-top:8px" id="slX">✕</button></div>`;
+      o.querySelector('#slX').onclick = () => o.remove(); o.querySelector('#slW').onclick = () => window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
+      document.body.appendChild(o);
+    };
+  }
+
+  function wizard(){
+    const p = Object.assign({ sex:'m', age:25, h:172, w:70, goal:'muscle', level:'b', days:4, place:'gym' }, LS(K, {}) || {});
+    const o = document.createElement('div'); o.id = 'lxWiz';
+    const sel = (id, opts) => `<select id="${id}">${opts.map(a => `<option value="${a[0]}" ${String(p[id.slice(2)]) === String(a[0]) ? 'selected' : ''}>${x(a[1])}</option>`).join('')}</select>`;
+    o.innerHTML = `<div class="box"><h3>🎯 ${x('خطتك الشخصية|Your personal plan|Ton plan personnalisé')}</h3>
+      <div class="row"><div><label>${x('الجنس|Sex|Sexe')}</label>${sel('wzsex', [['m','ذكر|Male|Homme'],['f','أنثى|Female|Femme']])}</div><div><label>${x('العمر|Age|Âge')}</label><input id="wzage" type="number" inputmode="numeric" value="${p.age}"></div></div>
+      <div class="row"><div><label>${x('الطول (سم)|Height (cm)|Taille (cm)')}</label><input id="wzh" type="number" inputmode="numeric" value="${p.h}"></div><div><label>${x('الوزن (كغ)|Weight (kg)|Poids (kg)')}</label><input id="wzw" type="number" inputmode="decimal" value="${p.w}"></div></div>
+      <label>${x('هدفك|Goal|Objectif')}</label>${sel('wzgoal', [['fat','خسارة الدهون|Fat loss|Perte de graisse'],['muscle','بناء العضلات|Build muscle|Prise de muscle'],['fit','لياقة وصحة|Fitness & health|Forme et santé']])}
+      <label>${x('مستواك|Level|Niveau')}</label>${sel('wzlevel', [['b','مبتدئ|Beginner|Débutant'],['m','متوسط|Intermediate|Intermédiaire'],['a','متقدم|Advanced|Avancé']])}
+      <div class="row"><div><label>${x('أيام التمرين|Days / week|Jours / semaine')}</label>${sel('wzdays', [[3,'3'],[4,'4'],[5,'5'],[6,'6']])}</div><div><label>${x('المكان|Where|Lieu')}</label>${sel('wzplace', [['gym','النادي|Gym|Salle'],['home','المنزل|Home|Maison']])}</div></div>
+      <p id="wzE" style="color:var(--red2);font-size:.85rem;min-height:1.2em"></p>
+      <button type="button" class="btn primary" id="wzGo" style="width:100%">${x('أنشئ خطتي|Create my plan|Créer mon plan')}</button>
+      <button type="button" class="btn ghost" id="wzX" style="width:100%;margin-top:8px">✕</button></div>`;
+    document.body.appendChild(o);
+    o.querySelector('#wzX').onclick = () => o.remove();
+    o.querySelector('#wzGo').onclick = () => {
+      const g = id => o.querySelector('#wz' + id).value, q = { sex:g('sex'), age:+g('age'), h:+g('h'), w:+g('w'), goal:g('goal'), level:g('level'), days:+g('days'), place:g('place') };
+      if(!(q.age >= 14 && q.age <= 80 && q.h >= 130 && q.h <= 220 && q.w >= 35 && q.w <= 250)){ o.querySelector('#wzE').textContent = x('تحقق من القيم المدخلة|Check your values|Vérifie les valeurs'); return; }
+      q.t = (LS(K, {}) || {}).t || Date.now(); SV(K, q); SEL = null; o.remove(); activeTab = 'myplan'; renderPublicView();
+    };
+  }
+
+  function renderMy(area){
+    const p = LS(K, null);
+    if(!p){
+      area.innerHTML = `<div class="lock-wrap"><div style="font-size:2.6rem">🎯</div><p>${x('أجب عن أسئلة قصيرة وسنبني لك خطة تمارين وتغذية احترافية تناسبك تلقائياً|Answer a few quick questions and we will build a professional training and nutrition plan just for you|Réponds à quelques questions et nous créons ton programme sport et nutrition sur mesure')}</p><button class="btn primary" id="lxGo">${x('ابدأ الآن|Start now|Commencer')}</button></div>`;
+      area.querySelector('#lxGo').onclick = wizard; return;
+    }
+    const wk = SEL !== null ? SEL : Math.floor((Date.now() - (p.t || Date.now())) / 6048e5) % 4, pl = build(p, wk), tips = ['🔥 ابدأ كل حصة بإحماء 5-8 دقائق ومجموعة تسخين خفيفة لأول تمرين.|🔥 Start each session with a 5-8 min warm-up and a light warm-up set.|🔥 Commence chaque séance par 5-8 min d\'échauffement.', '📈 عندما تنهي كل المجموعات بأعلى عدد تكرارات وبتقنية سليمة، زد الوزن 2.5-5%.|📈 When you hit the top reps on every set with good form, add 2.5-5% weight.|📈 Quand tu atteins le haut des reps avec une bonne technique, ajoute 2,5-5 % de charge.', '🎯 RIR = التكرارات الاحتياطية: اترك 1-3 تكرارات قبل الفشل حسب مستواك.|🎯 RIR = reps in reserve: stop 1-3 reps before failure depending on your level.|🎯 RIR = reps en réserve : arrête 1-3 reps avant l\'échec.', '😴 كل 4-6 أسابيع خذ أسبوع تخفيف بأوزان أخف 40%، ونم 7-9 ساعات يومياً.|😴 Every 4-6 weeks take a deload week with ~40% lighter weights, and sleep 7-9 h.|😴 Toutes les 4-6 semaines, semaine allégée (-40 %), et dors 7-9 h.', '⚕️ إن كانت لديك إصابة أو مرض مزمن فاستشر طبيباً قبل البدء.|⚕️ If you have an injury or a medical condition, consult a doctor first.|⚕️ En cas de blessure ou de maladie, consulte un médecin avant de commencer.'];
+    const sp = x(TT[SPLIT[p.days][0]] === TT.full ? 'Full Body|Full Body|Full Body' : { 4:'Upper / Lower|Upper / Lower|Upper / Lower', 5:'PPL + Upper/Lower|PPL + Upper/Lower|PPL + Upper/Lower', 6:'Push / Pull / Legs ×2|Push / Pull / Legs ×2|Push / Pull / Legs ×2' }[p.days] || 'Full Body|Full Body|Full Body');
+    area.innerHTML = `<div class="summary-bar"><div class="summary-item"><span class="slabel">${x('التقسيم|Split|Split')}</span><span class="sval">${sp}</span></div><div class="summary-item"><span class="slabel">${x('أيام/أسبوع|Days/week|Jours/sem.')}</span><span class="sval">${p.days}</span></div><div class="summary-item"><span class="slabel">${x('السعرات|Calories|Calories')}</span><span class="sval kcal">${pl.kcal}</span></div></div>
+      <div class="lx-mac"><div><b>${pl.pro}g</b>${x('بروتين|Protein|Protéines')}</div><div><b>${pl.carb}g</b>${x('كارب|Carbs|Glucides')}</div><div><b>${pl.fat}g</b>${x('دهون|Fat|Lipides')}</div><div><b>${pl.water}L</b>${x('ماء|Water|Eau')}</div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn small ghost" id="lxRe" style="width:auto">${x('✏️ تعديل بياناتي|✏️ Edit my details|✏️ Modifier mes infos')}</button><button class="btn small ghost" id="lxVp" style="width:auto">${x('👑 مدرب شخصي يتابعك|👑 A coach to follow you|👑 Un coach perso')}</button></div>
+      <div style="display:flex;gap:6px;overflow-x:auto;margin:10px 0 4px">${[0,1,2,3].map(i => `<button type="button" class="btn small ${i === wk ? 'primary' : 'ghost'}" data-wk="${i}" style="width:auto;flex:none">${x(['الأسبوع 1 · أساسي|Week 1 · Base|Sem. 1 · Base','الأسبوع 2 · زد الوزن|Week 2 · Add weight|Sem. 2 · + charge','الأسبوع 3 · ذروة +1 مجموعة|Week 3 · Peak +1 set|Sem. 3 · Pic +1 série','الأسبوع 4 · تخفيف|Week 4 · Deload|Sem. 4 · Décharge'][i])}</button>`).join('')}</div>
+      <div class="lx-tips" style="margin:6px 0"><small>${x('📊 مجموعات أسبوعية لكل عضلة (الدراسات: 10-20 للنمو، والمبتدئ يكفيه 6-10)|📊 Weekly sets per muscle (research: 10-20 for growth, 6-10 is enough for beginners)|📊 Séries hebdo par muscle (études : 10-20, 6-10 suffisent aux débutants)')}</small><br>${Object.keys(pl.vol).map(g => `<span style="display:inline-block;margin:3px 6px 0 0;color:${pl.vol[g] >= 10 ? 'var(--gold)' : 'inherit'}">${x({chest:'صدر|Chest|Pectoraux',back:'ظهر|Back|Dos',shoulders:'أكتاف|Shoulders|Épaules',quads:'أمامي الفخذ|Quads|Quadriceps',ham:'خلفي/أرداف|Hams/Glutes|Ischio/Fessiers',bi:'باي|Biceps|Biceps',tri:'تراي|Triceps|Triceps',calves:'سمانة|Calves|Mollets',core:'بطن|Core|Abdos'}[g])} <b>${pl.vol[g]}</b></span>`).join('')}</div>
+      <div class="lx-tips">${tips.map(x).join('<br>')}</div>
+      <div class="week-list">${pl.week.map(d => renderWorkoutDay(d)).join('')}</div><div id="lxNut"></div>`;
+    area.querySelector('#lxRe').onclick = wizard;
+    area.querySelectorAll('[data-wk]').forEach(b => b.onclick = () => { SEL = +b.dataset.wk; renderMy(area); });
+    drawNut(area.querySelector('#lxNut'), pl);
+    area.querySelector('#lxVp').onclick = () => { activeTab = 'vip'; renderPublicView(); };
+  }
+
+  // ربط التبويب الجديد ودمجه مع عرض الخطة الحالي
+  const _r = renderPlanArea;
+  renderPlanArea = async function(){
+    const ok = !!(currentUser || isAdmin), area = document.getElementById('planArea');
+    if(activeTab === 'myplan' && ok && area){ renderMy(area); return; }
+    await _r();
+    if(ok && activeTab === 'workout' && area && !LS(K, null) && !document.getElementById('lxBan')){
+      const b = document.createElement('div'); b.id = 'lxBan'; b.className = 'lx-tips'; b.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:10px';
+      b.innerHTML = `<span>${x('🎯 أنشئ خطة مخصّصة لك تلقائياً|🎯 Get your personalized plan|🎯 Crée ton plan personnalisé')}</span><button class="btn small primary" style="width:auto">${x('ابدأ|Start|Go')}</button>`;
+      b.querySelector('button').onclick = wizard; area.prepend(b);
+    }
+  };
+  let q = false;
+  new MutationObserver(() => { if(q) return; q = true; requestAnimationFrame(() => { q = false;
+    const tabs = document.querySelector('#mainView .tabs'); if(!tabs || document.getElementById('lxMyTab')) return;
+    const b = document.createElement('button'); b.id = 'lxMyTab'; b.className = 'tab-btn' + (activeTab === 'myplan' ? ' active' : ''); b.textContent = x('🎯 خطتي|🎯 My plan|🎯 Mon plan');
+    b.onclick = () => { activeTab = 'myplan'; renderPublicView(); }; tabs.prepend(b);
+  }); }).observe(document.body, { childList:true, subtree:true });
+})();
 </script>
 
 </body>
