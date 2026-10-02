@@ -1591,7 +1591,7 @@
       b.disabled = true;
       try{
         const rs = await fetch(`${API_BASE}/api/plan/vip/voice/${b.parentElement.dataset.v}`, { headers:{ 'x-member-email': currentUser.email } });
-        if(!rs.ok) throw new Error('x');
+        if(!rs.ok) throw new Error('HTTP ' + rs.status);
         const au = document.createElement('audio'); au.controls = true; au.autoplay = true; au.style.width = '100%'; au.src = URL.createObjectURL(await rs.blob());
         b.parentElement.replaceWith(au);
       }catch(e){ b.disabled = false; }
@@ -1883,6 +1883,23 @@
     VX.concat(LIB_EXTRA).forEach(x => { const k = x[3].toLowerCase(); if(!seen.has(k)){ seen.add(k); out.push(x); } });
     return out;
   }
+  // رسائل واضحة لأخطاء الميكروفون
+  function micMsg(err, noApi){
+    const M = {
+      ar:{ insecure:'التسجيل الصوتي لا يعمل عند فتح الملف من الهاتف مباشرة. افتح الموقع من الرابط الرسمي (https) ثم أعد المحاولة.', nosupport:'المتصفح لا يدعم التسجيل الصوتي. جرّب Chrome أو Safari حديث.', denied:'الميكروفون محظور. اضغط على أيقونة القفل بجانب الرابط ← الأذونات ← اسمح بالميكروفون.', nodev:'لم يتم العثور على ميكروفون في جهازك.', busy:'الميكروفون مستخدم من تطبيق آخر. أغلقه وأعد المحاولة.', other:'تعذّر بدء التسجيل. أعد المحاولة.' },
+      en:{ insecure:'Voice recording does not work when the file is opened directly on the phone. Open the site from its official https link and try again.', nosupport:'This browser does not support voice recording. Try a recent Chrome or Safari.', denied:'Microphone is blocked. Tap the lock icon next to the address, open Permissions and allow the microphone.', nodev:'No microphone found on your device.', busy:'The microphone is used by another app. Close it and try again.', other:'Could not start recording. Please try again.' },
+      fr:{ insecure:'L\'enregistrement vocal ne fonctionne pas quand le fichier est ouvert directement sur le téléphone. Ouvre le site via son lien officiel https puis réessaie.', nosupport:'Ce navigateur ne prend pas en charge l\'enregistrement vocal. Essaie un Chrome ou Safari récent.', denied:'Le micro est bloqué. Touche le cadenas près de l\'adresse, ouvre Autorisations et autorise le micro.', nodev:'Aucun micro détecté sur ton appareil.', busy:'Le micro est utilisé par une autre app. Ferme-la et réessaie.', other:'Impossible de démarrer l\'enregistrement. Réessaie.' }
+    }[currentLang] || null;
+    const m = M || { insecure:'', nosupport:'', denied:'', nodev:'', busy:'', other:'' };
+    if(window.isSecureContext === false) return m.insecure;
+    if(noApi) return m.nosupport;
+    const n = err && err.name;
+    if(n === 'NotAllowedError' || n === 'SecurityError') return m.denied;
+    if(n === 'NotFoundError' || n === 'OverconstrainedError') return m.nodev;
+    if(n === 'NotReadableError' || n === 'AbortError') return m.busy;
+    return m.other;
+  }
+
   // ---------- v3: admin voice messages ----------
   function openVoice(name, phone, reqId){
     let rec = null, blobRef = null, chunks = [], stream = null, timer = null, sec = 0, file = null, url = '';
@@ -1894,8 +1911,8 @@
     q('#vmX').onclick = close; wrap.onclick = ev => { if(ev.target === wrap) close(); };
     q('#vmR').onclick = async () => {
       if(rec && rec.state === 'recording'){ rec.stop(); return; }
-      if(!navigator.mediaDevices || !window.MediaRecorder){ alert('المتصفح لا يدعم التسجيل الصوتي'); return; }
-      try{ stream = await navigator.mediaDevices.getUserMedia({ audio:true }); }catch(e){ alert('لم يُسمح باستخدام الميكروفون'); return; }
+      if(!navigator.mediaDevices || !window.MediaRecorder){ alert(micMsg(null, true)); return; }
+      try{ stream = await navigator.mediaDevices.getUserMedia({ audio:true }); }catch(e){ alert(micMsg(e)); return; }
       const mt = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm'].find(m => MediaRecorder.isTypeSupported(m)) || '';
       rec = new MediaRecorder(stream, mt ? { mimeType: mt } : undefined); chunks = []; sec = 0; q('#vmP').innerHTML = '';
       rec.ondataavailable = ev => { if(ev.data.size) chunks.push(ev.data); };
@@ -1913,7 +1930,7 @@
             const rs = await fetch(`${API_BASE}/api/plan/vip/${reqId}/voice?d=${sec}`, { method:'POST', headers:{ 'Content-Type': blobRef.type || 'audio/webm', 'x-admin-password': adminPassword }, body: blobRef });
             if(!rs.ok) throw new Error('x');
             W.textContent = 'تم الإرسال ✓';
-          }catch(e){ W.disabled = false; W.textContent = 'إرسال داخل الموقع'; alert('تعذر الإرسال. تأكد من تفعيل مسار الصوت في الخادم.'); }
+          }catch(e){ W.disabled = false; W.textContent = 'إرسال داخل الموقع'; alert('تعذر الإرسال (' + ((e && e.message) || 'network') + '). استخدم زر واتساب أو حفظ الملف كبديل.'); }
         };
         q('#vmS').onclick = async () => {
           try{ if(navigator.canShare && navigator.canShare({ files:[file] })){ await navigator.share({ files:[file], text:'LHT+' }); return; } }catch(e){ if(e && e.name === 'AbortError') return; }
@@ -2542,10 +2559,10 @@
     rBtn.onclick = async () => {
       if(rec && rec.state === 'recording'){ stopRec(); return; }
       msg('');
-      if(!navigator.mediaDevices || !window.MediaRecorder){ msg(T.mic); return; }
-      try{ stream = await navigator.mediaDevices.getUserMedia({ audio:true }); }catch(e){ msg(T.mic); return; }
+      if(!navigator.mediaDevices || !window.MediaRecorder){ msg(micMsg(null, true)); return; }
+      try{ stream = await navigator.mediaDevices.getUserMedia({ audio:true }); }catch(e){ msg(micMsg(e)); return; }
       const mime = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4'].find(m => MediaRecorder.isTypeSupported(m));
-      rec = new MediaRecorder(stream, mime ? { mimeType: mime, audioBitsPerSecond: 24000 } : { audioBitsPerSecond: 24000 });
+      rec = new MediaRecorder(stream, mime ? { mimeType: mime, audioBitsPerSecond: 16000 } : { audioBitsPerSecond: 16000 });
       chunks = []; secs = 0;
       rec.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
       rec.onstop = () => {
@@ -2566,10 +2583,11 @@
         sBtn.disabled = true;
         try{
           const r = await fetch(URLV, { method:'POST', headers: Object.assign({ 'Content-Type':'application/json' }, hdr), body: JSON.stringify({ email, audio: fr.result, duration: secs }) });
-          if(r.status === 404 || r.status === 405){ msg(T.nosrv); }
-          else if(!r.ok){ msg(T.err); }
+          if(r.status === 404 || r.status === 405){ msg(T.nosrv + ' (' + r.status + ')'); }
+          else if(r.status === 413){ msg(T.big + ' (413)'); }
+          else if(!r.ok){ msg(T.err + ' (' + r.status + ')'); }
           else { msg(T.sent); reset(); load(); }
-        }catch(e){ msg(T.err); }
+        }catch(e){ msg(T.err + ' (' + ((e && e.message) || 'network') + ')'); }
         sBtn.disabled = false;
       };
       fr.readAsDataURL(blob);
