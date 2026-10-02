@@ -1620,6 +1620,30 @@
     const copy = document.getElementById('vipCopy');
     if(copy) copy.onclick = () => { try{ navigator.clipboard.writeText(VIP_CCP); }catch(e){} copy.textContent = L.copied; setTimeout(() => { copy.textContent = L.copy; }, 1500); };
     const lg = document.getElementById('vipLogin'); if(lg) lg.onclick = () => openModal('loginBackdrop');
+    if(currentUser && !mine){
+      const tc = document.createElement('div');
+      tc.className = 'vip-card'; tc.style.cssText = 'text-align:center;border:1px solid #ffd700';
+      tc.innerHTML = `<h3 class="vip-h">🎁 جرّب VIP مجاناً لمدة 7 أيام</h3>
+        <p style="opacity:.8;font-size:.9rem">تجربة واحدة لكل رقم هاتف. نرسل لك رمز تأكيد برسالة SMS للتأكد أن الرقم حقيقي.</p>
+        <div id="trS1"><input class="calc-search" id="trPhone" type="tel" inputmode="tel" dir="ltr" placeholder="05XXXXXXXX" style="text-align:center"><button type="button" class="btn vip-btn" id="trSend" style="width:auto;margin-top:8px">إرسال رمز التأكيد</button></div>
+        <div id="trS2" style="display:none"><input class="calc-search" id="trCode" type="text" inputmode="numeric" maxlength="8" dir="ltr" placeholder="رمز التأكيد" style="text-align:center"><button type="button" class="btn vip-btn" id="trOk" style="width:auto;margin-top:8px">تأكيد وبدء التجربة</button></div>
+        <div id="trMsg" style="margin-top:8px;font-size:.85rem;color:#ff6b6b"></div>`;
+      area.insertBefore(tc, area.firstChild);
+      const q = id => tc.querySelector(id), msg = t => q('#trMsg').textContent = t || '';
+      const post = async (path, body) => { try{ const r = await fetch(`${API_BASE}/api/activity/${path}`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) }); return { ok: r.ok, js: await r.json().catch(() => ({})) }; }catch(e){ return { ok:false, js:{} }; } };
+      q('#trSend').onclick = async () => {
+        msg(); q('#trSend').disabled = true;
+        const r = await post('trial/send', { email: currentUser.email, phone: q('#trPhone').value });
+        q('#trSend').disabled = false;
+        if(r.ok){ q('#trS2').style.display = 'block'; msg(''); } else msg(r.js.error || 'تعذر الاتصال بالخادم');
+      };
+      q('#trOk').onclick = async () => {
+        msg(); q('#trOk').disabled = true;
+        const r = await post('trial/verify', { email: currentUser.email, phone: q('#trPhone').value, code: q('#trCode').value });
+        q('#trOk').disabled = false;
+        if(r.ok) renderVip(area); else msg(r.js.error || 'تعذر الاتصال بالخادم');
+      };
+    }
     const ask = document.getElementById('vipAsk');
     if(ask) ask.onclick = async () => {
       if(!currentUser){ openModal('loginBackdrop'); return; }
@@ -2436,7 +2460,7 @@
     const goals = Object.keys(G).map(k => `<div class="ai-goal"><span>${G[k]}</span><div class="pg-bar"><i class="k" style="width:${acc.length ? gc(k) / acc.length * 100 : 0}%"></i></div><b>${gc(k)}</b></div>`).join('');
     const nr = reqs.filter(r => r.status === 'accepted').flatMap(r => (r.checkins || []).filter(c => !c.reply).map(c => ({ name: r.name, weight: c.weight, note: c.note })));
     const wrap = document.createElement('div'); wrap.className = 'ai-wrap';
-    wrap.innerHTML = `<div class="summary-bar">${it('إيراد تقديري (DA)', acc.length * price)}${it('اشتراكات نشطة', live.length)}${it('نسبة القبول', rate + '%')}${it('بانتظار ردّك', waiting.length)}</div>
+    wrap.innerHTML = `<div class="summary-bar">${it('إيراد تقديري (DA)', acc.filter(r => !(r.data || {}).trial).length * price)}${it('اشتراكات نشطة', live.length)}${it('نسبة القبول', rate + '%')}${it('بانتظار ردّك', waiting.length)}</div>
       <div class="ai-card"><h4>⏳ ينتهي اشتراكهم خلال 7 أيام</h4>${list(exp, r => 'متبقي ' + dl(r) + ' يوم', r => 'مرحباً ' + r.name + '، اشتراكك في LHT+‎ VIP يقترب من نهايته. تحب نجدّد ونكمل التقدّم؟')}</div>
       <div class="ai-card"><h4>💤 لم يسجّلوا تمريناً منذ أكثر من 5 أيام</h4>${list(idle, r => ago(r) === null ? 'لم يسجّل أي تمرين' : 'آخر تسجيل قبل ' + ago(r) + ' يوم', r => 'مرحباً ' + r.name + '، لاحظت أنك لم تسجّل تمارينك مؤخراً. كل شيء بخير؟ أنا هنا لأساعدك تكمل.')}</div>
       <div class="ai-card"><h4>📨 متابعات بانتظار ردّك (${nr.length})</h4>${nr.length ? nr.slice(0, 10).map(x => `<div class="ai-row"><span><b>${escapeHtml(x.name)}</b><br><small>${escapeHtml(x.weight)} كغ${x.note ? ' — ' + escapeHtml(x.note) : ''}</small></span></div>`).join('') : '<div class="ai-empty">لا أحد حالياً ✅</div>'}</div>
