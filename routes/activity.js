@@ -35,4 +35,32 @@ router.get('/:email', wrap(async (req, res) => {
   res.json({ days: r.rows.map(x => x.day) });
 }));
 
+function checkAdmin(req, res, next) {
+  if (req.header('x-admin-password') !== process.env.ADMIN_PASSWORD) return res.status(401).json({ error: 'غير مصرح' });
+  next();
+}
+
+// المشرف: تمديد اشتراك VIP بعدد أيام
+router.post('/extend', checkAdmin, wrap(async (req, res) => {
+  const id = parseInt((req.body || {}).id, 10), days = Math.min(parseInt((req.body || {}).days, 10) || 30, 365);
+  if (!Number.isInteger(id)) return res.status(400).json({ error: 'طلب غير صالح' });
+  await pool.query(
+    `UPDATE vip_requests SET status = 'accepted',
+       expires_at = GREATEST(COALESCE(expires_at, now()), now()) + ($2 || ' days')::interval WHERE id = $1`, [id, String(days)]);
+  res.json({ ok: true });
+}));
+
+// المشرف: منح تجربة VIP مجانية لعضو (لا تُمنح إن كان لديه اشتراك قائم)
+router.post('/grant', checkAdmin, wrap(async (req, res) => {
+  const mid = parseInt((req.body || {}).memberId, 10), days = Math.min(parseInt((req.body || {}).days, 10) || 7, 60);
+  if (!Number.isInteger(mid)) return res.status(400).json({ error: 'طلب غير صالح' });
+  const open = await pool.query(
+    "SELECT 1 FROM vip_requests WHERE member_id = $1 AND (status = 'pending' OR (status = 'accepted' AND (expires_at IS NULL OR expires_at > now())))", [mid]);
+  if (open.rows.length) return res.status(409).json({ error: 'لديه طلب قائم' });
+  await pool.query(
+    "INSERT INTO vip_requests (member_id, status, note, data, expires_at) VALUES ($1, 'accepted', 'تجربة مجانية', '{\"trial\":true}'::jsonb, now() + ($2 || ' days')::interval)",
+    [mid, String(days)]);
+  res.json({ ok: true });
+}));
+
 module.exports = router;
