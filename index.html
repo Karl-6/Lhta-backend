@@ -3755,14 +3755,146 @@
   }
   var q=0;new MutationObserver(function(){if(q)return;q=setTimeout(function(){q=0;inject();},150);}).observe(document.body,{childList:true,subtree:true});
   /* 4) notify the member when status / program / coach reply changes (read-only polling) */
-  function notify(msg){try{if(window.Notification&&Notification.permission==='granted')new Notification(t('ntit'),{body:msg});}catch(x){}
+  function notify(msg){try{if(window.Notification&&Notification.permission==='granted'){if(navigator.serviceWorker&&navigator.serviceWorker.getRegistration)navigator.serviceWorker.getRegistration().then(function(g){g?g.showNotification(t('ntit'),{body:msg,icon:'/icon-192.png'}):new Notification(t('ntit'),{body:msg});});else new Notification(t('ntit'),{body:msg});}}catch(x){}
     var d=document.createElement('div');d.textContent='👑 '+msg;d.style.cssText='position:fixed;left:0;right:0;bottom:70px;margin:0 auto;width:calc(100% - 32px);max-width:420px;z-index:100000;padding:12px 16px;border-radius:12px;background:#0b1530;border:1px solid #ffd700;color:#fff;text-align:center';document.body.appendChild(d);setTimeout(function(){d.remove();},6000);}
   function poll(){var u;try{u=JSON.parse(localStorage.getItem('lhta-user')||'null');}catch(x){}if(!u||!u.email)return;
     fetch('https://lhta-backend.onrender.com'+'/api/plan/vip/mine/'+encodeURIComponent(u.email)).then(function(r){return r.json();}).then(function(j){var r=j&&j.request;if(!r)return;
       var K='lhta-vipseen:'+u.email,cur={s:r.status,p:(r.program||'').length,r:(r.checkins||[]).filter(function(c){return c.reply;}).length},old=null;try{old=JSON.parse(localStorage.getItem(K)||'null');}catch(x){}
       localStorage.setItem(K,JSON.stringify(cur));if(!old)return;
       if(cur.s!==old.s)notify(cur.s==='accepted'?t('nacc'):t('nrej'));else if(cur.p!==old.p&&cur.p>0)notify(t('nprog'));else if(cur.r>old.r)notify(t('nrep'));}).catch(function(){});}
-  setTimeout(poll,4000);setInterval(poll,90000);
+  setTimeout(poll,4000);setInterval(poll,90000);document.addEventListener('visibilitychange',function(){if(!document.hidden)poll();});
+})();
+</script>
+<script>
+/* LHT+ subscriber upgrades v2: program checklist, check-in+photo, cloud sync, backup, renewal, Web Push (needs backend) */
+(function(){
+var cfg=window.APP_CONFIG||{},API='https://lhta-backend.onrender.com';
+var T=function(a,e,f){var l=localStorage.getItem('lhta-lang')||'ar';return l==='en'?e:l==='fr'?f:a;};
+var E=function(){try{return JSON.parse(localStorage.getItem('lhta-user')||'{}').email||'';}catch(x){return '';}};
+var G=function(k,d){try{var v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(x){return d;}};
+var S=function(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(x){}};
+var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+var W=function(){return Math.floor(Date.now()/(7*864e5));};
+var today=function(){return new Date().toISOString().slice(0,10);};
+var logKey=function(){return 'lhta-wlog:'+(E()||'me');};
+var st=document.createElement('style');
+st.textContent='.lx-day{margin:8px 0;border:1px solid rgba(255,215,0,.25);border-radius:12px;padding:8px 10px}.lx-day summary{cursor:pointer;color:#ffd700}.lx-ex{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,215,0,.12);font-size:.88rem}.lx-ex label{flex:1;display:flex;gap:8px;align-items:flex-start;color:#f3e9c4}.lx-ex .lx-w{width:64px;padding:6px;text-align:center}.lx-ex a{text-decoration:none}.lx-ex.done label span{opacity:.5;text-decoration:line-through}.lx-ban{border-color:#ff9f43;text-align:center}';
+document.head.appendChild(st);
+function api(path,method,body){return fetch(API+path,{method:method||'GET',headers:{'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});}
+
+/* ---- cloud sync of on-device data (needs the /sync endpoints in backend-additions.js; silent if absent) ---- */
+var SK=function(){var u=E()||'me';return ['lhta-wlog:'+u,'lhta-meas:'+u,'lhta-water','lhta-sleep','lhta-days'];};
+var syncT=0,noSync=sessionStorage.getItem('lx-nosync');
+function sync(){if(!E()||noSync)return;clearTimeout(syncT);syncT=setTimeout(function(){var d={};SK().forEach(function(k){var v=localStorage.getItem(k);if(v!=null)d[k]=v;});
+  api('/api/plan/vip/sync','POST',{email:E(),data:d}).then(function(r){if(r.status===404){noSync=1;sessionStorage.setItem('lx-nosync','1');}}).catch(function(){});},1500);}
+function restore(){if(!E()||noSync||sessionStorage.getItem('lx-rest'))return;sessionStorage.setItem('lx-rest','1');
+  api('/api/plan/vip/sync/'+encodeURIComponent(E())).then(function(r){return r.ok?r.json():null;}).then(function(j){var d=j&&j.data;if(!d)return;var ch=0;
+    SK().forEach(function(k){if(d[k]!=null&&localStorage.getItem(k)==null){localStorage.setItem(k,d[k]);ch=1;}});if(ch)location.reload();}).catch(function(){});}
+document.addEventListener('visibilitychange',function(){if(document.hidden)sync();});
+document.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('#mS,#wS,.lx-fin'))setTimeout(sync,300);},true);
+
+/* ---- program -> checklist ---- */
+function parse(t){var days=[],cur=null;
+  t.split('\n').forEach(function(l){var s=l.trim();if(!s)return;
+    var h=/^[#\s\p{Extended_Pictographic}]*(اليوم|يوم|day|jour|séance|session)(\s|\d|$)/iu.test(s)||(/[:：]$/.test(s)&&!/^[-•*\d]/.test(s));
+    if(h){cur={h:s.replace(/^#+\s*/,'').replace(/[:：]$/,''),ex:[]};days.push(cur);return;}
+    if(!cur){cur={h:T('البرنامج','Program','Programme'),ex:[]};days.push(cur);}
+    cur.ex.push(s.replace(/^([-•*]|\d+[.)])\s*/,''));});
+  return days;}
+function build(card,pre,days){
+  var L=G(logKey(),{wk:W(),i:{}});
+  if(L.wk!==W()){Object.keys(L.i).forEach(function(k){L.i[k].c=0;});L.wk=W();S(logKey(),L);}
+  var html=days.map(function(d,di){var done=0;
+    var rows=d.ex.map(function(x,xi){var k=di+'|'+xi,it=L.i[k]||{};if(it.c)done++;
+      var nm=x.replace(/\s*[\d×:–-].*$|\s+x\s*\d.*$/i,'').trim()||x;
+      return '<div class="lx-ex'+(it.c?' done':'')+'"><label><input type="checkbox" data-k="'+k+'"'+(it.c?' checked':'')+'><span>'+esc(x)+'</span></label><input class="calc-search lx-w" type="number" step="0.5" inputmode="decimal" placeholder="kg" data-w="'+k+'" value="'+esc(it.w||'')+'"><a href="https://www.youtube.com/results?search_query='+encodeURIComponent(nm+' '+T('شرح تمرين','exercise form','exercice technique'))+'" target="_blank" rel="noopener">▶️</a></div>';}).join('');
+    return '<details class="lx-day"'+(di===0?' open':'')+'><summary><b>'+esc(d.h)+'</b> <small>('+done+'/'+d.ex.length+')</small></summary>'+rows+'<button type="button" class="btn vip-btn lx-fin" style="margin-top:10px">'+T('✔ أنهيت هذا اليوم','✔ Day completed','✔ Séance terminée')+'</button></details>';}).join('');
+  pre.style.display='none';
+  var box=document.createElement('div');
+  box.innerHTML=html+'<details style="margin-top:8px"><summary style="font-size:.8rem;opacity:.7;cursor:pointer">'+T('النص الأصلي من المدرب','Coach original text','Texte original du coach')+'</summary><div style="white-space:pre-wrap;font-size:.85rem;line-height:1.8">'+esc(pre.textContent)+'</div></details>';
+  pre.after(box);
+  box.addEventListener('change',function(e){var t=e.target,k=t.dataset.k||t.dataset.w;if(!k)return;
+    var it=L.i[k]=L.i[k]||{};
+    if(t.dataset.k){it.c=t.checked?1:0;t.closest('.lx-ex').classList.toggle('done',t.checked);}else it.w=t.value;
+    S(logKey(),L);sync();});
+  box.addEventListener('click',function(e){var b=e.target.closest('.lx-fin');if(!b)return;
+    var d=G('lhta-days',[]),t=today();if(d.indexOf(t)<0){d.push(t);S('lhta-days',d);}
+    b.textContent=T('🔥 سُجّل يومك في سلسلة الالتزام','🔥 Logged in your streak','🔥 Ajouté à ta série');b.disabled=true;});
+}
+function program(){
+  if(!document.getElementById('ckW'))return;
+  var hs=document.querySelectorAll('.vip-card > h3.vip-h');
+  for(var i=0;i<hs.length;i++){var h=hs[i];if(h.textContent.indexOf('📋')!==0)continue;
+    var card=h.parentElement;if(card.dataset.lx)continue;
+    var pre=card.querySelector('div[style*="pre-wrap"]');if(!pre)continue;
+    var days=parse(pre.textContent),n=0;days.forEach(function(d){n+=d.ex.length;});if(n<2)continue;
+    card.dataset.lx='1';build(card,pre,days);}
+}
+
+/* ---- check-in: sleep/energy/sessions + latest measurements in the note, optional progress photo ---- */
+function checkin(){
+  var btn=document.getElementById('ckSend');if(!btn||document.getElementById('lxCk'))return;
+  var n7=G('lhta-days',[]).filter(function(s){return Date.now()-new Date(s).getTime()<7*864e5;}).length;
+  var c=document.createElement('div');c.id='lxCk';c.className='vip-form';c.style.marginTop='10px';
+  c.innerHTML='<label>😴 '+T('متوسط النوم (ساعات)','Avg sleep (hours)','Sommeil moyen (h)')+'<input class="calc-search" id="lxSl" type="number" step="0.5" min="0" max="14"></label><label>⚡ '+T('مستوى الطاقة (1-5)','Energy (1-5)','Énergie (1-5)')+'<input class="calc-search" id="lxEn" type="number" min="1" max="5"></label><label class="full">✅ '+T('عدد حصصك هذا الأسبوع','Sessions this week','Séances cette semaine')+'<input class="calc-search" id="lxAd" type="number" min="0" max="14" value="'+n7+'"></label><label class="full">📸 '+T('صورة تقدّمك (اختياري)','Progress photo (optional)','Photo de progrès (optionnel)')+'<input class="calc-search" id="lxPh" type="file" accept="image/*"></label>';
+  btn.before(c);
+}
+function shrink(f,cb){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var s=Math.min(1,900/Math.max(im.width,im.height)),cv=document.createElement('canvas');cv.width=im.width*s;cv.height=im.height*s;cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);cb(cv.toDataURL('image/jpeg',.7));};im.src=r.result;};r.readAsDataURL(f);}
+document.addEventListener('click',function(e){
+  if(!(e.target.closest&&e.target.closest('#ckSend')))return;
+  var n=document.getElementById('ckN');if(!n||n.value.indexOf(' [')>-1)return;
+  var g=function(i){var el=document.getElementById(i);return el&&el.value;},p=[];
+  if(g('lxSl'))p.push(T('نوم ','sleep ','sommeil ')+g('lxSl')+'h');if(g('lxEn'))p.push(T('طاقة ','energy ','énergie ')+g('lxEn')+'/5');if(g('lxAd'))p.push(T('حصص ','sessions ','séances ')+g('lxAd'));
+  var m=G('lhta-meas:'+(E()||'me'),[]).slice(-1)[0];
+  if(m){if(m.w)p.push(T('خصر ','waist ','taille ')+m.w);if(m.c)p.push(T('صدر ','chest ','poitrine ')+m.c);if(m.a)p.push(T('ذراع ','arm ','bras ')+m.a);}
+  if(p.length)n.value=(n.value.trim().slice(0,380)+' ['+p.join(' · ')+']').trim();
+  var f=document.getElementById('lxPh');f=f&&f.files[0];
+  if(f&&E())shrink(f,function(img){api('/api/plan/vip/photo','POST',{email:E(),image:img}).catch(function(){});});
+},true);
+
+/* ---- backup / restore ---- */
+function backup(){
+  var ck=document.getElementById('ckW'),card=ck&&ck.closest('.vip-card');
+  if(!card||document.getElementById('lxBk'))return;
+  var d=document.createElement('div');d.id='lxBk';d.className='vip-card';
+  d.innerHTML='<h3 class="vip-h">💾 '+T('نسخة احتياطية لبياناتك','Back up your data','Sauvegarde de tes données')+'</h3><p style="font-size:.82rem;opacity:.8;margin:0 0 10px">'+T('بياناتك تُزامَن تلقائياً مع حسابك عند توفر الخدمة، ويمكنك أيضاً حفظ نسخة يدوية.','Your data syncs to your account when available; you can also save a manual copy.','Tes données se synchronisent avec ton compte quand le service est disponible ; tu peux aussi sauvegarder une copie.')+'</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn vip-btn" id="lxEx" style="width:auto">⬇️ '+T('حفظ نسخة','Save copy','Sauvegarder')+'</button><label class="btn vip-btn" style="width:auto;cursor:pointer">⬆️ '+T('استعادة','Restore','Restaurer')+'<input type="file" id="lxIm" accept="application/json" hidden></label></div>';
+  card.after(d);
+  d.querySelector('#lxEx').onclick=function(){var o={};
+    for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k.indexOf('lhta')===0&&k!=='lhta-user'&&k.indexOf('lhta-vipseen')!==0)o[k]=localStorage.getItem(k);}
+    var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(o)],{type:'application/json'}));a.download='lht-backup-'+today()+'.json';document.body.appendChild(a);a.click();a.remove();};
+  d.querySelector('#lxIm').onchange=function(){var f=this.files[0];if(!f)return;var r=new FileReader();
+    r.onload=function(){try{var o=JSON.parse(r.result);Object.keys(o).forEach(function(k){if(k.indexOf('lhta')===0&&k!=='lhta-user')localStorage.setItem(k,o[k]);});alert('✓');location.reload();}catch(x){alert('✗');}};
+    r.readAsText(f);};
+}
+
+/* ---- review ETA + renewal banner ---- */
+function status(){
+  var s=document.querySelector('.vip-status');if(!s||s.dataset.lx)return;s.dataset.lx='1';
+  if(s.classList.contains('pending')){var p=document.createElement('p');p.textContent='⏱️ '+T('نراجع الطلبات عادةً خلال ','We usually review requests within ','Nous examinons les demandes sous ')+(cfg.eta||T('24 ساعة','24 hours','24 h'))+'.';s.appendChild(p);}
+  if(s.querySelector('.vip-days.warn')){var b=document.createElement('div');b.className='vip-card lx-ban';
+    b.innerHTML='<b>🔄 '+T('اشتراكك على وشك الانتهاء','Your plan ends soon','Ton abonnement se termine bientôt')+'</b><p style="font-size:.85rem;margin:6px 0">'+T('للتجديد حوّل ','To renew, send ','Pour renouveler, envoie ')+esc(cfg.price||'')+T(' إلى CCP ثم أرسل طلباً جديداً بعد انتهاء المدة.',' to CCP, then submit a new request after expiry.',' au CCP puis fais une nouvelle demande après expiration.')+'</p><code style="direction:ltr;display:block;color:#ffd700;margin:6px 0">'+esc(cfg.ccp||'')+'</code><button type="button" class="btn small vip-btn" style="width:auto">'+T('نسخ الرقم','Copy number','Copier')+'</button>';
+    b.querySelector('button').onclick=function(){try{navigator.clipboard.writeText(cfg.ccp||'');}catch(x){}this.textContent='✓';};
+    s.after(b);}
+}
+
+/* ---- Web Push (set APP_CONFIG.vapid = public VAPID key; backend-additions.js + sw-push.js required) ---- */
+function u8(b){var p='='.repeat((4-b.length%4)%4),r=atob((b+p).replace(/-/g,'+').replace(/_/g,'/')),o=new Uint8Array(r.length);for(var i=0;i<r.length;i++)o[i]=r.charCodeAt(i);return o;}
+function subscribe(){
+  if(!cfg.vapid||!E()||!window.Notification||Notification.permission!=='granted'||!navigator.serviceWorker||localStorage.getItem('lx-push:'+E()))return;
+  navigator.serviceWorker.ready.then(function(g){if(!g.pushManager)return;
+    return g.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:u8(cfg.vapid)}).then(function(sub){
+      return api('/api/push/subscribe','POST',{email:E(),sub:sub}).then(function(r){if(r.ok)localStorage.setItem('lx-push:'+E(),'1');});});}).catch(function(){});
+}
+function push(){
+  var ck=document.getElementById('ckW');
+  if(!ck||!window.Notification||Notification.permission!=='default'||document.getElementById('lxPn'))return;
+  var d=document.createElement('div');d.id='lxPn';d.className='vip-card lx-ban';
+  d.innerHTML='<b>🔔 '+T('لا تفوّتك ردود المدرب','Never miss a coach reply','Ne rate aucune réponse du coach')+'</b><p style="font-size:.85rem;margin:6px 0">'+T('فعّل الإشعارات لتصلك تنبيهات القبول والبرنامج والردود.','Enable notifications for approval, program and reply alerts.','Active les notifications pour l’acceptation, le programme et les réponses.')+'</p><button type="button" class="btn small vip-btn" style="width:auto">'+T('تفعيل','Enable','Activer')+'</button>';
+  d.querySelector('button').onclick=function(){Notification.requestPermission().then(function(){d.remove();subscribe();});};
+  ck.closest('.vip-card').before(d);
+}
+function run(){try{program();checkin();backup();status();push();subscribe();restore();}catch(x){}}
+var q=0;new MutationObserver(function(){if(q)return;q=setTimeout(function(){q=0;run();},200);}).observe(document.body,{childList:true,subtree:true});
 })();
 </script>
 </body>
