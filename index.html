@@ -768,6 +768,7 @@
   .sys-card ul{line-height:1.9;padding-inline-start:20px;margin:10px 0}
   .sys-card .sys-p{color:var(--gold);margin:6px 0 0;font-size:.88rem}
   body[data-sec=f] .sys-card{border-color:rgba(255,111,168,.35)}
+.wx{margin:8px 0;font-size:.82rem;line-height:1.7}.wx summary{cursor:pointer;color:var(--blue2)}.wsf{display:block;margin:8px 0}.wbd{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.wbd select{flex:1 1 45%;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--panel-solid);color:var(--ink)}
 </style>
 <script>/* عدّل السعر ورقم CCP هنا دون لمس بقية الكود */window.APP_CONFIG={price:'1000 DA',ccp:'00799999004162168744'};</script>
 </head>
@@ -2098,7 +2099,7 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
     ['biceps','g','كيرل بار EZ','EZ-Bar Curl'],['biceps','b','كيرل دامبل','Dumbbell Curl'],['biceps','b','كيرل مطرقة','Hammer Curl'],['biceps','g','كيرل كابل','Cable Curl'],
     ['triceps','g','ضغط كابل للترايسبس','Cable Pushdown'],['triceps','b','ديبس على كرسي','Bench Dips'],['triceps','g','سكل كراشر','Skull Crusher'],['triceps','b','ضغط ضيق','Close-Grip Push-up'],
     ['calves','b','رفع سمانة واقفاً','Standing Calf Raise'],['calves','g','رفع سمانة جالساً','Seated Calf Raise'],
-    ['core','b','بلانك','Plank'],['core','b','رفع الأرجل','Leg Raise'],['core','b','كرنش','Crunch'],['core','g','كرنش كابل','Cable Crunch'],['core','b','متسلق الجبل','Mountain Climber']];
+    ['core','b','بلانك','Plank'],['core','b','رفع الأرجل','Leg Raise'],['core','b','كرنش','Crunch'],['core','g','كرنش كابل','Cable Crunch'],['core','b','متسلق الجبل','Mountain Climber'],['chest','g','ضغط بنش مائل','Incline Bench Press'],['chest','g','ضغط بنش منحدر','Decline Bench Press'],['chest','g','فتح كابل للصدر','Cable Chest Fly'],['chest','b','فتح دامبل','Dumbbell Fly'],['chest','b','ضغط على الركبتين','Knee Push-Ups'],['back','g','سحب بار منحنٍ','Barbell Row'],['back','b','عقلة','Pull-Ups'],['back','b','عقلة بقبضة عكسية','Chin-Ups'],['back','g','سحب T-Bar','T-Bar Row'],['back','g','سحب بإسناد الصدر','Chest-Supported Row'],['back','g','عقلة بمساعدة جهاز','Assisted Pull-Up'],['back','b','سحب أفقي مقلوب','Inverted Row'],['back','g','ديدلفت بار سداسي','Trap Bar Deadlift'],['shoulders','g','ضغط كتف بالبار واقفاً','Barbell Overhead Press'],['shoulders','b','ضغط أرنولد','Arnold Press'],['shoulders','b','رفرفة جانبية بالدامبل','Dumbbell Lateral Raise'],['shoulders','g','رفرفة جانبية بالكابل','Cable Lateral Raise'],['shoulders','g','جهاز الدلتا الخلفية','Reverse Pec Deck'],['shoulders','g','فيس بول','Face Pull'],['shoulders','g','ضغط لاندماين','Landmine Press'],['shoulders','b','ضغط بايك','Pike Push-Ups'],['biceps','g','كيرل بار مستقيم','Barbell Curl'],['biceps','b','كيرل دامبل مائل','Incline Dumbbell Curl'],['biceps','g','كيرل بريتشر','Preacher Curl'],['biceps','g','كيرل كابل','Cable Curl'],['triceps','g','تراي بحبل','Rope Pushdown'],['triceps','g','سكل كراشر','Skull Crushers'],['triceps','g','تمديد كابل فوق الرأس','Overhead Cable Extension'],['triceps','b','تمديد دامبل فوق الرأس','Dumbbell Overhead Extension'],['triceps','g','ضغط بنش قبضة ضيقة','Close-Grip Bench Press'],['quads','g','سكوات أمامي','Front Squat'],['quads','g','هاك سكوات','Hack Squat'],['quads','b','سكوات بوزن الجسم','Bodyweight Squat'],['quads','b','لانج بالمشي','Walking Lunges'],['hams','g','ثني الساق جالساً','Seated Leg Curl'],['hams','b','جسر الأرداف','Glute Bridge'],['calves','b','رفع الساق (سمانة)','Calf Raises'],['calves','g','سمانة جالساً','Seated Calf Raise'],['core','g','رفع الساق معلقاً','Hanging Leg Raise'],['core','g','رفع الركبة معلقاً','Hanging Knee Raise'],['core','g','عجلة البطن','Ab Wheel Rollout'],['core','b','بلانك جانبي','Side Plank'],['core','b','التفاف روسي','Russian Twist'],['core','g','بالوف برس','Pallof Press'],['core','b','ديد باغ','Dead Bug'],['core','b','تسلق الجبل','Mountain Climbers']];
   function libAll(){
     const seen = new Set(), out = [];
     VX.concat(LIB_EXTRA).forEach(x => { const k = x[3].toLowerCase(); if(!seen.has(k)){ seen.add(k); out.push(x); } });
@@ -2180,11 +2181,103 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
   function libFavs(){ try{ return new Set(JSON.parse(localStorage.getItem('lhta-fav') || '[]')); }catch(e){ return new Set(); } }
   function libToggleFav(n){ const f = libFavs(); if(f.has(n)) f.delete(n); else f.add(n); try{ localStorage.setItem('lhta-fav', JSON.stringify([...f])); }catch(e){} }
 
+
+  /* ===== LHT+ women's library v2 (women section only) ===== */
+  const WL3 = (a, e) => tr3(a, e, e);
+  const WLCAT = {glutes:['🍑','الجلوتس','Glutes','Fessiers'],legs:['🦵','الأرجل','Legs','Jambes'],back:['🧍‍♀️','الظهر','Back','Dos'],arms:['💪','الذراعين','Arms','Bras'],shoulders:['🏋️‍♀️','الكتفين','Shoulders','Épaules'],chest:['🫀','الصدر','Chest','Poitrine'],core:['🔥','البطن','Core','Abdos'],cardio:['❤️','الكارديو','Cardio','Cardio']};
+  const WLLV = {b:['🟢','مبتدئة','Beginner','Débutante'],i:['🟡','متوسطة','Intermediate','Intermédiaire'],a:['🔴','متقدمة','Advanced','Avancée']};
+  const WLRANK = {b:0,i:1,a:2};
+  const WLCARDIO = [['cardio','b','مشي مائل','Incline Walk'],['cardio','g','جهاز السلالم','Stair Climber'],['cardio','g','دراجة ثابتة','Stationary Bike'],['cardio','b','نط الحبل','Jump Rope'],['cardio','g','جهاز التجديف','Rowing Machine'],['cardio','b','HIIT خفيف بلا قفز','Low-Impact HIIT']];
+  const WLRX = {glutes:['3-4','8-15','60-120','2-1-2',['تقويس أسفل الظهر أو الدفع بالظهر بدل الورك','Arching the low back or pushing with the back instead of the hips']],legs:['3-4','8-12','75-120','3-0-1',['انهيار الركبتين للداخل أو رفع الكعبين','Knees caving in or heels lifting']],back:['3-4','8-12','60-90','2-1-2',['السحب بالذراعين ورفع الكتفين نحو الأذنين','Pulling with the arms and shrugging']],arms:['2-3','10-15','45-60','2-0-2',['التأرجح بالجسم بدل عزل العضلة','Swinging the body instead of isolating']],shoulders:['3','10-15','45-75','2-0-2',['رفع الكتفين وزخم زائد','Shrugging and using momentum']],chest:['3','8-12','60-90','2-1-2',['فتح المرفقين كثيراً','Flaring the elbows']],core:['2-3','12-20','30-45','2-0-2',['شدّ الرقبة وتقويس أسفل الظهر','Pulling on the neck and arching the low back']],cardio:['—','15-30 min','—','—',['البدء بقوة دون إحماء','Starting hard with no warm-up']]};
+  function wlCat(x){ if(x[0]==='cardio') return 'cardio'; if(/hip thrust|glute|kickback|bridge|abduct|donkey|romanian|good morning|step-up|frog|clam|sumo|curtsy|bulgarian|hydrant/i.test(x[3])) return 'glutes'; return ({quads:'legs',hams:'legs',calves:'legs',biceps:'arms',triceps:'arms'})[x[0]] || x[0]; }
+  function wlLv(x){ const n = x[3]; if(/deadlift|barbell squat|bulgarian|weighted|pull-up|chin-up|dips|snatch|clean|jump squat|pistol|front squat|overhead barbell|nordic|handstand/i.test(n)) return 'a'; if(/machine|pulldown|leg press|leg extension|leg curl|abduction|adduction|pec deck|walk|bridge|clam|superman|dead bug|plank|crunch|bird|hydrant|bottle|towel|wall/i.test(n) && !/weighted/i.test(n)) return 'b'; return 'i'; }
+  function wlSafe(){ try{ return JSON.parse(localStorage.getItem('lhta-wsafe') || '{}'); }catch(e){ return {}; } }
+  function wlSafeOK(x){ const S = wlSafe(), n = x[3];
+    if((S.preg || S.surg) && wlLv(x) === 'a') return false;
+    if(S.preg && /crunch|sit-up|leg raise|superman|jump|burpee|plank|hiit/i.test(n)) return false;
+    if(S.back && /deadlift|good morning|bent-over|barbell squat|superman|romanian|row/i.test(n) && !/cable|machine/i.test(n)) return false;
+    if(S.knee && /jump|bulgarian|pistol|lunge|curtsy|burpee|hiit|step-up/i.test(n)) return false;
+    return true; }
+  function wlInfo(x, pool){ const c = wlCat(x), r = WLRX[c], mi = currentLang === 'ar' ? 0 : 1, lv = wlLv(x);
+    const alt = pool.find(y => y[3] !== x[3] && wlCat(y) === c && WLRANK[wlLv(y)] <= WLRANK[lv] && y[1] === 'b');
+    return `<details class="wx"><summary>📊 ${WL3('التفاصيل','Details')}</summary><div>🎯 ${WLCAT[c][mi+1]} · ${WLLV[lv][0]} ${WLLV[lv][mi+1]}<br>🔢 ${r[0]} × ${r[1]} · ⏱ ${r[2]}s · ⚡ ${r[3]}<br>⚠️ ${r[4][mi]}${alt ? `<br>🔄 ${escapeHtml(mi ? alt[3] : alt[2])}` : ''}<br><small>${WL3('قيم عامة حسب القسم، عدّليها مع مدربك.','General values by category, adjust with your coach.')}</small></div></details>`; }
+  function wlMount(area, redraw, allFn){
+    const box = area.querySelector('#wLib'); if(!box) return; const S = wlSafe(), mi = currentLang === 'ar' ? 0 : 1;
+    const GOALS = [['glute','🍑 '+WL3('تنمية الجلوتس','Glute Growth')],['fat','🔥 '+WL3('خسارة الدهون','Fat Loss')],['recomp','💪 '+WL3('إعادة تشكيل الجسم','Recomposition')],['muscle','🏋️‍♀️ '+WL3('بناء العضلات','Muscle Building')],['tone','✨ '+WL3('شدّ الجسم','Toning')]];
+    const SF = [['knee','ألم أو إصابة في الركبة','Knee pain or injury'],['back','ألم في الظهر','Back pain'],['preg','حمل أو ما بعد الولادة','Pregnancy or postpartum'],['surg','عملية جراحية سابقة','Past surgery']];
+    box.innerHTML = `<details class="vip-card"><summary><b>🛡️ ${WL3('فحص الأمان','Safety check')}</b></summary>${SF.map(([k,a,e]) => `<label class="wsf"><input type="checkbox" data-s="${k}" ${S[k] ? 'checked' : ''}> ${WL3(a,e)}</label>`).join('')}<p class="lib-count" id="wSn"></p></details>
+    <details class="vip-card" open><summary><b>🧠 ${WL3('منشئ البرنامج','Workout Builder')}</b></summary><div class="wbd"><select id="wbG">${GOALS.map(([k,l]) => `<option value="${k}">${l}</option>`).join('')}</select><select id="wbL">${['b','i','a'].map(k => `<option value="${k}">${WLLV[k][0]} ${WLLV[k][mi+1]}</option>`).join('')}</select><select id="wbD">${[2,3,4,5].map(n => `<option value="${n}" ${n===3?'selected':''}>${n} ${WL3('أيام','days')}</option>`).join('')}</select><select id="wbP"><option value="g">${WL3('نادي','Gym')}</option><option value="b">${WL3('منزل','Home')}</option></select></div><button type="button" class="btn small primary" id="wbGo">${WL3('أنشئي برنامجي','Build my plan')}</button><div id="wbOut"></div></details>`;
+    const note = () => { const on = SF.some(([k]) => wlSafe()[k]); box.querySelector('#wSn').textContent = on ? WL3('تم تصفية بعض التمارين. هذه الفلترة تقريبية، استشيري طبيبة أو مختصة قبل البدء.','Some exercises are filtered out. This is approximate; consult a doctor or specialist before starting.') : ''; }; note();
+    box.querySelectorAll('[data-s]').forEach(c => c.onchange = () => { const s = wlSafe(); s[c.dataset.s] = c.checked; try{ localStorage.setItem('lhta-wsafe', JSON.stringify(s)); }catch(e){} note(); redraw(); });
+    box.querySelector('#wbGo').onclick = () => {
+      const g = box.querySelector('#wbG').value, lv = box.querySelector('#wbL').value, nd = +box.querySelector('#wbD').value, pl = box.querySelector('#wbP').value;
+      const pool = allFn().filter(x => wlSafeOK(x) && WLRANK[wlLv(x)] <= WLRANK[lv] && (pl === 'g' || x[1] === 'b'));
+      const LOW = [['glutes','legs','core'],['back','shoulders','arms'],['glutes','legs'],['chest','back','core'],['glutes','cardio']];
+      const FAT = [['legs','glutes','cardio'],['back','chest','core'],['glutes','shoulders','cardio'],['legs','arms','core'],['cardio','core']];
+      const GEN2 = [['glutes','legs'],['back','shoulders','arms'],['legs','glutes','core'],['chest','back'],['glutes','core','cardio']];
+      const days = (g === 'glute' ? LOW : g === 'fat' ? FAT : GEN2).slice(0, nd), scheme = g === 'fat' || g === 'tone' ? '3×12-15' : g === 'recomp' ? '3×10-12' : '4×8-12';
+      const out = days.map((cats, di) => `<div class="gen-box"><b>${WL3('اليوم','Day')} ${di+1}</b><ol>${cats.map(c => { const cand = pool.filter(x => wlCat(x) === c), n = c === 'glutes' ? 3 : c === 'cardio' || c === 'core' ? 1 : 2; return Array.from({length: Math.min(n, cand.length)}, (_, k) => cand[(k + di) % cand.length]).map(x => `<li>${WLCAT[c][0]} ${escapeHtml(mi ? x[3] : x[2])} · ${c === 'cardio' ? '15-25 min' : scheme}</li>`).join(''); }).join('')}</ol></div>`).join('');
+      box.querySelector('#wbOut').innerHTML = out + `<p class="lib-count">🍽️ ${WL3('اربطي برنامجك بتبويب الحاسبة: حدّدي سعراتك وبروتينك (1.6-2.2 غ/كغ).','Link your plan to the calculator tab: set calories and protein (1.6-2.2 g/kg).')}</p>`;
+    };
+  }
+
+
+  /* ===== LHT+ men's library v2 (men section only) ===== */
+  const ML3 = (a, e, f) => tr3(a, e, f || e);
+  const MLX = {cardio:['الكارديو والتحمل','Conditioning','Cardio']};
+  const MLLV = {b:['🟢','مبتدئ','Beginner','Débutant'],i:['🟡','متوسط','Intermediate','Intermédiaire'],a:['🔴','متقدم','Advanced','Avancé']};
+  const MLRANK = {b:0,i:1,a:2};
+  const MLCARDIO = [['cardio','g','مشي مائل على السير','Treadmill Incline Walk'],['cardio','b','جري','Running'],['cardio','g','دراجة','Cycling'],['cardio','g','جهاز التجديف','Rowing Machine'],['cardio','g','جهاز السلالم','Stair Climber'],['cardio','g','دفع الزلاجة','Sled Push'],['cardio','g','سحب الزلاجة','Sled Drag'],['cardio','g','حبال المعركة','Battle Ropes'],['cardio','g','مشية المزارع','Farmer\'s Walk'],['cardio','g','دراجة الهجوم','Assault Bike'],['cardio','b','نط الحبل','Jump Rope'],['cardio','b','بيربي','Burpees']];
+  const MLRX = {chest:['3-4','6-12','60-120','2-1-1',['فتح المرفقين كثيراً ورفع الأرداف عن المقعد','Flaring the elbows and lifting the hips off the bench'],'ضغط الصدر'],back:['3-4','6-12','60-120','2-1-2',['السحب بالذراعين ورفع الكتفين نحو الأذنين','Pulling with the arms and shrugging'],'سحب الظهر'],shoulders:['3-4','8-15','45-90','2-0-2',['الزخم الزائد وتقويس أسفل الظهر','Excess momentum and arching the low back']],quads:['3-4','6-12','90-150','3-0-1',['انهيار الركبتين للداخل أو رفع الكعبين','Knees caving in or heels lifting']],hams:['3-4','8-12','75-120','3-1-1',['تقويس أسفل الظهر بدل ثني الورك','Rounding or arching the low back instead of hinging at the hips']],biceps:['2-4','8-15','45-60','2-0-2',['التأرجح بالجسم بدل عزل العضلة','Swinging the body instead of isolating']],triceps:['2-4','8-15','45-60','2-0-2',['فتح المرفقين وتحريك الكتفين','Flaring the elbows and moving the shoulders']],calves:['3-4','10-20','45-60','2-1-1',['نصف مدى الحركة والارتداد السريع','Half range and bouncing']],core:['2-4','10-20','30-60','2-0-2',['شدّ الرقبة وتقويس أسفل الظهر','Pulling on the neck and arching the low back']],cardio:['—','10-30 min','—','—',['البدء بقوة دون إحماء','Starting hard with no warm-up']]};
+  function mlLv(x){ const n = x[3]; if(/trap bar|deadlift$|^deadlift|barbell squat|back squat|front squat|bulgarian|weighted|pull-up|chin-up|chest dips|^dips|muscle-up|snatch|clean|pistol|overhead barbell|barbell overhead|nordic|handstand|t-bar|landmine|ab wheel|hanging leg|sled|assault|burpee|skull|close-grip bench/i.test(n) && !/assisted|band|romanian/i.test(n)) return 'a'; if(/machine|pulldown|leg press|leg extension|leg curl|pec deck|walk|plank|crunch|dead bug|knee push|assisted|bodyweight|calf raise|cycling|bike|stair|rowing|running|jump rope|push-up|push up|bench dips|glute bridge|superman|face pull|cable|pallof|goblet|rope/i.test(n) && !/weighted|pull-up|chin-up|pike/i.test(n)) return 'b'; return 'i'; }
+  function mlComp(x){ return /bench press|press$|squat|deadlift|row|pull-up|chin-up|pulldown|dips|lunge|leg press|thrust|push-up|push up|clean|landmine|hack/i.test(x[3]) && !/triceps|extension|lateral|front raise/i.test(x[3]); }
+  function mlSafe(){ try{ return JSON.parse(localStorage.getItem('lhta-msafe') || '{}'); }catch(e){ return {}; } }
+  function mlSafeOK(x){ const S = mlSafe(), n = x[3];
+    if(S.surg && mlLv(x) === 'a') return false;
+    if(S.back && /deadlift|good morning|bent-over|barbell row|barbell squat|back squat|front squat|overhead|t-bar|rollout|ab wheel|sled|farmer|landmine|clean|snatch/i.test(n) && !/cable|machine|chest-supported|romanian dumbbell/i.test(n)) return false;
+    if(S.knee && /jump|bulgarian|pistol|lunge|burpee|plyo|hack|squat|sprint|running|box|step-up|sled|stair|battle|assault/i.test(n) && !/leg press|goblet|bodyweight/i.test(n)) return false;
+    if(S.knee && /^barbell squat|front squat|back squat/i.test(n)) return false;
+    if(S.shoulder && /overhead|military|arnold|upright|dips|behind|snatch|handstand|pike|jerk|landmine|push press|battle|skull|decline|dumbbell fly|^fly/i.test(n)) return false;
+    return true; }
+  function mlInfo(x, pool){ const c = x[0], r = MLRX[c] || MLRX.chest, mi = currentLang === 'ar' ? 0 : 1, lv = mlLv(x);
+    const alt = pool.find(y => y[3] !== x[3] && y[0] === c && MLRANK[mlLv(y)] <= MLRANK[lv] && MLRANK[mlLv(y)] < MLRANK[lv] || (y[3] !== x[3] && y[0] === c && lv === 'b' && y[1] === 'b' && mlLv(y) === 'b'));
+    const vm = (VM[c] || MLX[c] || [c, c, c])[mi];
+    return `<details class="wx"><summary>📊 ${ML3('التفاصيل','Details')}</summary><div>🎯 ${escapeHtml(vm)} · ${MLLV[lv][0]} ${MLLV[lv][mi+1]}<br>🔢 ${r[0]} × ${r[1]} · ⏱ ${r[2]}s · ⚡ ${r[3]}<br>⚠️ ${r[4][mi]}${alt ? `<br>🔄 ${escapeHtml(mi ? alt[3] : alt[2])}` : ''}<br><small>${ML3('قيم عامة حسب العضلة، عدّلها مع مدربك.','General values by muscle, adjust with your coach.')}</small></div></details>`; }
+  function mlMount(area, redraw, allFn){
+    const box = area.querySelector('#mLib'); if(!box) return; const mi = currentLang === 'ar' ? 0 : 1;
+    const SF = [['knee','ألم أو إصابة في الركبة','Knee pain or injury'],['back','ألم في الظهر','Back pain'],['shoulder','ألم أو إصابة في الكتف','Shoulder pain or injury'],['surg','عملية جراحية سابقة','Past surgery']];
+    const goalsFor = lv => [['muscle','🏋️ '+ML3('بناء العضلات','Muscle Building')],['fat','🔥 '+ML3('خسارة الدهون','Fat Loss')],['strength','💪 '+ML3('زيادة القوة','Strength')],['endure','🏃 '+ML3('التحمل واللياقة','Endurance & Fitness')]].concat(lv === 'a' ? [['recomp','🔄 '+ML3('بناء العضلات + خسارة الدهون','Body Recomposition')]] : []);
+    box.innerHTML = `<details class="vip-card"><summary><b>🛡️ ${ML3('فحص الأمان','Safety check')}</b></summary>${SF.map(([k,a,e]) => `<label class="wsf"><input type="checkbox" data-ms="${k}" ${mlSafe()[k] ? 'checked' : ''}> ${ML3(a,e)}</label>`).join('')}<p class="lib-count" id="mSn"></p></details>
+    <details class="vip-card" open><summary><b>🧠 ${ML3('منشئ البرنامج','Workout Builder')}</b></summary><div class="wbd"><select id="mbL">${['b','i','a'].map(k => `<option value="${k}">${MLLV[k][0]} ${MLLV[k][mi+1]}</option>`).join('')}</select><select id="mbG"></select><select id="mbD">${[2,3,4,5,6].map(n => `<option value="${n}" ${n===3?'selected':''}>${n} ${ML3('أيام','days')}</option>`).join('')}</select><select id="mbP"><option value="g">${ML3('نادي','Gym')}</option><option value="b">${ML3('منزل','Home')}</option></select></div><button type="button" class="btn small primary" id="mbGo">${ML3('أنشئ برنامجي','Build my plan')}</button><div id="mbOut"></div></details>`;
+    const fillGoals = () => { const g = box.querySelector('#mbG'), cur = g.value; g.innerHTML = goalsFor(box.querySelector('#mbL').value).map(([k,l]) => `<option value="${k}">${l}</option>`).join(''); if([...g.options].some(o => o.value === cur)) g.value = cur; };
+    fillGoals(); box.querySelector('#mbL').onchange = fillGoals;
+    const note = () => { const on = SF.some(([k]) => mlSafe()[k]); box.querySelector('#mSn').textContent = on ? ML3('تم تصفية بعض التمارين. هذه الفلترة تقريبية، استشر طبيباً أو مختصاً قبل البدء.','Some exercises are filtered out. This is approximate; consult a doctor or specialist before starting.') : ''; }; note();
+    box.querySelectorAll('[data-ms]').forEach(c => c.onchange = () => { const s = mlSafe(); s[c.dataset.ms] = c.checked; try{ localStorage.setItem('lhta-msafe', JSON.stringify(s)); }catch(e){} note(); redraw(); });
+    box.querySelector('#mbGo').onclick = () => {
+      const g = box.querySelector('#mbG').value, lv = box.querySelector('#mbL').value, nd = +box.querySelector('#mbD').value, pl = box.querySelector('#mbP').value;
+      let pool = allFn().filter(x => mlSafeOK(x) && MLRANK[mlLv(x)] <= MLRANK[lv] && (pl === 'g' || x[1] === 'b'));
+      const SPL = {2:[['chest','back','quads','shoulders','core'],['back','chest','hams','biceps','triceps']],3:[['chest','shoulders','triceps'],['back','biceps','core'],['quads','hams','calves']],4:[['chest','back','shoulders'],['quads','hams','calves','core'],['back','chest','biceps','triceps'],['hams','quads','calves','core']],5:[['chest','shoulders','triceps'],['back','biceps'],['quads','hams','calves'],['chest','back','shoulders'],['quads','hams','core']],6:[['chest','shoulders','triceps'],['back','biceps','core'],['quads','hams','calves'],['chest','shoulders','triceps'],['back','biceps','core'],['quads','hams','calves']]};
+      let days = SPL[nd].map(d => d.slice()), scheme, cardioAll = false;
+      if(g === 'fat'){ scheme = '3×12-15'; days = days.map(d => d.concat('cardio')); }
+      else if(g === 'strength'){ scheme = '4-5×3-6'; days = days.map(d => d.filter(c => ['chest','back','quads','hams','shoulders','core'].includes(c))); }
+      else if(g === 'endure'){ scheme = '3×15-20'; days = days.map(d => d.slice(0, 3).concat('core','cardio')); }
+      else if(g === 'recomp'){ scheme = '3-4×8-12'; days = days.map((d, i) => i % 2 ? d.concat('cardio') : d); }
+      else scheme = '3-4×6-12';
+      const out = days.map((cats, di) => `<div class="gen-box"><b>${ML3('اليوم','Day')} ${di+1}</b><ol>${cats.map(c => {
+        const cand = pool.filter(x => x[0] === c); if(!cand.length) return '';
+        const comp = cand.filter(mlComp), iso = cand.filter(x => !mlComp(x)), big = ['chest','back','quads','hams','shoulders'].includes(c), n = c === 'cardio' || c === 'core' || !big ? 1 : 2, picks = [];
+        const first = (comp.length ? comp : iso)[di % (comp.length ? comp.length : iso.length)]; picks.push(first);
+        if(n > 1){ const rest = cand.filter(x => x !== first), sec = (g === 'strength' ? rest.filter(mlComp) : iso.length ? iso : rest); const s2 = (sec.length ? sec : rest)[di % Math.max(1, (sec.length ? sec : rest).length)]; if(s2) picks.push(s2); }
+        return picks.filter(Boolean).map(x => `<li>${escapeHtml((VM[c] || MLX[c])[mi]).slice(0,0)}${escapeHtml(mi ? x[3] : x[2])} · ${c === 'cardio' ? (g === 'endure' ? '20-30 min' : '15-25 min') : scheme}</li>`).join(''); }).join('')}</ol></div>`).join('');
+      box.querySelector('#mbOut').innerHTML = out + `<p class="lib-count">🍽️ ${ML3('اربط برنامجك بتبويب الحاسبة: حدّد سعراتك وبروتينك (1.6-2.2 غ/كغ).','Link your plan to the calculator tab: set calories and protein (1.6-2.2 g/kg).')}</p>`;
+    };
+  }
+
   function renderLibrary(area){
     const FV = { ar:'المفضلة', en:'Favorites', fr:'Favoris' }, GN = { ar:['ولّد لي تمرين اليوم', 'جلسة مقترحة', '3×10-12'], en:['Generate today\'s workout', 'Suggested session', '3×10-12'], fr:['Génère ma séance', 'Séance suggérée', '3×10-12'] };
     const T = LB[currentLang] || LB.ar, mi = currentLang === 'en' ? 1 : currentLang === 'fr' ? 2 : 0;
-    const mn = k => (VM[k] || [k, k, k])[mi];
-    let fm = 'all', fe = 'all', fq = '';
+    const mn = k => (VM[k] || MLX[k] || [k, k, k])[mi];
+    let fm = 'all', fe = 'all', fq = '', fl = 'all', fc = 'all'; const isF = GEN() === 'f', isM = !isF, sel = g => g === 'm' ? fm : g === 'l' ? fl : g === 'c' ? fc : fe;
     const Z = (tag, a, m) => `<${tag} class="bz" ${a} data-m="${m}" tabindex="0" role="button" aria-label="${escapeHtml(mn(m))}"><title>${escapeHtml(mn(m))}</title></${tag}>`;
     const R = (x, y, w, h, m, r = 6) => Z('rect', `x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}"`, m), C = (cx, cy, r, m) => Z('circle', `cx="${cx}" cy="${cy}" r="${r}"`, m), E = (cx, cy, rx, ry, m) => Z('ellipse', `cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}"`, m);
     const map = `<svg viewBox="0 0 240 240" role="group" aria-label="${T.tab}">
@@ -2195,19 +2288,19 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
     const chip = (v, l, g) => `<button type="button" class="lib-chip" data-g="${g}" data-v="${v}">${escapeHtml(l)}</button>`;
     area.innerHTML = `<div class="lib-top"><div class="lib-map">${map}</div><div>
       <p class="lib-count" style="margin-top:0">${T.sub}</p>
-      <div class="lib-chips">${chip('all', T.all, 'm')}${Object.keys(VM).map(k => chip(k, mn(k), 'm')).join('')}</div>
+      <div class="lib-chips">${chip('all', T.all, isF ? 'c' : 'm')}${isF ? Object.keys(WLCAT).map(k => chip(k, WLCAT[k][0] + ' ' + WLCAT[k][mi+1], 'c')).join('') : Object.keys(VM).concat('cardio').map(k => chip(k, mn(k), 'm')).join('')}</div>${isF ? `<div class="lib-chips">${chip('all', WL3('كل المستويات','All levels'), 'l')}${['b','i','a'].map(k => chip(k, WLLV[k][0] + ' ' + WLLV[k][mi+1], 'l')).join('')}</div><div id="wLib"></div>` : `<div class="lib-chips">${chip('all', ML3('كل المستويات','All levels','Tous niveaux'), 'l')}${['b','i','a'].map(k => chip(k, MLLV[k][0] + ' ' + MLLV[k][mi+1], 'l')).join('')}</div><div id="mLib"></div>`}
       <div class="lib-chips">${chip('all', T.eqAll, 'e')}${chip('b', T.home, 'e')}${chip('g', T.gym, 'e')}${chip('fav', '⭐ ' + FV[currentLang], 'e')}</div><button type="button" class="btn small primary" id="libGen">🎲 ${GN[currentLang][0]}</button>
       <input class="calc-search" id="libQ" placeholder="${T.search}" style="margin-bottom:0"></div></div>
       <div id="libGenOut"></div><p class="lib-count" id="libCount" aria-live="polite"></p><div class="lib-grid" id="libGrid"></div><p class="lib-count" style="margin-top:18px">${T.note}</p>`;
     function draw(){
-      const all = libAll(), q = fq.trim().toLowerCase(), favs = libFavs();
-      const res = all.filter(x => (fm === 'all' || x[0] === fm) && (fe === 'all' || (fe === 'fav' ? favs.has(x[3]) : x[1] === fe)) && (!q || (x[2] + ' ' + x[3]).toLowerCase().includes(q)));
-      area.querySelectorAll('.lib-chip').forEach(c => c.classList.toggle('on', c.dataset.v === (c.dataset.g === 'm' ? fm : fe)));
+      const all = isF ? libAll().concat(WLCARDIO) : libAll().concat(MLCARDIO), q = fq.trim().toLowerCase(), favs = libFavs();
+      const res = all.filter(x => (fm === 'all' || x[0] === fm) && (fe === 'all' || (fe === 'fav' ? favs.has(x[3]) : x[1] === fe)) && (!q || (x[2] + ' ' + x[3]).toLowerCase().includes(q)) && (!isF || ((fl === 'all' || wlLv(x) === fl) && (fc === 'all' || wlCat(x) === fc) && wlSafeOK(x))) && (!isM || ((fl === 'all' || mlLv(x) === fl) && mlSafeOK(x))));
+      area.querySelectorAll('.lib-chip').forEach(c => c.classList.toggle('on', c.dataset.v === sel(c.dataset.g)));
       area.querySelectorAll('.bz').forEach(z => z.classList.toggle('on', z.dataset.m === fm));
       document.getElementById('libCount').textContent = res.length + ' ' + T.n;
-      document.getElementById('libGrid').innerHTML = res.length ? res.map(x => `<div class="lib-card"><div class="lib-head"><b>${escapeHtml(currentLang === 'ar' ? x[2] : x[3])}</b><button type="button" class="fav-btn${favs.has(x[3]) ? ' on' : ''}" data-fav="${escapeHtml(x[3])}" aria-pressed="${favs.has(x[3])}" aria-label="${FV[currentLang]}">${favs.has(x[3]) ? '★' : '☆'}</button></div>${currentLang === 'ar' ? `<span class="en">${escapeHtml(x[3])}</span>` : ''}<div class="lib-tags"><span>${escapeHtml(mn(x[0]))}</span><span>${x[1] === 'g' ? T.gym : T.both}</span></div><a href="https://www.youtube.com/results?search_query=${encodeURIComponent(x[3] + ' exercise form')}" target="_blank" rel="noopener noreferrer">${T.video}</a></div>`).join('') : `<div class="log-empty">${T.empty}</div>`;
+      document.getElementById('libGrid').innerHTML = res.length ? res.map(x => `<div class="lib-card"><div class="lib-head"><b>${escapeHtml(currentLang === 'ar' ? x[2] : x[3])}</b><button type="button" class="fav-btn${favs.has(x[3]) ? ' on' : ''}" data-fav="${escapeHtml(x[3])}" aria-pressed="${favs.has(x[3])}" aria-label="${FV[currentLang]}">${favs.has(x[3]) ? '★' : '☆'}</button></div>${currentLang === 'ar' ? `<span class="en">${escapeHtml(x[3])}</span>` : ''}<div class="lib-tags"><span>${escapeHtml(mn(x[0]))}</span><span>${x[1] === 'g' ? T.gym : T.both}</span>${isF ? `<span>${WLLV[wlLv(x)][0]} ${WLLV[wlLv(x)][mi+1]}</span>` : `<span>${MLLV[mlLv(x)][0]} ${MLLV[mlLv(x)][mi+1]}</span>`}</div>${isF ? wlInfo(x, all) : mlInfo(x, all)}<a href="https://www.youtube.com/results?search_query=${encodeURIComponent(x[3] + ' exercise form')}" target="_blank" rel="noopener noreferrer">${T.video}</a></div>`).join('') : `<div class="log-empty">${T.empty}</div>`;
     }
-    area.querySelectorAll('.lib-chip').forEach(c => c.onclick = () => { if(c.dataset.g === 'm') fm = c.dataset.v; else fe = c.dataset.v; draw(); });
+    area.querySelectorAll('.lib-chip').forEach(c => c.onclick = () => { if(c.dataset.g === 'm') fm = c.dataset.v; else if(c.dataset.g === 'l') fl = c.dataset.v; else if(c.dataset.g === 'c') fc = c.dataset.v; else fe = c.dataset.v; draw(); });
     area.querySelectorAll('.bz').forEach(z => { const pick = () => { fm = fm === z.dataset.m ? 'all' : z.dataset.m; draw(); }; z.onclick = pick; z.onkeydown = ev => { if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); pick(); } }; });
     document.getElementById('libQ').oninput = ev => { fq = ev.target.value; draw(); };
     document.getElementById('libGrid').onclick = ev => { const b = ev.target.closest('.fav-btn'); if(b){ libToggleFav(b.dataset.fav); draw(); } };
@@ -2218,12 +2311,16 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
       else { const c = pool.filter(x => x[0] === fm).slice(); while(out.length < 5 && c.length) out.push(c.splice(Math.floor(Math.random() * c.length), 1)[0]); }
       document.getElementById('libGenOut').innerHTML = `<div class="gen-box"><b>🎲 ${GN[currentLang][1]}</b><ol>${out.map(x => `<li>${escapeHtml(currentLang === 'ar' ? x[2] : x[3])} · ${GN[currentLang][2]}</li>`).join('')}</ol></div>`;
     };
+    if(isF) wlMount(area, draw, () => libAll().concat(WLCARDIO));
+    else mlMount(area, draw, () => libAll().concat(MLCARDIO));
     draw();
   }
 
   async function renderPlanArea(){
     const area = document.getElementById('planArea');
   if(activeTab === 'systems') activeTab = 'workout';
+  if(activeTab === 'calisthenics' && GEN() === 'f') activeTab = 'workout';
+  if(WX_IDS.includes(activeTab) && GEN() !== 'f') activeTab = 'workout';
 
     // تبويبات تتطلب تسجيل الدخول (ما عدا تبويب VIP الذي يعرض الباقة فقط)
     const unlockedNow = !!currentUser || isAdmin;
@@ -2241,6 +2338,7 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
       return;
     }
 
+    if(WX_IDS.includes(activeTab)){ renderWomenTab(area); return; }
     if(activeTab === 'calculator'){ renderCalculator(area); return; }
     if(activeTab === 'recipes'){ await renderRecipes(area); return; }
     if(activeTab === 'library'){ renderLibrary(area); return; }
@@ -2264,7 +2362,7 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
     }
     const plan = await loadPlan();
     if(activeTab === 'workout'){
-      const s = plan.summary || PLAN_SUMMARY;
+      const isF = GEN() === 'f', TG0 = isF ? tgLoad() : null, s = isF ? {frequency:'5 أيام', rirTarget:'RIR 1-3', splitName:'سفلي/علوي — تركيز جلوتس', dailyCalories: TG0 ? TG0.kcal + ' kcal' : '—'} : (plan.summary || PLAN_SUMMARY);
       area.innerHTML = `
         <div class="summary-bar">
           <div class="summary-item"><span class="slabel">${LX('التردد الأسبوعي')}</span><span class="sval">${escapeHtml(s.frequency)}</span></div>
@@ -2272,7 +2370,7 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
           <div class="summary-item"><span class="slabel">${LX('التقسيم')}</span><span class="sval">${escapeHtml(s.splitName)}</span></div>
           <div class="summary-item"><span class="slabel">${LX('السعرات اليومية')}</span><span class="sval kcal">${escapeHtml(s.dailyCalories)}</span></div>
         </div>
-        <div class="week-list">${plan.workout.map(d => renderWorkoutDay(d)).join('')}</div>
+        <div class="week-list">${(isF ? WOMEN_WEEK : plan.workout).map(d => renderWorkoutDay(d)).join('')}</div>
         ${genderGymHTML()}
       `;
       womenGymBind(area);
@@ -2345,8 +2443,12 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
       [S('تغذية','Nutrition','Nutrition'), [['nutrition','🍎',t('tabNutrition')],['calculator','🔥',t('tabCalc')],['recipes','🍳',t('tabRecipes')]]],
       [S('متابعة','Tracking','Suivi'), [['progress','📈',(PG[currentLang]||PG.ar).tab],['tools','🧰',S('أدوات','Tools','Outils')],['vip','👑','VIP · '+(VT[currentLang]||VT.ar).tab]]]
     ];
+    if(g==='f'){
+      G[0][1].push(['wcycle','🌙',S('الدورة والتمرين','Cycle & training','Cycle & entraînement')],['whome','🏠',S('تمارين منزلية','Home training','Maison')]);
+      G[2][1].splice(2,0,['wbody','📏',S('قياسات الجسم','Measurements','Mensurations')]);
+    }
     const btn = ([k,i,l]) => `<button class="tab-btn${k==='vip'?' vip-tab':''}${activeTab===k?' active':''}" data-tab="${k}">${i?i+' ':''}${l}</button>`;
-    return `<div class="sec-switch">${['m','f'].map(x=>`<button type="button" data-gd="${x}" data-s="${x}" class="${g===x?'on':''}">${x==='m'?S('قسم الرجال','Men','Hommes'):S('قسم النساء','Women','Femmes')}</button>`).join('')}</div><div class="tab-groups">${G.map(([h,a])=>`<div class="tab-group"><small>${h}</small><div class="tabs">${a.map(btn).join('')}</div></div>`).join('')}</div>`;
+    return `<div class="sec-switch">${['m','f'].map(x=>`<button type="button" data-gd="${x}" data-s="${x}" class="${g===x?'on':''}">${x==='m'?S('قسم الرجال','Men','Hommes'):S('قسم النساء','Women','Femmes')}</button>`).join('')}</div><div class="tab-groups">${G.map(([h,a])=>`<div class="tab-group"><small>${h}</small><div class="tabs">${a.filter(b=>!(g==='f'&&b[0]==='calisthenics')).map(btn).join('')}</div></div>`).join('')}</div>`;
   }
 
   // ---------- WOMEN'S GYM PROGRAM (inside Gym/workout tab) ----------
@@ -2374,6 +2476,57 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
     g('wgS').onclick = show; show();
   }
 
+
+  // ---------- WOMEN-ONLY TABS: cycle · home training · body measurements ----------
+  const WX_IDS = ['wcycle','whome','wbody'];
+  const wxNote = () => `<small style="opacity:.6;display:block;margin:6px 0 14px">${tr3('معلومات عامة وليست نصيحة طبية. استشيري طبيباً عند الألم الشديد أو الحمل أو اضطراب الدورة.','General information, not medical advice. See a doctor for severe pain, pregnancy or irregular cycles.','Informations générales, pas un avis médical. Consulte un médecin en cas de douleur forte, grossesse ou cycle irrégulier.')}</small>`;
+  const WX_PH = [
+    {ic:'🩸',ar:['الحيض','تمارين خفيفة: مشي، تمدد، يوغا. إن كانت طاقتك جيدة فتمرين عادي بشدة أقل.','حديد (لحم، عدس، سبانخ) مع فيتامين C، ماء ومغنيسيوم (مكسرات).'],en:['Menstrual','Go light: walking, stretching, yoga. If energy is fine, train normally at lower intensity.','Iron (meat, lentils, spinach) with vitamin C, water and magnesium (nuts).'],fr:['Menstruation','Léger : marche, étirements, yoga. Si l’énergie va bien, entraîne-toi normalement en moins intense.','Fer (viande, lentilles, épinards) + vitamine C, eau et magnésium (noix).']},
+    {ic:'🌱',ar:['الجريبية (بعد الحيض)','أفضل وقت لرفع الأوزان الثقيلة وتمارين القوة وتجربة أرقام جديدة.','بروتين كافٍ (1.6-2 غ/كغ) وكربوهيدرات معقدة لدعم الأداء.'],en:['Follicular','Best window for heavy lifting, strength work and new PRs.','Enough protein (1.6-2 g/kg) and complex carbs to fuel performance.'],fr:['Folliculaire','Meilleure période pour charges lourdes, force et nouveaux records.','Protéines suffisantes (1,6-2 g/kg) et glucides complexes.']},
+    {ic:'✨',ar:['الإباضة','طاقة عالية: تمارين شدة عالية وقوة. انتبهي للإحماء وحماية الركبة فالمرونة أعلى.','خضروات وفواكه وماء وفير، وأوميغا 3.'],en:['Ovulation','High energy: intense and strength sessions. Warm up well and protect your knees; laxity is higher.','Plenty of veg, fruit, water and omega-3.'],fr:['Ovulation','Énergie haute : séances intenses et force. Échauffe-toi bien et protège les genoux.','Légumes, fruits, eau et oméga-3.']},
+    {ic:'🌙',ar:['الأصفرية (قبل الحيض)','خففي الشدة تدريجياً: بيلاتس، مشي، قوة متوسطة. الجوع والتعب طبيعيان.','زيدي السعرات قليلاً (100-200)، ألياف، مغنيسيوم، وقللي الملح والكافيين لتخفيف الانتفاخ.'],en:['Luteal (pre-period)','Ease off gradually: pilates, walking, moderate strength. Hunger and fatigue are normal.','Add a little food (100-200 kcal), fibre, magnesium; cut salt and caffeine to reduce bloating.'],fr:['Lutéale (pré-règles)','Baisse l’intensité : pilates, marche, force modérée. Faim et fatigue sont normales.','Un peu plus de calories (100-200), fibres, magnésium ; moins de sel et caféine.']}
+  ];
+  function wxCycle(area){
+    const D = LS.g('lhta-w-cycle',{d:'',n:28}), L = {ar:0,en:1,fr:2}[currentLang] || 0;
+    area.innerHTML = `<div class="vip-card"><h3 class="vip-h">🌙 ${tr3('الدورة والتمرين','Cycle & training','Cycle & entraînement')}</h3>
+      <div class="vip-form"><div><label>${tr3('أول يوم من آخر دورة','First day of last period','1er jour des dernières règles')}</label><input class="calc-search" id="wcD" type="date" value="${D.d}"></div>
+      <div><label>${tr3('طول الدورة (يوم)','Cycle length (days)','Durée du cycle (jours)')}</label><input class="calc-search" id="wcN" type="number" min="21" max="40" value="${D.n}"></div></div>
+      <button type="button" class="btn vip-btn" id="wcGo" style="margin-top:10px">${tr3('احسبي','Calculate','Calculer')}</button><div id="wcR" style="margin-top:14px"></div></div>${wxNote()}`;
+    const show = () => {
+      const r = area.querySelector('#wcR'), d = LS.g('lhta-w-cycle',{d:'',n:28});
+      if(!d.d){ r.textContent = ''; return; }
+      const n = Math.min(40,Math.max(21,+d.n||28)), st = new Date(d.d+'T00:00:00'), diff = Math.floor((Date.now()-st)/864e5);
+      if(isNaN(diff) || diff < 0){ r.textContent = '⚠️ ' + tr3('اختاري تاريخاً سابقاً','Pick a past date','Choisis une date passée'); return; }
+      const day = diff % n + 1, ov = n - 14, p = day <= 5 ? 0 : day < ov - 1 ? 1 : day <= ov + 1 ? 2 : 3, ph = WX_PH[p], tx = ph[currentLang] || ph.ar;
+      const nx = new Date(st.getTime() + (Math.floor(diff/n)+1)*n*864e5).toLocaleDateString();
+      r.innerHTML = `<div style="padding:12px;border-radius:12px;background:rgba(255,215,0,.07);line-height:1.9"><b>${ph.ic} ${tx[0]} · ${tr3('اليوم','Day','Jour')} ${day}/${n}</b><p style="margin:6px 0">🏋️ ${tx[1]}</p><p style="margin:6px 0">🍽️ ${tx[2]}</p><small style="opacity:.7">📅 ${tr3('الدورة القادمة تقريباً','Next period approx.','Prochaines règles env.')}: ${nx}</small></div>`;
+    };
+    area.querySelector('#wcGo').onclick = () => { LS.s('lhta-w-cycle',{d:area.querySelector('#wcD').value,n:area.querySelector('#wcN').value}); show(); };
+    show();
+  }
+  const WX_HOME = [
+    {n:['أحزمة المقاومة · جلوتس وأرجل (4 أسابيع)','Bands · Glutes & legs (4 weeks)','Élastiques · Fessiers & jambes (4 semaines)'],d:['D1: Banded hip thrust 4x15 · Banded squat 4x12 · Lateral band walk 3x15/side · Glute kickback 3x12','D2: Rest or 30 min walk','D3: Banded RDL 4x12 · Reverse lunge 3x10/leg · Clamshell 3x20 · Donkey kick 3x15','D4: Rest or stretching','D5: Sumo squat pulse 4x15 · Single-leg bridge 4x12 · Fire hydrant 3x15']},
+    {n:['دمبل خفيف · جسم كامل (3 أيام)','Light dumbbells · Full body (3 days)','Haltères légers · Corps entier (3 jours)'],d:['A: Goblet squat 4x12 · DB row 4x10 · Floor press 3x12 · Plank 3x40s','B: DB RDL 4x10 · Shoulder press 3x10 · Split squat 3x10/leg · Dead bug 3x10','C: Step-up 3x10/leg · Bent-over reverse fly 3x12 · Glute bridge (DB) 4x12 · Side plank 3x30s','بدّلي A/B/C مع يوم راحة بين كل حصة · زيدي الوزن عند إتمام كل التكرارات بسهولة']},
+    {n:['15 دقيقة سريعة · بدون أدوات','15-min express · No equipment','Express 15 min · Sans matériel'],d:['4 جولات، 40 ثانية عمل / 20 راحة:','Squat · Incline push-up · Glute bridge · Reverse lunge · Bird dog · Mountain climber','أيام الأسبوع: 3-4 حصص · إحماء 3 دقائق قبل البدء']}
+  ];
+  function wxHome(area){
+    area.innerHTML = `<div class="vip-card"><h3 class="vip-h">🏠 ${tr3('تمارين منزلية بأدوات بسيطة','Home training, minimal gear','Entraînement maison, peu de matériel')}</h3>
+      ${WX_HOME.map((p,i)=>`<details style="margin:8px 0" ${i?'':'open'}><summary><b>${p.n[{ar:0,en:1,fr:2}[currentLang]||0]}</b></summary><ul style="line-height:1.9">${p.d.map(x=>`<li dir="auto">${x}</li>`).join('')}</ul></details>`).join('')}</div>${wxNote()}`;
+  }
+  function wxBody(area){
+    const F = ['w','waist','hip','chest','thigh'], N = [tr3('الوزن كغ','Weight kg','Poids kg'),tr3('الخصر سم','Waist cm','Taille cm'),tr3('الورك سم','Hips cm','Hanches cm'),tr3('الصدر سم','Chest cm','Poitrine cm'),tr3('الفخذ سم','Thigh cm','Cuisse cm')];
+    const rows = LS.g('lhta-w-body',[]), first = rows.length ? rows[rows.length-1] : null;
+    const dl = (k,v) => { if(!first || !v || !first[k] || first===rows[0]) return ''; const x = +(v-first[k]).toFixed(1); return ` <small style="opacity:.7">(${x>0?'+':''}${x})</small>`; };
+    area.innerHTML = `<div class="vip-card"><h3 class="vip-h">📏 ${tr3('قياسات الجسم','Body measurements','Mensurations')}</h3>
+      <div class="vip-form">${F.map((k,i)=>`<div><label>${N[i]}</label><input class="calc-search" id="wb_${k}" type="number" step="0.1" min="0"></div>`).join('')}</div>
+      <button type="button" class="btn vip-btn" id="wbS" style="margin-top:10px">${tr3('حفظ القياسات','Save','Enregistrer')}</button>
+      <div style="margin-top:14px;line-height:2">${rows.length ? rows.map((r,j)=>{ const whr = r.waist && r.hip ? ' · WHR ' + (r.waist/r.hip).toFixed(2) : ''; return `<div style="padding:8px 0;border-top:1px solid var(--line)"><b>${r.d}</b>${whr}<br>${F.map((k,i)=>r[k]?N[i]+': '+r[k]+dl(k,r[k]):'').filter(Boolean).join(' · ')}</div>`; }).join('') : `<p style="opacity:.7">${tr3('لا قياسات بعد. قيسي كل أسبوعين بنفس الوقت والظروف.','No entries yet. Measure every 2 weeks, same time and conditions.','Aucune mesure. Mesure toutes les 2 semaines, mêmes conditions.')}</p>`}</div>
+      ${rows.length ? `<button type="button" class="btn small vip-btn" id="wbU" style="width:auto;margin-top:8px">↩️ ${tr3('حذف آخر قياس','Delete latest','Supprimer la dernière')}</button>` : ''}</div>
+      <small style="opacity:.6;display:block;margin:6px 0 14px">${tr3('الأرقام المقارنة تظهر بين كل قياس وأول قياس. القياسات أدق من الميزان وحده.','Changes are shown against your first entry. Measurements tell more than the scale alone.','Les écarts sont comparés à ta première mesure.')}</small>`;
+    area.querySelector('#wbS').onclick = () => { const o = {d:new Date().toLocaleDateString()}; let any = false; F.forEach(k=>{ const v = parseFloat(area.querySelector('#wb_'+k).value); if(v>0){ o[k]=v; any=true; } }); if(!any) return; rows.unshift(o); LS.s('lhta-w-body',rows.slice(0,100)); wxBody(area); };
+    const u = area.querySelector('#wbU'); if(u) u.onclick = () => { rows.shift(); LS.s('lhta-w-body',rows); wxBody(area); };
+  }
+  function renderWomenTab(area){ ({wcycle:wxCycle,whome:wxHome,wbody:wxBody})[activeTab](area); }
 
   // ---------- GENDER SECTIONS (men / women) ----------
   const GEN = () => LS.g('lhta-gender','m')==='f' ? 'f' : 'm';
@@ -2458,7 +2611,14 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
     wkSave(st); wkUpdate(card);
   });
 
-  function renderWorkoutDay(d){
+  const WOMEN_WEEK = [{ day:'الأحد 🌸', isRest:false, title:'سفلي أ — جلوتس', focus:'التركيز: الجلوتس والخلفية مع تحكم بالحوض', duration:'60 دقيقة', exercises:[{ar:'هيب ثراست بالبار',en:'Barbell Hip Thrust',sets:'4',reps:'8-12',rest:'90-120 ثا',tempo:'Tempo 2-1-1-0 | RIR 2'},{ar:'رومانيان ديدلفت',en:'Romanian Deadlift',sets:'3',reps:'8-10',rest:'90 ثا',tempo:'Tempo 3-0-1-0 | RIR 2'},{ar:'سكوات بلغاري',en:'Bulgarian Split Squat',sets:'3',reps:'8-10 لكل رجل',rest:'75 ثا',tempo:'RIR 1-2'},{ar:'ركلة خلفية بالكيبل',en:'Cable Kickback',sets:'3',reps:'12-15',rest:'60 ثا',tempo:'ثبات ثانية بالقمة | RIR 1'},{ar:'إبعاد الورك بالجهاز',en:'Hip Abduction Machine',sets:'3',reps:'15-20',rest:'45 ثا',tempo:'RIR 0-1'}]},
+{ day:'الاثنين 🌸', isRest:false, title:'علوي أ', focus:'التركيز: ظهر وأكتاف وتناسق الجزء العلوي', duration:'50 دقيقة', exercises:[{ar:'سحب ظهر عمودي',en:'Lat Pulldown',sets:'4',reps:'8-12',rest:'75 ثا',tempo:'Tempo 3-1-1-0 | RIR 2'},{ar:'ضغط صدر مائل بالدامبلز',en:'Incline DB Press',sets:'3',reps:'8-12',rest:'75 ثا',tempo:'RIR 2'},{ar:'سحب كابل جالس',en:'Seated Cable Row',sets:'3',reps:'10-12',rest:'75 ثا',tempo:'RIR 2'},{ar:'رفرفة كتف جانبي',en:'Lateral Raise',sets:'3',reps:'12-15',rest:'45 ثا',tempo:'RIR 1'},{ar:'ترايسبس بالحبل',en:'Triceps Pushdown',sets:'2',reps:'12-15',rest:'45 ثا',tempo:'RIR 1'},{ar:'بايسبس بالدامبلز',en:'DB Biceps Curl',sets:'2',reps:'12-15',rest:'45 ثا',tempo:'RIR 1'}]},
+{ day:'الثلاثاء 🌸', isRest:true, title:'راحة نشطة', focus:'مشي خفيف وتحريك المفاصل', restNotes:['مشي 30-40 دقيقة بوتيرة مريحة', 'تحريك الورك والكتف 10 دقائق وتمدد خفيف', 'نوم 7-9 ساعات وشرب الماء']},
+{ day:'الأربعاء 🌸', isRest:false, title:'سفلي ب — فخذ أمامي وخلفي', focus:'التركيز: الفخذان والسمانة بحجم متوازن', duration:'55 دقيقة', exercises:[{ar:'سكوات جوبلت أو هاك',en:'Goblet / Hack Squat',sets:'4',reps:'8-12',rest:'90 ثا',tempo:'RIR 2'},{ar:'ليج برس',en:'Leg Press',sets:'3',reps:'10-12',rest:'90 ثا',tempo:'RIR 2'},{ar:'ليج كيرل مستلقٍ',en:'Lying Leg Curl',sets:'3',reps:'10-15',rest:'60 ثا',tempo:'RIR 1'},{ar:'اندفاع مع المشي',en:'Walking Lunges',sets:'2',reps:'12 لكل رجل',rest:'60 ثا',tempo:'RIR 2'},{ar:'سمانة واقفة',en:'Standing Calf Raise',sets:'3',reps:'12-15',rest:'45 ثا',tempo:'RIR 1'}]},
+{ day:'الخميس 🌸', isRest:false, title:'علوي ب + جذع', focus:'التركيز: سحب ودفع خفيف وثبات الجذع', duration:'55 دقيقة', exercises:[{ar:'عقلة بمساعدة',en:'Assisted Pull-up',sets:'3',reps:'6-10',rest:'90 ثا',tempo:'RIR 2'},{ar:'ضغط كتف بالدامبلز',en:'Overhead DB Press',sets:'3',reps:'8-12',rest:'75 ثا',tempo:'RIR 2'},{ar:'سحب بدعم الصدر',en:'Chest-supported Row',sets:'3',reps:'10-12',rest:'75 ثا',tempo:'RIR 2'},{ar:'فيس بول',en:'Face Pull',sets:'3',reps:'15',rest:'45 ثا',tempo:'RIR 1-2'},{ar:'ديد باغ',en:'Dead Bug',sets:'3',reps:'10 لكل جهة',rest:'45 ثا',tempo:'تحكم بطيء'},{ar:'بلانك',en:'Plank',sets:'3',reps:'30-45 ثانية',rest:'45 ثا',tempo:'لا تقوّسي أسفل الظهر'}]},
+{ day:'الجمعة 🌸', isRest:false, title:'جلوتس وجذع + كارديو خفيف', focus:'التركيز: تفعيل الجلوتس وتحمل بدون إجهاد', duration:'55 دقيقة', exercises:[{ar:'هيب ثراست برجل واحدة',en:'Single-leg Hip Thrust',sets:'3',reps:'10 لكل رجل',rest:'75 ثا',tempo:'RIR 2'},{ar:'سومو ديدلفت خفيف',en:'Sumo Deadlift',sets:'3',reps:'8',rest:'90 ثا',tempo:'RIR 3'},{ar:'صعود الدرجة بالدامبل',en:'DB Step-up',sets:'3',reps:'10 لكل رجل',rest:'60 ثا',tempo:'RIR 2'},{ar:'بول ثرو بالكيبل',en:'Cable Pull-through',sets:'3',reps:'12-15',rest:'60 ثا',tempo:'RIR 1-2'},{ar:'بلانك جانبي',en:'Side Plank',sets:'3',reps:'30 ثانية لكل جهة',rest:'45 ثا',tempo:'ثبات'},{ar:'كارديو منطقة 2 (مشي مائل أو دراجة)',en:'Zone 2 Cardio',sets:'1',reps:'20 دقيقة',rest:'—',tempo:'حديث مريح'}]},
+{ day:'السبت 🌸', isRest:true, title:'راحة تامة', focus:'استشفاء وتجهيز الأسبوع', restNotes:['راحة كاملة أو مشي خفيف', 'جهّزي وجبات الأسبوع مسبقاً', 'سجّلي الوزن والمقاسات لمتابعة التقدم']}];
+function renderWorkoutDay(d){
     if(d.isRest){
       return `
         <div class="day-card rest-card">
