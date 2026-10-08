@@ -419,6 +419,11 @@
   .vip-faq details{ border-bottom:1px solid rgba(255,215,0,.15); padding:10px 0; }
   .vip-faq summary{ cursor:pointer; color:#ffd700; font-weight:600; font-size:.9rem; }
   .vip-faq p{ margin:8px 0 0; color:#e8d9a0; font-size:.85rem; line-height:1.7; }
+  .vip-plans{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:6px; }
+  .vip-plan{ position:relative; display:flex; flex-direction:column; align-items:center; gap:2px; padding:16px 6px 12px; border:1px solid rgba(255,215,0,.3); border-radius:14px; background:rgba(255,215,0,.05); color:#e8d9a0; cursor:pointer; font-family:inherit; }
+  .vip-plan b{ font-size:1.5rem; color:#ffd700; } .vip-plan span{ font-weight:700; color:#f3e9c4; } .vip-plan small{ font-size:.72rem; }
+  .vip-plan .sv{ color:#3ddc84; font-weight:700; } .vip-plan.on{ border:2px solid #ffd700; background:rgba(255,215,0,.14); box-shadow:0 0 14px rgba(255,215,0,.3); }
+  .vip-plan em{ position:absolute; top:-10px; font-style:normal; font-size:.68rem; font-weight:800; padding:2px 10px; border-radius:999px; background:#ffd700; color:#2a1d00; white-space:nowrap; }
   .vip-chips{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
   .vip-chip{ flex:1 1 90px; background:rgba(255,215,0,.07); border:1px solid rgba(255,215,0,.3); border-radius:12px; padding:10px; text-align:center; }
   .vip-chip b{ display:block; font-size:1.25rem; color:#ffd700; } .vip-chip span{ font-size:.72rem; color:#e8d9a0; }
@@ -1632,6 +1637,10 @@
 
   // ---------- تدريب خاص VIP ----------
   const VIP_CCP = (window.APP_CONFIG||{}).ccp || '00799999004162168744', VIP_PRICE = (window.APP_CONFIG||{}).price || '1000 DA';
+  const VIP_PLANS = [{k:'m',months:1,price:1000},{k:'q',months:3,price:2700},{k:'y',months:12,price:9600}];
+  let vipPlanKey = 'q';
+  const vplan = () => VIP_PLANS.find(p => p.k === vipPlanKey) || VIP_PLANS[1];
+  const vpl = k => ({ m:tr3('شهر','1 month','1 mois'), q:tr3('3 أشهر','3 months','3 mois'), y:tr3('سنة','1 year','1 an'), mo:tr3('شهر','mo','mois'), best:tr3('الأكثر طلباً','Most popular','Le plus choisi'), save:tr3('وفّر','Save','Économise') }[k]);
   const VT = {
     ar:{tab:'تدريب خاص',title:'طلب تدريب خاص',price:'السعر',ccp:'أرسل المبلغ إلى حساب CCP',copy:'نسخ',h:'الطول (سم)',w:'الوزن (كغ)',age:'العمر',sex:'الجنس',m:'ذكر',f:'أنثى',goal:'الهدف',g1:'إنقاص الوزن',g2:'زيادة الوزن',g3:'زيادة العضلات',g4:'الحفاظ على الوزن',days:'أيام التمرين في الأسبوع',inten:'شدة التدريب',i1:'خفيفة',i2:'متوسطة',i3:'عالية',phone:'هاتفك (واتساب)',sender:'اسم صاحب الحوالة / رقم العملية',receipt:'صورة وصل الدفع (اختياري)',kcal:'سعراتك اليومية',prot:'البروتين',bf:'الفطور',ln:'الغداء',dn:'العشاء',sleep:'مدة النوم',hrs:'ساعات',send:'طلب تدريب خاص',sub:'برنامج تدريب وتغذية مخصّص لك وحدك، بمتابعة مباشرة من المدرب',once:'دفعة واحدة',featsT:'ماذا ستحصل عليه',f1:'برنامج تدريب مبني على هدفك ومستواك',f2:'حساب سعراتك اليومية والبروتين',f3:'اقتراح الفطور والغداء والعشاء',f4:'مدة النوم المناسبة لجسمك',stepsT:'كيف يعمل؟',s1:'حوّل المبلغ إلى حساب CCP',s2:'املأ بياناتك وأرفق وصل الدفع',s3:'بعد قبول المدرب تُفتح لك خطتك',formT:'بيانات الطلب',daysLeft:'متبقي من اشتراكك',day:'يوم',expired:'انتهى اشتراكك ⌛ جدّده بطلب جديد',prog:'برنامجك من المدرب',progWait:'المدرب يجهّز برنامجك، سيظهر هنا قريباً',ckT:'المتابعة الأسبوعية',ckW:'وزنك الحالي (كغ)',ckN:'كيف كان أسبوعك؟ (اختياري)',ckSend:'إرسال المتابعة',ckSent:'تم إرسال متابعتك',rep:'رد المدرب',copied:'تم النسخ ✓',save:'حفظ وإرسال للمدرب',saved:'تم حفظ بياناتك وإرسالها للمدرب',need:'املأ كل الحقول',sent:'تم إرسال طلبك، سنراجعه قريباً',st:{pending:'قيد المراجعة ⏳',accepted:'تم القبول ✅',rejected:'تم الرفض ❌'},note:'رسالة المدرب',mb:'شوفان + بيض + موز',ml:'أرز أو معكرونة + دجاج أو لحم + سلطة',md:'تونة أو بيض + خبز أسمر + زبادي'},
     en:{tab:'Private Coaching',title:'Private coaching request',price:'Price',ccp:'Send the amount to CCP account',copy:'Copy',h:'Height (cm)',w:'Weight (kg)',age:'Age',sex:'Sex',m:'Male',f:'Female',goal:'Goal',g1:'Lose weight',g2:'Gain weight',g3:'Build muscle',g4:'Maintain weight',days:'Training days per week',inten:'Training intensity',i1:'Light',i2:'Moderate',i3:'High',phone:'Your phone (WhatsApp)',sender:'Sender name / transfer number',receipt:'Payment receipt photo (optional)',kcal:'Daily calories',prot:'Protein',bf:'Breakfast',ln:'Lunch',dn:'Dinner',sleep:'Sleep',hrs:'hours',send:'Request private coaching',sub:'A training and nutrition plan made only for you, with direct follow-up from the coach',once:'One-time payment',featsT:'What you get',f1:'A training plan built around your goal and level',f2:'Your daily calories and protein',f3:'Breakfast, lunch and dinner suggestions',f4:'The right amount of sleep for your body',stepsT:'How it works',s1:'Send the amount to the CCP account',s2:'Fill in your details and attach the receipt',s3:'Once the coach accepts, your plan unlocks',formT:'Request details',daysLeft:'Left in your plan',day:'days',expired:'Your plan has expired ⌛ renew with a new request',prog:'Your coach program',progWait:'Your coach is preparing your program, it will appear here soon',ckT:'Weekly check-in',ckW:'Current weight (kg)',ckN:'How was your week? (optional)',ckSend:'Send check-in',ckSent:'Check-in sent',rep:'Coach reply',copied:'Copied ✓',save:'Save and send to coach',saved:'Your details were saved and sent to the coach',need:'Fill in all fields',sent:'Request sent, we will review it soon',st:{pending:'Pending ⏳',accepted:'Accepted ✅',rejected:'Rejected ❌'},note:'Coach message',mb:'Oats + eggs + banana',ml:'Rice or pasta + chicken or beef + salad',md:'Tuna or eggs + brown bread + yogurt'},
@@ -1852,10 +1861,10 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
     if(currentUser){ try{ mine = (await (await fetch(`${API_BASE}/api/plan/vip/mine/${encodeURIComponent(currentUser.email)}`)).json()).request; }catch(e){console.warn(e)} }
     const expired = !!(mine && mine.status === 'accepted' && mine.expires_at && new Date(mine.expires_at) < new Date());
     const accepted = !!(mine && mine.status === 'accepted') && !expired;
-    const head = `<div class="vip-card vip-hero"><div class="vip-badge">VIP</div><h2 class="vip-title">👑 ${L.title}</h2><p class="vip-sub">${L.sub}</p><div class="vip-pricebox"><b>${VIP_PRICE}</b><span>${L.once}</span></div></div>
+    const head = `<div class="vip-card vip-hero"><div class="vip-badge">VIP</div><h2 class="vip-title">👑 ${L.title}</h2><p class="vip-sub">${L.sub}</p><div class="vip-plans" id="vipPlans">${VIP_PLANS.map(p => `<button type="button" class="vip-plan${p.k === vipPlanKey ? ' on' : ''}" data-plan="${p.k}">${p.k === 'q' ? `<em>${vpl('best')}</em>` : ''}<span>${vpl(p.k)}</span><b>${p.price}</b><small>DA${p.months > 1 ? ' · ' + Math.round(p.price / p.months) + ' DA/' + vpl('mo') : ''}</small>${p.months > 1 ? `<small class="sv">${vpl('save')} ${1000 * p.months - p.price} DA</small>` : ''}</button>`).join('')}</div></div>
       <div class="vip-card"><h3 class="vip-h">${L.featsT}</h3><ul class="vip-feats"><li>${L.f1}</li><li>${L.f2}</li><li>${L.f3}</li><li>${L.f4}</li></ul></div>
       <div class="vip-card"><h3 class="vip-h">${L.stepsT}</h3><div class="vip-step"><i>1</i><span>${L.s1}</span></div><div class="vip-step"><i>2</i><span>${L.s2}</span></div><div class="vip-step"><i>3</i><span>${L.s3}</span></div></div>
-      <div class="vip-card vip-pay"><div class="vip-paylabel">${L.ccp}</div><code>${VIP_CCP}</code><button type="button" class="btn small vip-btn" id="vipCopy" style="width:auto">${L.copy}</button></div>`;
+      <div class="vip-card vip-pay"><div class="vip-paylabel">${L.ccp}: <b id="vipAmt" style="color:#ffd700">${vplan().price} DA</b></div><code>${VIP_CCP}</code><button type="button" class="btn small vip-btn" id="vipCopy" style="width:auto">${L.copy}</button></div>`;
     const left = accepted && mine.expires_at ? Math.max(0, Math.ceil((new Date(mine.expires_at) - Date.now()) / 864e5)) : null;
     const status = mine ? `<div class="vip-card vip-status ${expired ? 'rejected' : mine.status}"><b>${expired ? L.expired : L.st[mine.status]}</b>${left !== null ? `<span class="vip-days ${left <= 5 ? 'warn' : ''}">${L.daysLeft}: <b>${left}</b> ${L.day}${left <= 5 ? ' · ' + L.soon : ''}</span>` : ''}${mine.note ? `<p>${L.note}: ${escapeHtml(mine.note)}</p>` : ''}</div>` : '';
     const fmt = d => new Date(d).toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : currentLang);
@@ -1863,7 +1872,8 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
       <div class="vip-card"><h3 class="vip-h">📈 ${L.ckT}</h3><div class="vip-form"><label>${L.ckW}<input class="calc-search" id="ckW" type="number" step="0.1" min="20" max="400"></label><label>${L.ckN}<input class="calc-search" id="ckN" maxlength="500"></label></div><button type="button" class="btn vip-btn" id="ckSend" style="margin-top:12px">${L.ckSend}</button>
       ${vipProgress(mine.checkins || [], L, (mine.data || {}).goal)}${(mine.checkins || []).map(c => `<div class="vip-req" style="margin:12px 0 0"><b>${fmt(c.created_at)} · ${escapeHtml(c.weight)} kg</b>${c.note ? `<br>${escapeHtml(c.note)}` : ''}${c.reply ? `<br><span style="color:#ffd700">💬 ${L.rep}: ${escapeHtml(c.reply)}</span>` : ''}</div>`).join('')}</div>` : '';
     const yes = '<td class="yes">✓</td>', no = '<td class="no">—</td>';
-    const cmp = `<div class="vip-card"><h3 class="vip-h">${L.cmpT}</h3><table class="vip-cmp"><tr><th></th><th>${L.cmpFree}</th><th>VIP</th></tr><tr><td>${L.c1}</td>${no}${yes}</tr><tr><td>${L.c2}</td>${no}${yes}</tr><tr><td>${L.c3}</td>${no}${yes}</tr><tr><td>${L.c4}</td>${yes}${yes}</tr></table></div>`;
+    const row = (l, a, b) => `<tr><td>${l}</td>${a}${b}</tr>`, fr = x => `<td class="no">${x}</td>`;
+    const cmp = `<div class="vip-card"><h3 class="vip-h">${L.cmpT}</h3><table class="vip-cmp"><tr><th></th><th>${L.cmpFree}</th><th>VIP</th></tr>${row(L.c4, yes, yes)}${row(tr3('الحاسبة والوصفات','Calculator & recipes','Calculateur & recettes'), yes, yes)}${row(tr3('تتبع التقدم والعادات','Progress & habit tracking','Suivi & habitudes'), yes, yes)}${row(L.c1, no, yes)}${row(L.c2, no, yes)}${row(L.c3, no, yes)}${row(tr3('رسائل صوتية من المدرب','Voice messages from coach','Messages vocaux du coach'), no, yes)}${row(tr3('تعديل البرنامج حسب تقدمك','Plan adjusted to your progress','Plan ajusté à ta progression'), no, yes)}</table></div>`;
     const faq = `<div class="vip-card vip-faq"><h3 class="vip-h">${L.faqT}</h3>${[1,2,3].map(n => `<details><summary>${L['q' + n]}</summary><p>${L['a' + n]}</p></details>`).join('')}</div>`;
     const loginCard = `<div class="vip-card vip-pay"><div class="vip-paylabel">${L.loginNeed}</div><button type="button" class="btn vip-btn" id="vipLogin" style="width:auto">${L.loginBtn}</button></div>`;
     const opt = (v, txt) => `<option value="${v}">${txt}</option>`;
@@ -1893,6 +1903,11 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
     const copy = document.getElementById('vipCopy');
     if(copy) copy.onclick = () => { try{ navigator.clipboard.writeText(VIP_CCP); }catch(e){console.warn(e)} copy.textContent = L.copied; setTimeout(() => { copy.textContent = L.copy; }, 1500); };
     const lg = document.getElementById('vipLogin'); if(lg) lg.onclick = () => openModal('loginBackdrop');
+    area.querySelectorAll('.vip-plan').forEach(b => b.onclick = () => {
+      vipPlanKey = b.dataset.plan;
+      area.querySelectorAll('.vip-plan').forEach(x => x.classList.toggle('on', x === b));
+      const am = document.getElementById('vipAmt'); if(am) am.textContent = vplan().price + ' DA';
+    });
     if(currentUser && !mine){
       const tc = document.createElement('div');
       tc.className = 'vip-card'; tc.style.cssText = 'text-align:center;border:1px solid #ffd700';
@@ -1934,7 +1949,7 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
           const uj = await up.json().catch(() => ({}));
           if(up.ok) receipt = uj.id;
         }
-        const r = await fetch(`${API_BASE}/api/plan/vip/request`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email: currentUser.email, data: { phone, sender, receipt, consent: true } }) });
+        const r = await fetch(`${API_BASE}/api/plan/vip/request`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email: currentUser.email, data: { phone, sender, receipt, consent: true, plan: vipPlanKey, months: vplan().months, amount: vplan().price } }) });
         const j = await r.json().catch(() => ({}));
         if(!r.ok){ vipToast(j.error || L.err, 1); return; }
         vipToast(L.sent); renderVip(area);
@@ -3257,7 +3272,7 @@ function renderWorkoutDay(d){
     const goals = Object.keys(G).map(k => `<div class="ai-goal"><span>${G[k]}</span><div class="pg-bar"><i class="k" style="width:${acc.length ? gc(k) / acc.length * 100 : 0}%"></i></div><b>${gc(k)}</b></div>`).join('');
     const nr = reqs.filter(r => r.status === 'accepted').flatMap(r => (r.checkins || []).filter(c => !c.reply).map(c => ({ name: r.name, weight: c.weight, note: c.note })));
     const wrap = document.createElement('div'); wrap.className = 'ai-wrap';
-    wrap.innerHTML = `<div class="summary-bar">${it('إيراد تقديري (DA)', acc.filter(r => !(r.data || {}).trial).length * price)}${it('اشتراكات نشطة', live.length)}${it('نسبة القبول', rate + '%')}${it('بانتظار ردّك', waiting.length)}</div>
+    wrap.innerHTML = `<div class="summary-bar">${it('إيراد تقديري (DA)', acc.filter(r => !(r.data || {}).trial).reduce((a, r) => a + (+((r.data || {}).amount) || price), 0))}${it('اشتراكات نشطة', live.length)}${it('نسبة القبول', rate + '%')}${it('بانتظار ردّك', waiting.length)}</div>
       <div class="ai-card"><h4>⏳ ينتهي اشتراكهم خلال 7 أيام</h4>${list(exp, r => 'متبقي ' + dl(r) + ' يوم', r => 'مرحباً ' + r.name + '، اشتراكك في LHT+‎ VIP يقترب من نهايته. تحب نجدّد ونكمل التقدّم؟')}</div>
       <div class="ai-card"><h4>💤 لم يسجّلوا تمريناً منذ أكثر من 5 أيام</h4>${list(idle, r => ago(r) === null ? 'لم يسجّل أي تمرين' : 'آخر تسجيل قبل ' + ago(r) + ' يوم', r => 'مرحباً ' + r.name + '، لاحظت أنك لم تسجّل تمارينك مؤخراً. كل شيء بخير؟ أنا هنا لأساعدك تكمل.')}</div>
       <div class="ai-card"><h4>📨 متابعات بانتظار ردّك (${nr.length})</h4>${nr.length ? nr.slice(0, 10).map(x => `<div class="ai-row"><span><b>${escapeHtml(x.name)}</b><br><small>${escapeHtml(x.weight)} كغ${x.note ? ' — ' + escapeHtml(x.note) : ''}</small></span></div>`).join('') : '<div class="ai-empty">لا أحد حالياً ✅</div>'}</div>
@@ -3559,7 +3574,7 @@ function renderWorkoutDay(d){
       const fd = d => new Date(d).toLocaleDateString('ar-EG'), dl = r => Math.ceil((new Date(r.expires_at) - Date.now()) / 864e5), ago = r => r.last_log ? Math.floor((Date.now() - new Date(r.last_log)) / 864e5) : null;
       const accBlock = r => r.status !== 'accepted' ? '' : `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line)">
           <div>🏋️ جلسات آخر 7 أيام: <b>${r.sessions7 || 0}</b> · آخر تسجيل: ${r.last_log ? fd(r.last_log) : 'لم يسجّل بعد'}${(ago(r) === null || ago(r) > 5) ? ` · <a class="btn small ghost" href="${waLink((r.data || {}).phone)}?text=${encodeURIComponent('مرحباً، لاحظت أنك لم تسجّل تمرينك منذ فترة. هل تحتاج تعديلاً على البرنامج؟')}" target="_blank" rel="noopener">⚠️ تذكير واتساب</a>` : ''}</div>
-          ${r.expires_at ? `⏳ ينتهي: <b>${fd(r.expires_at)}</b> <span class="vip-days ${dl(r) <= 5 ? 'warn' : ''}">${dl(r) > 0 ? 'متبقي ' + dl(r) + ' يوم' : 'منتهي'}</span>` : ''}
+          ${(r.data || {}).plan ? `<div>💳 الباقة: <b>${({m:'شهر',q:'3 أشهر',y:'سنة'})[r.data.plan] || ''}</b> · ${escapeHtml(r.data.amount)} DA</div>` : ''}${r.expires_at ? `⏳ ينتهي: <b>${fd(r.expires_at)}</b> <span class="vip-days ${dl(r) <= 5 ? 'warn' : ''}">${dl(r) > 0 ? 'متبقي ' + dl(r) + ' يوم' : 'منتهي'}</span>` : ''}
           <div class="vv" data-email="${escapeHtml(r.email)}"></div><div class="vt-row"><select class="calc-search vtpl">${tplOpts()}</select><button type="button" class="btn small ghost vtplsave">حفظ كقالب</button><button type="button" class="btn small ghost vtpldel">حذف قالب</button></div><textarea class="calc-search vprog" rows="5" placeholder="اكتب برنامج العضو هنا (التمارين، المجموعات، العدات...)" style="margin:8px 0">${escapeHtml(r.program || '')}</textarea>
           <button class="btn small ghost vgen">⚡ توليد مسودة تلقائية</button> <button class="btn small primary vsaveprog">حفظ البرنامج</button>
           ${vipProgress(r.checkins || [], VT.ar, (r.data || {}).goal)}${(r.checkins || []).map(c => `<div style="margin-top:10px">📈 ${fd(c.created_at)} · <b>${escapeHtml(c.weight)} كغ</b>${c.note ? ' — ' + escapeHtml(c.note) : ''} <button type="button" class="btn small ghost vcdel" data-c="${c.id}" style="margin-inline-start:6px;color:#ff4757">🗑</button><br>
