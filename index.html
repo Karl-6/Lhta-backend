@@ -2,6 +2,27 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' blob: data: https://lhta-backend.onrender.com; manifest-src 'self' blob:; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<script>
+/* حماية من تعطّل التخزين (التصفح الخاص / المنع): نسخة احتياطية في الذاكرة */
+(function(){
+  ['localStorage','sessionStorage'].forEach(function(name){
+    var ok=false;
+    try{ var s=window[name]; s.setItem('__t','1'); s.removeItem('__t'); ok=true; }catch(e){console.warn(e)}
+    if(ok) return;
+    var m={};
+    var shim={
+      getItem:function(k){ return Object.prototype.hasOwnProperty.call(m,k)?m[k]:null; },
+      setItem:function(k,v){ m[k]=String(v); },
+      removeItem:function(k){ delete m[k]; },
+      clear:function(){ m={}; },
+      key:function(i){ return Object.keys(m)[i]||null; },
+      get length(){ return Object.keys(m).length; }
+    };
+    try{ Object.defineProperty(window,name,{value:shim,configurable:true}); }catch(e){console.warn(e)}
+  });
+})();
+</script>
 <meta name="description" content="تمارين، خطط تغذية، حاسبة سعرات ومخطط وجبات، ووصفات، وتدريب VIP خاص مع LHT+.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="LHT+ — تمارين، تغذية، وأبطال">
@@ -9,6 +30,8 @@
 <meta property="og:locale" content="ar_AR">
 <meta property="og:site_name" content="LHT+">
 <meta name="twitter:card" content="summary">
+<meta property="og:image" content="/icon-192.png">
+<meta name="twitter:image" content="/icon-192.png">
 <meta name="twitter:title" content="LHT+ — تمارين، تغذية، وأبطال">
 <meta name="twitter:description" content="تمارين، خطط تغذية، حاسبة سعرات ومخطط وجبات، ووصفات، وتدريب VIP خاص مع LHT+.">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,12 +41,14 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="LHT+">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#050b1a">
+<script>(function(){try{if(!document.querySelector('link[rel=canonical]')){var l=document.createElement('link');l.rel='canonical';l.href=location.origin+location.pathname;document.head.appendChild(l);}}catch(e){console.warn(e)}})();</script>
 <title>LHT+‎ — تمارين، تغذية، وأبطال</title>
 <meta name="theme-color" content="#060E22">
 <link rel="apple-touch-icon" href="data:image/png;base64,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">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;900&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=Bebas+Neue&family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;900&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=Bebas+Neue&family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;900&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=Bebas+Neue&family=Anton&family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
 <style>
   :root{
     --navy: #060E22;
@@ -756,6 +781,7 @@
   .sec-switch button span{display:block;font-size:1.5rem;margin-bottom:2px}
   .sec-switch button[data-s=m].on{background:linear-gradient(135deg,#1E4FD8,#4E7FFF);color:#fff;box-shadow:0 6px 20px rgba(30,79,216,.4)}
   .sec-switch button[data-s=f].on{background:linear-gradient(135deg,#c2185b,#ff6fa8);color:#fff;box-shadow:0 6px 20px rgba(255,92,154,.4)}
+  .sec-switch button[data-lv].on{background:linear-gradient(135deg,#c2185b,#ff6fa8);color:#fff;box-shadow:0 6px 20px rgba(255,92,154,.4)}
   .tab-groups{max-width:760px;margin:16px auto 0;display:grid;gap:12px;padding:0 12px}
   .tab-group small{display:block;color:var(--gold);font-size:.72rem;font-weight:700;letter-spacing:1px;margin:0 6px 4px}
   .tab-group .tabs{max-width:none;margin:0;justify-content:flex-start}
@@ -799,7 +825,7 @@
   <div class="drawer" id="settingsDrawer">
     <div class="drawer-head">
       <h2 data-i18n="settingsTitle">الإعدادات</h2>
-      <button class="close-x" id="settingsClose">✕</button>
+      <button class="close-x" id="settingsClose" aria-label="إغلاق">✕</button>
     </div>
     <div class="drawer-body">
       <div class="drawer-section">
@@ -1117,9 +1143,9 @@
   // ---------- حفظ سجلّ اليوم والأطعمة الخاصة (في متصفح العضو) ----------
   function todayKey(){ const d = new Date(); return 'lhta-log-' + d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate(); }
   function loadCalcLog(){ try{ const v = JSON.parse(localStorage.getItem(todayKey()) || '[]'); return Array.isArray(v) ? v : []; }catch(e){ return []; } }
-  function saveCalcLog(){ try{ localStorage.setItem(todayKey(), JSON.stringify(calcLog)); }catch(e){} }
+  function saveCalcLog(){ try{ localStorage.setItem(todayKey(), JSON.stringify(calcLog)); }catch(e){console.warn(e)} }
   function loadMyFoods(){ try{ const v = JSON.parse(localStorage.getItem('lhta-my-foods') || '[]'); return Array.isArray(v) ? v : []; }catch(e){ return []; } }
-  function saveMyFoods(arr){ try{ localStorage.setItem('lhta-my-foods', JSON.stringify(arr)); }catch(e){} }
+  function saveMyFoods(arr){ try{ localStorage.setItem('lhta-my-foods', JSON.stringify(arr)); }catch(e){console.warn(e)} }
 
   // ---- extra foods + translated names
   (function(){ const TRN={"كسكس مطبوخ": ["Cooked couscous", "Couscous cuit"], "خبز الدار (خبز تقليدي)": ["Traditional homemade bread", "Pain maison traditionnel"], "شربة فريك": ["Freekeh soup", "Soupe de freekeh"], "حريرة": ["Harira soup", "Harira"], "شخشوخة بالدجاج": ["Chakhchoukha with chicken", "Chakhchoukha au poulet"], "رشتة بالدجاج": ["Rechta with chicken", "Rechta au poulet"], "طاجين الزيتون بالدجاج": ["Chicken & olive tagine", "Tajine poulet aux olives"], "طاجين لحم بالبرقوق": ["Lamb & prune tagine", "Tajine d'agneau aux pruneaux"], "بوراك (فطيرة لحم مقلية)": ["Fried meat brik", "Brik à la viande frit"], "مطلوع (خبز)": ["Matlouh bread", "Pain matlouh"], "لوبيا بيضاء مطبوخة بالصلصة": ["White beans in sauce", "Haricots blancs en sauce"], "عدس مطبوخ": ["Cooked lentils", "Lentilles cuites"], "تمر دقلة نور": ["Deglet Nour dates", "Dattes Deglet Nour"], "قلب اللوز": ["Qalb el louz", "Qalb el louz"], "مقروط": ["Makroud", "Makroud"], "بقلاوة": ["Baklava", "Baklava"], "زلابية": ["Zlabia", "Zlabia"], "أرز أبيض مطبوخ": ["Cooked white rice", "Riz blanc cuit"], "صدر دجاج مشوي": ["Grilled chicken breast", "Blanc de poulet grillé"], "بيضة مسلوقة": ["Boiled egg", "Œuf dur"], "خبز أبيض": ["White bread", "Pain blanc"], "خبز أسمر": ["Brown bread", "Pain complet"], "زيت زيتون": ["Olive oil", "Huile d'olive"], "موز": ["Banana", "Banane"], "تفاح": ["Apple", "Pomme"], "حليب كامل الدسم": ["Whole milk", "Lait entier"], "زبادي يوناني": ["Greek yogurt", "Yaourt grec"], "جبنة بيضاء": ["White cheese", "Fromage blanc"], "تمر": ["Dates", "Dattes"], "حمص": ["Chickpeas", "Pois chiches"], "فلافل": ["Falafel", "Falafel"], "شاورما دجاج": ["Chicken shawarma", "Shawarma de poulet"], "سلطة خضراء": ["Green salad", "Salade verte"], "تونة معلبة": ["Canned tuna", "Thon en conserve"], "سلمون مشوي": ["Grilled salmon", "Saumon grillé"], "شوفان نيء": ["Raw oats", "Flocons d'avoine"], "لوز": ["Almonds", "Amandes"], "زبدة فول سوداني": ["Peanut butter", "Beurre de cacahuète"], "أفوكادو": ["Avocado", "Avocat"], "بطاطا حلوة": ["Sweet potato", "Patate douce"], "بطاطا مسلوقة": ["Boiled potato", "Pomme de terre bouillie"], "معكرونة مطبوخة": ["Cooked pasta", "Pâtes cuites"], "لحم بقري مشوي": ["Grilled beef", "Bœuf grillé"], "برتقال": ["Orange", "Orange"], "خيار": ["Cucumber", "Concombre"], "طماطم": ["Tomato", "Tomate"], "عسل": ["Honey", "Miel"], "جبنة شيدر": ["Cheddar cheese", "Cheddar"], "زيت جوز الهند": ["Coconut oil", "Huile de coco"], "كينوا مطبوخة": ["Cooked quinoa", "Quinoa cuit"]}; FOOD_DB.forEach(f=>{ const t=TRN[f.n]; if(t){ f.en=t[0]; f.fr=t[1]; } }); FOOD_DB.push(...[{"n": "فول مطبوخ", "en": "Cooked fava beans", "fr": "Fèves cuites", "kcal": 110, "p": 7.6, "c": 19.0, "f": 0.4}, {"n": "فاصوليا بيضاء مطبوخة", "en": "Cooked white beans", "fr": "Haricots blancs cuits", "kcal": 139, "p": 9.7, "c": 25.0, "f": 0.5}, {"n": "بازلاء مطبوخة", "en": "Cooked green peas", "fr": "Petits pois cuits", "kcal": 84, "p": 5.4, "c": 16.0, "f": 0.2}, {"n": "سردين معلب", "en": "Canned sardines", "fr": "Sardines en conserve", "kcal": 208, "p": 25.0, "c": 0.0, "f": 11.0}, {"n": "سمك أبيض مشوي", "en": "Grilled white fish", "fr": "Poisson blanc grillé", "kcal": 105, "p": 23.0, "c": 0.0, "f": 0.9}, {"n": "جمبري مطبوخ", "en": "Cooked shrimp", "fr": "Crevettes cuites", "kcal": 99, "p": 24.0, "c": 0.2, "f": 0.3}, {"n": "لحم غنم مشوي", "en": "Grilled lamb", "fr": "Agneau grillé", "kcal": 294, "p": 25.0, "c": 0.0, "f": 21.0}, {"n": "كبد بقري مطبوخ", "en": "Cooked beef liver", "fr": "Foie de bœuf cuit", "kcal": 175, "p": 27.0, "c": 4.0, "f": 5.0}, {"n": "صدر ديك رومي مشوي", "en": "Grilled turkey breast", "fr": "Blanc de dinde grillé", "kcal": 135, "p": 30.0, "c": 0.0, "f": 1.0}, {"n": "فخذ دجاج بدون جلد", "en": "Skinless chicken thigh", "fr": "Cuisse de poulet sans peau", "kcal": 177, "p": 24.0, "c": 0.0, "f": 8.0}, {"n": "كفتة مشوية", "en": "Grilled kofta", "fr": "Kefta grillée", "kcal": 250, "p": 20.0, "c": 3.0, "f": 18.0}, {"n": "بياض البيض", "en": "Egg whites", "fr": "Blanc d'œuf", "kcal": 52, "p": 11.0, "c": 0.7, "f": 0.2}, {"n": "جبنة قريش", "en": "Cottage cheese", "fr": "Fromage cottage", "kcal": 98, "p": 11.0, "c": 3.4, "f": 4.3}, {"n": "لبن رائب", "en": "Buttermilk (laban)", "fr": "Lait fermenté (lben)", "kcal": 40, "p": 3.3, "c": 4.8, "f": 1.0}, {"n": "جبنة موزاريلا", "en": "Mozzarella", "fr": "Mozzarella", "kcal": 280, "p": 28.0, "c": 3.0, "f": 17.0}, {"n": "حليب خالي الدسم", "en": "Skim milk", "fr": "Lait écrémé", "kcal": 34, "p": 3.4, "c": 5.0, "f": 0.1}, {"n": "مسحوق بروتين مصل اللبن", "en": "Whey protein powder", "fr": "Protéine whey en poudre", "kcal": 400, "p": 80.0, "c": 8.0, "f": 6.0}, {"n": "أرز بني مطبوخ", "en": "Cooked brown rice", "fr": "Riz complet cuit", "kcal": 112, "p": 2.3, "c": 23.0, "f": 0.8}, {"n": "برغل مطبوخ", "en": "Cooked bulgur", "fr": "Boulgour cuit", "kcal": 83, "p": 3.1, "c": 19.0, "f": 0.2}, {"n": "شوفان مطبوخ", "en": "Cooked oatmeal", "fr": "Porridge d'avoine", "kcal": 71, "p": 2.5, "c": 12.0, "f": 1.5}, {"n": "بطاطا مقلية", "en": "French fries", "fr": "Frites", "kcal": 312, "p": 3.4, "c": 41.0, "f": 15.0}, {"n": "ذرة مطبوخة", "en": "Cooked corn", "fr": "Maïs cuit", "kcal": 96, "p": 3.4, "c": 21.0, "f": 1.5}, {"n": "بروكلي مطبوخ", "en": "Cooked broccoli", "fr": "Brocoli cuit", "kcal": 35, "p": 2.4, "c": 7.0, "f": 0.4}, {"n": "سبانخ مطبوخ", "en": "Cooked spinach", "fr": "Épinards cuits", "kcal": 23, "p": 3.0, "c": 3.8, "f": 0.3}, {"n": "جزر", "en": "Carrot", "fr": "Carotte", "kcal": 41, "p": 0.9, "c": 10.0, "f": 0.2}, {"n": "فلفل حلو", "en": "Bell pepper", "fr": "Poivron", "kcal": 31, "p": 1.0, "c": 6.0, "f": 0.3}, {"n": "كوسا", "en": "Zucchini", "fr": "Courgette", "kcal": 17, "p": 1.2, "c": 3.1, "f": 0.3}, {"n": "باذنجان مطبوخ", "en": "Cooked eggplant", "fr": "Aubergine cuite", "kcal": 35, "p": 0.8, "c": 9.0, "f": 0.2}, {"n": "بصل", "en": "Onion", "fr": "Oignon", "kcal": 40, "p": 1.1, "c": 9.3, "f": 0.1}, {"n": "فطر", "en": "Mushrooms", "fr": "Champignons", "kcal": 22, "p": 3.1, "c": 3.3, "f": 0.3}, {"n": "فراولة", "en": "Strawberries", "fr": "Fraises", "kcal": 32, "p": 0.7, "c": 7.7, "f": 0.3}, {"n": "عنب", "en": "Grapes", "fr": "Raisin", "kcal": 69, "p": 0.7, "c": 18.0, "f": 0.2}, {"n": "بطيخ", "en": "Watermelon", "fr": "Pastèque", "kcal": 30, "p": 0.6, "c": 7.6, "f": 0.2}, {"n": "رمان", "en": "Pomegranate", "fr": "Grenade", "kcal": 83, "p": 1.7, "c": 19.0, "f": 1.2}, {"n": "تين", "en": "Fig", "fr": "Figue", "kcal": 74, "p": 0.8, "c": 19.0, "f": 0.3}, {"n": "جوز", "en": "Walnuts", "fr": "Noix", "kcal": 654, "p": 15.0, "c": 14.0, "f": 65.0}, {"n": "فول سوداني", "en": "Peanuts", "fr": "Cacahuètes", "kcal": 567, "p": 26.0, "c": 16.0, "f": 49.0}, {"n": "بذور الشيا", "en": "Chia seeds", "fr": "Graines de chia", "kcal": 486, "p": 17.0, "c": 42.0, "f": 31.0}, {"n": "بذور الكتان", "en": "Flax seeds", "fr": "Graines de lin", "kcal": 534, "p": 18.0, "c": 29.0, "f": 42.0}, {"n": "طحينة", "en": "Tahini", "fr": "Tahini", "kcal": 595, "p": 17.0, "c": 21.0, "f": 54.0}, {"n": "زبدة", "en": "Butter", "fr": "Beurre", "kcal": 717, "p": 0.9, "c": 0.1, "f": 81.0}, {"n": "عصير برتقال", "en": "Orange juice", "fr": "Jus d'orange", "kcal": 45, "p": 0.7, "c": 10.0, "f": 0.2}, {"n": "شوكولاتة داكنة", "en": "Dark chocolate", "fr": "Chocolat noir", "kcal": 598, "p": 7.8, "c": 46.0, "f": 43.0}, {"n": "بيتزا", "en": "Pizza", "fr": "Pizza", "kcal": 266, "p": 11.0, "c": 33.0, "f": 10.0}, {"n": "سكر", "en": "Sugar", "fr": "Sucre", "kcal": 387, "p": 0.0, "c": 100.0, "f": 0.0}]); })();
@@ -1141,7 +1167,7 @@
 
   // ---------- الاتصال بالخادم الحقيقي ----------
   const API_BASE = 'https://lhta-backend.onrender.com';
-  let adminPassword = localStorage.getItem('lhta-admin-pass') || '';
+  let adminPassword = sessionStorage.getItem('lhta-admin-pass') || '';
 
   async function apiGet(path){
     const res = await fetch(`${API_BASE}${path}`);
@@ -1214,7 +1240,7 @@
     return data.id;
   }
   async function deleteExerciseImage(id){
-    try{ await fetch(`${API_BASE}/api/plan/image/${id}`, { method:'DELETE', headers:{ 'x-admin-password': adminPassword } }); }catch(e){}
+    try{ await fetch(`${API_BASE}/api/plan/image/${id}`, { method:'DELETE', headers:{ 'x-admin-password': adminPassword } }); }catch(e){console.warn(e)}
   }
   // يحافظ على صور التمارين عند تعديل نص التمارين
   function mergeExerciseImages(oldArr, newArr){
@@ -1254,8 +1280,8 @@
         g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + d + 0.2);
         o.start(ctx.currentTime + d); o.stop(ctx.currentTime + d + 0.22);
       });
-    }catch(e){}
-    try{ if(navigator.vibrate) navigator.vibrate([200,100,200,100,200]); }catch(e){}
+    }catch(e){console.warn(e)}
+    try{ if(navigator.vibrate) navigator.vibrate([200,100,200,100,200]); }catch(e){console.warn(e)}
   }
   function rtRender(){
     const el = restTimer.el; if(!el) return;
@@ -1371,7 +1397,7 @@
       badge.style.cssText = 'color:var(--blue2); font-size:0.85rem;';
       const out = document.createElement('button');
       out.className = 'btn small ghost'; out.textContent = t('logoutBtn');
-      out.onclick = () => { isAdmin = false; adminPassword = ''; localStorage.removeItem('lhta-admin-pass'); renderApp(); };
+      out.onclick = () => { isAdmin = false; adminPassword = ''; sessionStorage.removeItem('lhta-admin-pass'); renderApp(); };
       el.appendChild(out); el.appendChild(badge);
     } else if(currentUser){
       const name = document.createElement('span');
@@ -1471,11 +1497,11 @@
     <div class="vip-card"><h3 class="vip-h">🏆 ${U('rec')}</h3><div class="vip-form"><input class="calc-search" id="cPn" placeholder="${U('name')}"><input class="calc-search" id="cPv" placeholder="${U('val')}"></div><button class="btn vip-btn" id="cPs" style="margin:10px 0">${U('add')}</button><div id="cPl">${prs.map(r=>`<div style="padding:4px 0">${r.n}: <b>${r.v}</b> <small style="opacity:.6">${r.d}</small></div>`).join('')}</div></div>`;
     const g = id => area.querySelector('#'+id);
     g('cLv').onclick = () => { const a=+g('cq1').value||0,b=+g('cq2').value||0,c=+g('cq3').value||0; const sc=a/30+b/10+c/20; const i=sc<1?0:sc<2?1:2; g('cLvR').textContent = '→ '+U('lvls')[i]+' · '+pk(CAL_PROGS[i].n); };
-    g('cPs').onclick = () => { if(!g('cPn').value.trim()) return; prs.unshift({n:g('cPn').value.trim(),v:g('cPv').value.trim(),d:new Date().toLocaleDateString()}); try{ localStorage.setItem('lhta-cal-pr',JSON.stringify(prs.slice(0,50))); }catch(e){} renderCali(area); };
+    g('cPs').onclick = () => { if(!g('cPn').value.trim()) return; prs.unshift({n:g('cPn').value.trim(),v:g('cPv').value.trim(),d:new Date().toLocaleDateString()}); try{ localStorage.setItem('lhta-cal-pr',JSON.stringify(prs.slice(0,50))); }catch(e){console.warn(e)} renderCali(area); };
     g('cGo').onclick = () => {
       if(calTimer){ clearInterval(calTimer); calTimer=null; g('cGo').textContent=U('start'); return; }
       let ph='work', left=+g('cW').value||30; g('cGo').textContent=U('stop');
-      calTimer = setInterval(()=>{ if(!g('cTv')){ clearInterval(calTimer); calTimer=null; return; } left--; if(left<=0){ ph = ph==='work'?'rest':'work'; left = +(ph==='work'?g('cW').value:g('cR').value)||30; try{ navigator.vibrate&&navigator.vibrate(300); }catch(e){} } g('cTv').textContent = (ph==='work'?'🔥 ':'😮‍💨 ')+left; g('cTv').style.color = ph==='work'?'#ff6b6b':'#6bd6ff'; }, 1000);
+      calTimer = setInterval(()=>{ if(!g('cTv')){ clearInterval(calTimer); calTimer=null; return; } left--; if(left<=0){ ph = ph==='work'?'rest':'work'; left = +(ph==='work'?g('cW').value:g('cR').value)||30; try{ navigator.vibrate&&navigator.vibrate(300); }catch(e){console.warn(e)} } g('cTv').textContent = (ph==='work'?'🔥 ':'😮‍💨 ')+left; g('cTv').style.color = ph==='work'?'#ff6b6b':'#6bd6ff'; }, 1000);
     };
   }
   const VXE = {
@@ -1498,7 +1524,7 @@
 
   // ---------- TOOLS: 1RM, muscle map, gym mode, trackers, before/after, theme, PDF ----------
   const tr3 = (a,e,f) => ({ar:a,en:e,fr:f}[currentLang] || a);
-  const LS = { g:(k,d)=>{ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v); }catch(e){ return d; } }, s:(k,v)=>{ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} } };
+  const LS = { g:(k,d)=>{ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v); }catch(e){ return d; } }, s:(k,v)=>{ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){console.warn(e)} } };
   const MUSCLES = {
     chest:{n:['الصدر','Chest','Pectoraux'],x:'Push-ups, Dips, Archer push-ups, Planche lean'},
     back:{n:['الظهر','Back','Dos'],x:'Pull-ups, Australian rows, Front lever, Back lever'},
@@ -1512,8 +1538,8 @@
     try{
       const m = {name:'LHT+',short_name:'LHT+',start_url:'./',display:'standalone',background_color:'#0a1530',theme_color:'#0a1530',icons:[]};
       const l = document.createElement('link'); l.rel='manifest'; l.href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'})); document.head.appendChild(l);
-      [['theme-color','#0a1530'],['apple-mobile-web-app-capable','yes']].forEach(([n,c])=>{ const e=document.createElement('meta'); e.name=n; e.content=c; document.head.appendChild(e); });
-    }catch(e){}
+      [['theme-color','#0a1530'],['apple-mobile-web-app-capable','yes']].forEach(([n,c])=>{ if(document.querySelector('meta[name="'+n+'"]')) return; const e=document.createElement('meta'); e.name=n; e.content=c; document.head.appendChild(e); });
+    }catch(e){console.warn(e)}
   }
   function applyTheme(){ const light = LS.g('lhta-theme','dark')==='light'; document.documentElement.style.filter = light ? 'invert(1) hue-rotate(180deg)' : ''; document.querySelectorAll('img,video,svg image').forEach(i=>{ i.style.filter = light ? 'invert(1) hue-rotate(180deg)' : ''; }); }
 
@@ -1580,7 +1606,7 @@
     
     + card('🔥 '+tr3('الالتزام والإنجازات','Streak & Badges','Série & badges'), `<p style="font-size:1.4rem;margin:0 0 6px"><b>${streak}</b> ${tr3('يوم متتالٍ','day streak','jours d’affilée')}</p><div>${badges}</div><button class="btn vip-btn" id="sDone" style="margin-top:10px">${tr3('سجّلت تمرين اليوم','Log today’s workout','Séance faite')}</button>`)
     + card('💧 '+tr3('الماء والنوم','Water & Sleep','Eau & Sommeil'), `<div class="vip-form"><input class="calc-search" id="wV" type="number" step="0.25" placeholder="${tr3('لتر اليوم','Litres today','Litres aujourd’hui')}" value="${water[today]||''}"><input class="calc-search" id="slV" type="number" step="0.5" placeholder="${tr3('ساعات النوم','Sleep hours','Heures de sommeil')}" value="${sleep[today]||''}"></div><button class="btn vip-btn" id="wS" style="margin-top:10px">${tr3('حفظ','Save','Enregistrer')}</button><p id="wMsg" style="margin:8px 0 0"></p>`)
-    + card('🖼️ '+tr3('قبل / بعد','Before / After','Avant / Après'), `<div class="vip-form"><input type="file" accept="image/*" id="baA"><input type="file" accept="image/*" id="baB"></div><div id="baBox" style="position:relative;margin-top:10px;display:none;max-width:360px"><img id="baImgB" style="width:100%;display:block;border-radius:10px"><div id="baTop" style="position:absolute;inset:0;overflow:hidden;width:50%"><img id="baImgA" style="width:360px;max-width:none;display:block;border-radius:10px"></div></div><input type="range" id="baR" min="0" max="100" value="50" style="width:100%;max-width:360px;display:none"><small style="opacity:.7">${tr3('الصور تبقى على جهازك فقط','Photos stay on your device only','Les photos restent sur ton appareil')}</small>`)
+    + card('🖼️ '+tr3('قبل / بعد','Before / After','Avant / Après'), `<div class="vip-form"><input type="file" accept="image/*" id="baA"><input type="file" accept="image/*" id="baB"></div><div id="baBox" style="position:relative;margin-top:10px;display:none;max-width:360px"><img id="baImgB" alt="${tr3('بعد','After','Après')}" style="width:100%;display:block;border-radius:10px"><div id="baTop" style="position:absolute;inset:0;overflow:hidden;width:50%"><img id="baImgA" alt="${tr3('قبل','Before','Avant')}" style="width:360px;max-width:none;display:block;border-radius:10px"></div></div><input type="range" id="baR" min="0" max="100" value="50" style="width:100%;max-width:360px;display:none"><small style="opacity:.7">${tr3('الصور تبقى على جهازك فقط','Photos stay on your device only','Les photos restent sur ton appareil')}</small>`)
     + card('⚙️ '+tr3('أدوات','Utilities','Outils'), `<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn vip-btn" id="gym" style="width:auto">🏋️ ${tr3('وضع الجيم','Gym mode','Mode salle')}</button><button class="btn vip-btn" id="pdf" style="width:auto">📄 ${tr3('تصدير PDF','Export PDF','Exporter PDF')}</button><button class="btn vip-btn" id="thm" style="width:auto">🌓 ${tr3('الوضع الفاتح/الداكن','Light/Dark','Clair/Sombre')}</button></div>`);
     const g = id => area.querySelector('#'+id);
     g('rGo').onclick = () => { const w=+g('rW').value, r=+g('rR').value; if(!w||!r) return; const o = r===1?w:w*(1+r/30); g('rOut').innerHTML = `<b>1RM ≈ ${o.toFixed(1)} kg</b><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">${[95,90,85,80,75,70,60,50].map(p=>`<span class="vip-chip">${p}% · ${(o*p/100).toFixed(1)}</span>`).join('')}</div>`; };
@@ -1595,7 +1621,7 @@
     g('gym').onclick = () => {
       const o = document.createElement('div'); o.style.cssText='position:fixed;inset:0;z-index:99999;background:#000;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px';
       let s = 0, iv; o.innerHTML = `<div id="gT" style="font-size:22vw;font-weight:800" dir="ltr">00:00</div><div style="display:flex;gap:12px"><button class="btn vip-btn" id="gR" style="width:auto">⏱️ 60s</button><button class="btn vip-btn" id="gX" style="width:auto">✖</button></div>`;
-      document.body.appendChild(o); try{ navigator.wakeLock&&navigator.wakeLock.request('screen'); }catch(e){}
+      document.body.appendChild(o); try{ navigator.wakeLock&&navigator.wakeLock.request('screen'); }catch(e){console.warn(e)}
       const f = n => String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');
       iv = setInterval(()=>{ s++; o.querySelector('#gT').textContent = f(s); },1000);
       o.querySelector('#gR').onclick = () => { s = 0; };
@@ -1658,7 +1684,7 @@
     (program || '').split('\n').forEach(l => { const m = l.match(/^• (.+?) \((.+?)\) — (\d+)×(\d+)-(\d+) —/);
       if(l.startsWith('📅')) days.push({t:l.slice(2).trim(), ex:[]}); else if(m && days.length) days[days.length - 1].ex.push({a:m[1], n:m[2], s:m[3], hi:+m[5]}); });
     if(!days.some(d => d.ex.length)) return;
-    const K = 'lhta-log:' + email; let log = {}; try{ log = JSON.parse(localStorage.getItem(K) || '{}'); }catch(e){}
+    const K = 'lhta-log:' + email; let log = {}; try{ log = JSON.parse(localStorage.getItem(K) || '{}'); }catch(e){console.warn(e)}
     const e1 = x => x.kg * (1 + x.r / 30); let cur = 0;
     const draw = () => {
       box.innerHTML = `<div class="vip-card"><h3 class="vip-h">🏋️ ${vn('logT')}</h3><div class="vip-filter">${days.map((d, i) => `<button type="button" class="btn small ${i === cur ? 'on' : ''}" data-i="${i}">${i + 1}</button>`).join('')}</div><div style="font-size:.8rem;color:#e8d9a0;margin-bottom:8px">${escapeHtml(days[cur].t)}</div>
@@ -1670,7 +1696,7 @@
         let c = 0, pr = 0; const ent = []; const q = (k, j) => box.querySelector(`[data-k="${k}"][data-j="${j}"]`);
         days[cur].ex.forEach((x, j) => { const kgv = q('kg', j).value, kg = +kgv, r = +q('r', j).value;
           if(kgv !== '' && kg >= 0 && r > 0){ const h = log[x.n] = log[x.n] || []; if(h.length && h.every(o => e1({kg, r}) > e1(o))) pr++; h.push({kg, r, t:Date.now()}); ent.push({ex:x.n, kg, reps:r}); c++; } });
-        try{ localStorage.setItem(K, JSON.stringify(log)); }catch(e){}
+        try{ localStorage.setItem(K, JSON.stringify(log)); }catch(e){console.warn(e)}
         if(ent.length) fetch(`${API_BASE}/api/plan/vip/log`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, entries: ent }) }).catch(() => {});
         vipToast(c ? vn('logOk') + (pr ? ' 🏆 ' + pr + ' ' + vn('pr') : '') : vn('need2'), !c); if(c) draw();
       };
@@ -1802,7 +1828,7 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
   // ---------- v3: member voice inbox ----------
   async function vipVoiceCard(host){
     let list = [];
-    try{ list = (await (await fetch(`${API_BASE}/api/plan/vip/voice/list/${encodeURIComponent(currentUser.email)}`)).json()).voices || []; }catch(e){}
+    try{ list = (await (await fetch(`${API_BASE}/api/plan/vip/voice/list/${encodeURIComponent(currentUser.email)}`)).json()).voices || []; }catch(e){console.warn(e)}
     if(!list.length) return;
     const T = { ar:['رسائل المدرب الصوتية', 'استماع'], en:['Voice messages from your coach', 'Play'], fr:['Messages vocaux du coach', 'Écouter'] }[currentLang] || ['رسائل المدرب الصوتية', 'استماع'];
     const card = document.createElement('div'); card.className = 'vip-card';
@@ -1823,7 +1849,7 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
   async function renderVip0(area){
     const L = VT[currentLang] || VT.ar;
     let mine = null;
-    if(currentUser){ try{ mine = (await (await fetch(`${API_BASE}/api/plan/vip/mine/${encodeURIComponent(currentUser.email)}`)).json()).request; }catch(e){} }
+    if(currentUser){ try{ mine = (await (await fetch(`${API_BASE}/api/plan/vip/mine/${encodeURIComponent(currentUser.email)}`)).json()).request; }catch(e){console.warn(e)} }
     const expired = !!(mine && mine.status === 'accepted' && mine.expires_at && new Date(mine.expires_at) < new Date());
     const accepted = !!(mine && mine.status === 'accepted') && !expired;
     const head = `<div class="vip-card vip-hero"><div class="vip-badge">VIP</div><h2 class="vip-title">👑 ${L.title}</h2><p class="vip-sub">${L.sub}</p><div class="vip-pricebox"><b>${VIP_PRICE}</b><span>${L.once}</span></div></div>
@@ -1863,9 +1889,9 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
       <div class="full" style="font-size:.8rem;color:#e8d9a0">${vn('pqT')}</div>${[1,2,3,4,5,6,7].map(n => `<label class="full" style="flex-direction:row;align-items:flex-start;gap:8px;color:#f3e9c4"><input type="checkbox" id="pq${n}" style="margin-top:3px"><span>${vn('pq' + n)}</span></label>`).join('')}
     </div><div class="vip-res" id="vipRes"></div>
     <button type="button" class="btn vip-btn" id="vipSave" style="margin-top:14px">${L.save}</button></div>`;
-    area.innerHTML = accepted ? status + extra + (saved ? `<details style="margin-bottom:14px"><summary class="btn vip-btn" style="display:block;text-align:center">${vn('profEdit')}</summary>${form}</details>` : form) : status + head + cmp + (mine && mine.status === 'pending' ? '' : !currentUser ? loginCard : `<div class="vip-card"><h3 class="vip-h">${L.formT}</h3><div class="vip-form"><label>${L.phone}<input class="calc-search" id="vp" type="tel"></label><label>${L.sender}<input class="calc-search" id="vn"></label><label class="full">${L.receipt}<input type="file" accept="image/jpeg,image/png,image/webp" id="vr" class="calc-search"></label><label class="full" style="flex-direction:row;align-items:flex-start;gap:8px;color:#f3e9c4"><input type="checkbox" id="vc" style="margin-top:4px"><span>${vn('consent')}</span></label></div><button type="button" class="btn vip-btn" id="vipAsk" style="margin-top:14px">${L.send}</button></div>`) + faq;
+    area.innerHTML = accepted ? status + extra + (saved ? `<details style="margin-bottom:14px"><summary class="btn vip-btn" style="display:block;text-align:center">${vn('profEdit')}</summary>${form}</details>` : form) : status + head + cmp + (mine && mine.status === 'pending' ? '' : !currentUser ? loginCard : `<div class="vip-card"><h3 class="vip-h">${L.formT}</h3><div class="vip-form"><label>${L.phone}<input class="calc-search" id="vp" type="tel"></label><label>${L.sender}<input class="calc-search" id="vn"></label><label class="full">${L.receipt}<input type="file" accept="image/jpeg,image/png,image/webp" id="vrc" class="calc-search"></label><label class="full" style="flex-direction:row;align-items:flex-start;gap:8px;color:#f3e9c4"><input type="checkbox" id="vc" style="margin-top:4px"><span>${vn('consent')}</span></label></div><button type="button" class="btn vip-btn" id="vipAsk" style="margin-top:14px">${L.send}</button></div>`) + faq;
     const copy = document.getElementById('vipCopy');
-    if(copy) copy.onclick = () => { try{ navigator.clipboard.writeText(VIP_CCP); }catch(e){} copy.textContent = L.copied; setTimeout(() => { copy.textContent = L.copy; }, 1500); };
+    if(copy) copy.onclick = () => { try{ navigator.clipboard.writeText(VIP_CCP); }catch(e){console.warn(e)} copy.textContent = L.copied; setTimeout(() => { copy.textContent = L.copy; }, 1500); };
     const lg = document.getElementById('vipLogin'); if(lg) lg.onclick = () => openModal('loginBackdrop');
     if(currentUser && !mine){
       const tc = document.createElement('div');
@@ -1901,7 +1927,7 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
       try{
         ask.disabled = true;
         let receipt = null;
-        const f = document.getElementById('vr').files[0];
+        const f = document.getElementById('vrc').files[0];
         if(f){
           const blob = await compressImage(f);
           const up = await fetch(`${API_BASE}/api/plan/vip/receipt`, { method:'POST', headers:{ 'Content-Type': blob.type || 'image/jpeg', 'x-member-email': currentUser.email }, body: blob });
@@ -1940,7 +1966,7 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
       const res = vipCalc(L);
       if(!res){ vipToast(L.need, 1); return; }
       if(+g('va') < 18){ vipToast(vn('age18'), 1); return; }
-      let photoIds = []; try{ const fl = [...(document.getElementById('vph')||{files:[]}).files].slice(0,3); for(const f of fl){ const bl = await compressImage(f); const up = await fetch(`${API_BASE}/api/plan/vip/receipt`, { method:'POST', headers:{ 'Content-Type': bl.type || 'image/jpeg', 'x-member-email': currentUser.email }, body: bl }); const uj = await up.json().catch(() => ({})); if(up.ok && uj.id) photoIds.push(uj.id); } }catch(e){}
+      let photoIds = []; try{ const fl = [...(document.getElementById('vph')||{files:[]}).files].slice(0,3); for(const f of fl){ const bl = await compressImage(f); const up = await fetch(`${API_BASE}/api/plan/vip/receipt`, { method:'POST', headers:{ 'Content-Type': bl.type || 'image/jpeg', 'x-member-email': currentUser.email }, body: bl }); const uj = await up.json().catch(() => ({})); if(up.ok && uj.id) photoIds.push(uj.id); } }catch(e){console.warn(e)}
       const data = { photoIds, bfSelf:(document.getElementById('vf')||{value:''}).value.trim(), h:g('vh'), w:g('vw'), age:g('va'), sex:g('vs'), goal:g('vg'), days:g('vd'), intensity:g('vi'), kcal:res.kcal, protein:res.prot, sleep:res.sleep, bf:res.bf, level:g('vl'), equip:g('ve'), neck:g('vk'), waist:g('vx'), hip:g('vy'), med:(g('vq') === 'y' || g('vz') !== 'n' || [1,2,3,4,5,6,7].some(n => document.getElementById('pq' + n).checked)) ? 'y' : 'n', inj:g('vj'), ram:g('vr'), injArea:g('vz'), parq:[1,2,3,4,5,6,7].filter(n => document.getElementById('pq' + n).checked), weak:[...new Set([g('vm1'), g('vm2')].filter(x => VM[x]))] };
       try{
         const r = await fetch(`${API_BASE}/api/plan/vip/profile`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email: currentUser.email, data }) });
@@ -1961,7 +1987,7 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
     const l = document.createElement('link'); l.rel = 'manifest';
     l.href = URL.createObjectURL(new Blob([JSON.stringify(m)], { type:'application/manifest+json' }));
     document.head.appendChild(l);
-  }catch(e){} })();
+  }catch(e){console.warn(e)} })();
 
   // ---------- متابعة الوزن ----------
   const PG = {
@@ -1979,8 +2005,8 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
     box.style.cssText = 'margin-top:16px;padding:14px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)';
     area.appendChild(box);
     let days = [], board = [];
-    try{ days = (await (await fetch(`${API_BASE}/api/activity/${encodeURIComponent(currentUser.email)}`)).json()).days || []; }catch(e){}
-    try{ board = (await (await fetch(`${API_BASE}/api/activity/leaderboard`)).json()).board || []; }catch(e){}
+    try{ days = (await (await fetch(`${API_BASE}/api/activity/${encodeURIComponent(currentUser.email)}`)).json()).days || []; }catch(e){console.warn(e)}
+    try{ board = (await (await fetch(`${API_BASE}/api/activity/leaderboard`)).json()).board || []; }catch(e){console.warn(e)}
     const set = new Set(days), today = new Date();
     const doneToday = set.has(ymd(today));
     let streak = 0, d = new Date(today); if(!doneToday) d.setDate(d.getDate()-1);
@@ -1999,7 +2025,7 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
     const btn = box.querySelector('#actBtn');
     btn.onclick = async () => {
       btn.disabled = true;
-      try{ await fetch(`${API_BASE}/api/activity`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email: currentUser.email, day: ymd(new Date()) }) }); }catch(e){}
+      try{ await fetch(`${API_BASE}/api/activity`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email: currentUser.email, day: ymd(new Date()) }) }); }catch(e){console.warn(e)}
       box.remove(); renderActivity(area);
     };
   }
@@ -2016,7 +2042,7 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
       c.style.cssText = 'position:fixed;left:12px;right:12px;bottom:12px;z-index:10001;padding:14px;border-radius:16px;background:#0b1530;border:1px solid #ffd700;color:#fff;box-shadow:0 8px 30px rgba(0,0,0,.5);display:flex;gap:12px;align-items:center';
       c.innerHTML = `<img src="/icon-192.png" width="48" height="48" alt="" style="border-radius:12px"><div style="flex:1"><b>ثبّت LHT+ على هاتفك</b><div style="font-size:.85rem;opacity:.8;margin-top:2px">${msg}</div></div>${onGo ? '<button type="button" id="instGo" class="btn small primary" style="width:auto">تثبيت</button>' : ''}<button type="button" id="instX" aria-label="إغلاق" style="background:none;border:0;color:#fff;font-size:20px">✕</button>`;
       document.body.appendChild(c);
-      c.querySelector('#instX').onclick = () => { try{ localStorage.setItem(KEY, Date.now()); }catch(e){} c.remove(); };
+      c.querySelector('#instX').onclick = () => { try{ localStorage.setItem(KEY, Date.now()); }catch(e){console.warn(e)} c.remove(); };
       if(onGo) c.querySelector('#instGo').onclick = () => { onGo(); c.remove(); };
     }
     let ev = null;
@@ -2039,25 +2065,25 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
     function doInstall(){
       if(ev){
         const e = ev; ev = null;
-        try{ e.prompt(); e.userChoice && e.userChoice.then(r => { if(r && r.outcome === 'accepted') removeFab(); }); return; }catch(_){}
+        try{ e.prompt(); e.userChoice && e.userChoice.then(r => { if(r && r.outcome === 'accepted') removeFab(); }); return; }catch(_){console.warn(_)}
       }
       instHelp();
     }
     function removeFab(){ const f = document.getElementById('instFab'); if(f) f.remove(); }
     function ensureFab(){
       if(document.getElementById('instFab')) return;
-      try{ if(sessionStorage.getItem('instFabHidden')) return; }catch(_){}
+      try{ if(sessionStorage.getItem('instFabHidden')) return; }catch(_){console.warn(_)}
       const f = document.createElement('button'); f.type = 'button'; f.id = 'instFab';
       f.style.cssText = 'position:fixed;bottom:16px;right:16px;z-index:60;height:34px;padding:0 12px;border-radius:17px;border:1px solid #ffd700;background:#0b1530;color:#ffd700;font-family:inherit;font-size:.75rem;font-weight:600;display:flex;align-items:center;gap:4px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.45)';
       f.innerHTML = '<span style="font-size:14px">📲</span><span id="instFabT">' + IL().btn + '</span><span id="instFabX" aria-label="close" style="margin-inline-start:6px;padding:0 4px;font-size:15px;line-height:1;opacity:.75">✕</span>';
-      f.onclick = e => { if(e.target && e.target.id === 'instFabX'){ e.stopPropagation(); try{ sessionStorage.setItem('instFabHidden','1'); }catch(_){} removeFab(); return; } doInstall(); };
+      f.onclick = e => { if(e.target && e.target.id === 'instFabX'){ e.stopPropagation(); try{ sessionStorage.setItem('instFabHidden','1'); }catch(_){console.warn(_)} removeFab(); return; } doInstall(); };
       document.body.appendChild(f);
     }
     document.addEventListener('click', e => { if(e.target.closest && e.target.closest('.lang-options button')) setTimeout(() => { const t = document.getElementById('instFabT'); if(t) t.textContent = IL().btn; }, 0); });
-    let wasInstalled = false; try{ wasInstalled = !!localStorage.getItem(INST); }catch(_){}
+    let wasInstalled = false; try{ wasInstalled = !!localStorage.getItem(INST); }catch(_){console.warn(_)}
     if(!wasInstalled) ensureFab();
-    window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); ev = e; try{ localStorage.removeItem(INST); }catch(_){} ensureFab(); card('يفتح بملء الشاشة كتطبيق حقيقي، وأسرع من المتصفح.', doInstall); });
-    window.addEventListener('appinstalled', () => { try{ localStorage.setItem(INST, '1'); }catch(_){} removeFab(); const c = document.getElementById('instCard'); if(c) c.remove(); });
+    window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); ev = e; try{ localStorage.removeItem(INST); }catch(_){console.warn(_)} ensureFab(); card('يفتح بملء الشاشة كتطبيق حقيقي، وأسرع من المتصفح.', doInstall); });
+    window.addEventListener('appinstalled', () => { try{ localStorage.setItem(INST, '1'); }catch(_){console.warn(_)} removeFab(); const c = document.getElementById('instCard'); if(c) c.remove(); });
     if(/iphone|ipad|ipod/i.test(navigator.userAgent)) setTimeout(() => card('اضغط زر المشاركة ⬆️ ثم «إضافة إلى الشاشة الرئيسية».', null), 2500);
   })();
 
@@ -2066,7 +2092,7 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
     const P = PG[currentLang] || PG.ar;
     if(!currentUser){ area.innerHTML = `<div class="log-empty">${P.login}</div>`; return; }
     let rows = [];
-    try{ rows = (await (await fetch(`${API_BASE}/api/plan/progress/${encodeURIComponent(currentUser.email)}`)).json()).entries || []; }catch(e){}
+    try{ rows = (await (await fetch(`${API_BASE}/api/plan/progress/${encodeURIComponent(currentUser.email)}`)).json()).entries || []; }catch(e){console.warn(e)}
     const pts = rows.map(r => ({ d:r.day, w:+r.weight }));
     let chart = `<div class="log-empty">${P.empty}</div>`;
     if(pts.length){
@@ -2080,7 +2106,7 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
     document.getElementById('pgAdd').onclick = async () => {
       const w = parseFloat(document.getElementById('pgW').value);
       if(!(w >= 20 && w <= 400)){ alert(P.need); return; }
-      try{ await fetch(`${API_BASE}/api/plan/progress`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email: currentUser.email, weight: w }) }); }catch(e){}
+      try{ await fetch(`${API_BASE}/api/plan/progress`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email: currentUser.email, weight: w }) }); }catch(e){console.warn(e)}
       renderProgress(area);
     };
   }
@@ -2129,7 +2155,7 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
     wrap.innerHTML = `<div class="vm-box" role="dialog" aria-modal="true"><h3>🎙️ رسالة صوتية إلى ${escapeHtml(name)}</h3><div class="vm-time" id="vmT">0:00</div><button type="button" class="vm-rec" id="vmR" aria-label="تسجيل">●</button><div id="vmP"></div><div class="vm-act"><button type="button" class="btn small ghost" id="vmX">إغلاق</button></div><p class="vm-note">اضغط للتسجيل ثم اضغط للإيقاف (حتى 3 دقائق). الإرسال عبر واتساب من هاتفك، أو احفظ الملف وأرسله يدوياً.</p></div>`;
     document.body.appendChild(wrap);
     const q = id => wrap.querySelector(id), fmt = n => Math.floor(n / 60) + ':' + String(n % 60).padStart(2, '0');
-    const close = () => { clearInterval(timer); try{ if(rec && rec.state !== 'inactive') rec.stop(); }catch(e){} if(stream) stream.getTracks().forEach(t => t.stop()); if(url) URL.revokeObjectURL(url); wrap.remove(); };
+    const close = () => { clearInterval(timer); try{ if(rec && rec.state !== 'inactive') rec.stop(); }catch(e){console.warn(e)} if(stream) stream.getTracks().forEach(t => t.stop()); if(url) URL.revokeObjectURL(url); wrap.remove(); };
     q('#vmX').onclick = close; wrap.onclick = ev => { if(ev.target === wrap) close(); };
     q('#vmR').onclick = async () => {
       if(rec && rec.state === 'recording'){ rec.stop(); return; }
@@ -2172,14 +2198,14 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
     let n = parseInt(localStorage.getItem(key)) || 0;
     const w = document.createElement('div'); w.className = 'wt-card';
     const draw = () => { w.innerHTML = `<div class="wt-row"><b>💧 ${L[0]}</b><div class="wt-btns"><button type="button" id="wM" aria-label="-">−</button><b dir="ltr">${n} / ${goal}</b><button type="button" id="wP" aria-label="+">+</button></div></div><div class="pg-bar"><i style="width:${Math.min(100, n / goal * 100)}%"></i></div><p class="vx-note">${L[1]}</p>`;
-      w.querySelector('#wM').onclick = () => { n = Math.max(0, n - 1); try{ localStorage.setItem(key, n); }catch(e){} draw(); };
-      w.querySelector('#wP').onclick = () => { n++; try{ localStorage.setItem(key, n); }catch(e){} draw(); }; };
+      w.querySelector('#wM').onclick = () => { n = Math.max(0, n - 1); try{ localStorage.setItem(key, n); }catch(e){console.warn(e)} draw(); };
+      w.querySelector('#wP').onclick = () => { n++; try{ localStorage.setItem(key, n); }catch(e){console.warn(e)} draw(); }; };
     draw(); box.after(w);
   }
 
   // ---------- v3: library favorites + session generator ----------
   function libFavs(){ try{ return new Set(JSON.parse(localStorage.getItem('lhta-fav') || '[]')); }catch(e){ return new Set(); } }
-  function libToggleFav(n){ const f = libFavs(); if(f.has(n)) f.delete(n); else f.add(n); try{ localStorage.setItem('lhta-fav', JSON.stringify([...f])); }catch(e){} }
+  function libToggleFav(n){ const f = libFavs(); if(f.has(n)) f.delete(n); else f.add(n); try{ localStorage.setItem('lhta-fav', JSON.stringify([...f])); }catch(e){console.warn(e)} }
 
 
   /* ===== LHT+ women's library v2 (women section only) ===== */
@@ -2208,7 +2234,7 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
     box.innerHTML = `<details class="vip-card"><summary><b>🛡️ ${WL3('فحص الأمان','Safety check')}</b></summary>${SF.map(([k,a,e]) => `<label class="wsf"><input type="checkbox" data-s="${k}" ${S[k] ? 'checked' : ''}> ${WL3(a,e)}</label>`).join('')}<p class="lib-count" id="wSn"></p></details>
     <details class="vip-card" open><summary><b>🧠 ${WL3('منشئ البرنامج','Workout Builder')}</b></summary><div class="wbd"><select id="wbG">${GOALS.map(([k,l]) => `<option value="${k}">${l}</option>`).join('')}</select><select id="wbL">${['b','i','a'].map(k => `<option value="${k}">${WLLV[k][0]} ${WLLV[k][mi+1]}</option>`).join('')}</select><select id="wbD">${[2,3,4,5].map(n => `<option value="${n}" ${n===3?'selected':''}>${n} ${WL3('أيام','days')}</option>`).join('')}</select><select id="wbP"><option value="g">${WL3('نادي','Gym')}</option><option value="b">${WL3('منزل','Home')}</option></select></div><button type="button" class="btn small primary" id="wbGo">${WL3('أنشئي برنامجي','Build my plan')}</button><div id="wbOut"></div></details>`;
     const note = () => { const on = SF.some(([k]) => wlSafe()[k]); box.querySelector('#wSn').textContent = on ? WL3('تم تصفية بعض التمارين. هذه الفلترة تقريبية، استشيري طبيبة أو مختصة قبل البدء.','Some exercises are filtered out. This is approximate; consult a doctor or specialist before starting.') : ''; }; note();
-    box.querySelectorAll('[data-s]').forEach(c => c.onchange = () => { const s = wlSafe(); s[c.dataset.s] = c.checked; try{ localStorage.setItem('lhta-wsafe', JSON.stringify(s)); }catch(e){} note(); redraw(); });
+    box.querySelectorAll('[data-s]').forEach(c => c.onchange = () => { const s = wlSafe(); s[c.dataset.s] = c.checked; try{ localStorage.setItem('lhta-wsafe', JSON.stringify(s)); }catch(e){console.warn(e)} note(); redraw(); });
     box.querySelector('#wbGo').onclick = () => {
       const g = box.querySelector('#wbG').value, lv = box.querySelector('#wbL').value, nd = +box.querySelector('#wbD').value, pl = box.querySelector('#wbP').value;
       const pool = allFn().filter(x => wlSafeOK(x) && WLRANK[wlLv(x)] <= WLRANK[lv] && (pl === 'g' || x[1] === 'b'));
@@ -2252,7 +2278,7 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
     const fillGoals = () => { const g = box.querySelector('#mbG'), cur = g.value; g.innerHTML = goalsFor(box.querySelector('#mbL').value).map(([k,l]) => `<option value="${k}">${l}</option>`).join(''); if([...g.options].some(o => o.value === cur)) g.value = cur; };
     fillGoals(); box.querySelector('#mbL').onchange = fillGoals;
     const note = () => { const on = SF.some(([k]) => mlSafe()[k]); box.querySelector('#mSn').textContent = on ? ML3('تم تصفية بعض التمارين. هذه الفلترة تقريبية، استشر طبيباً أو مختصاً قبل البدء.','Some exercises are filtered out. This is approximate; consult a doctor or specialist before starting.') : ''; }; note();
-    box.querySelectorAll('[data-ms]').forEach(c => c.onchange = () => { const s = mlSafe(); s[c.dataset.ms] = c.checked; try{ localStorage.setItem('lhta-msafe', JSON.stringify(s)); }catch(e){} note(); redraw(); });
+    box.querySelectorAll('[data-ms]').forEach(c => c.onchange = () => { const s = mlSafe(); s[c.dataset.ms] = c.checked; try{ localStorage.setItem('lhta-msafe', JSON.stringify(s)); }catch(e){console.warn(e)} note(); redraw(); });
     box.querySelector('#mbGo').onclick = () => {
       const g = box.querySelector('#mbG').value, lv = box.querySelector('#mbL').value, nd = +box.querySelector('#mbD').value, pl = box.querySelector('#mbP').value;
       let pool = allFn().filter(x => mlSafeOK(x) && MLRANK[mlLv(x)] <= MLRANK[lv] && (pl === 'g' || x[1] === 'b'));
@@ -2354,10 +2380,10 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
         <div class="lock-wrap">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="1.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
           <p>${t('lockTitle')}</p>
-          <button class="btn primary" id="unlockBtn">${t('unlockBtn')}</button>
+          <button class="btn primary" id="unlockBtn2">${t('unlockBtn')}</button>
         </div>
       `;
-      document.getElementById('unlockBtn').onclick = () => openModal('registerBackdrop');
+      document.getElementById('unlockBtn2').onclick = () => openModal('registerBackdrop');
       return;
     }
     const plan = await loadPlan();
@@ -2452,6 +2478,12 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
   }
 
   // ---------- WOMEN'S GYM PROGRAM (inside Gym/workout tab) ----------
+  /* رابط ▶ لشرح التمرين على يوتيوب (بحث بلغة التطبيق) */
+  const WX_VID = {'Frog Pump':'rgljhH1X4vc','Fire Hydrant':'KOMtxRvGACA','Donkey Kick':'IAQ-iUfoF4Y','Wall Sit':'JaZNYM3zAP0','Incline Push-up':'DhXlLypHyUw','Bird Dog':'LaLKNS7mxrk','Chair Squat':'rvpC9QkTc3Y','Curtsy Lunge':'g8mCJDtD2DQ','Banded Lateral Walk':'ReT_5fnUe6k','Cossack Squat':'gfod3jiMgl4','Side Plank':'oEs8ZvVDOzI','Hollow Hold':'R4rLjkmbHjw','Cat-Cow':'xKN35sXbwpQ','Bicycle Crunch':'QtptPxZq4R8','Superman':'UXUGfiNL1lI','Single-Leg Glute Bridge':'nat5dN0Kuao','Banded Clamshell':'ymjOGuPjOSE','Push-up':'z8nUnCdZXQI','Pike Push-up':'pHR5yG6xBps','Banded Pull-Apart':'WqdNDTTe-9g','Sumo Squat':'u2oXPmPH0hA','Sumo Squat Pulse':'u2oXPmPH0hA'};
+  const ytName = en => String(en).split(/\s*(?:\/|\+|\()/)[0].trim();
+  const ytA = en => { const nm = ytName(en), id = WX_VID[nm];
+    const href = id ? `https://www.youtube.com/watch?v=${id}` : `https://www.youtube.com/results?search_query=${encodeURIComponent(nm+' '+tr3('شرح','exercise form','exercice technique'))}`;
+    return `<a class="ex-vid-link" style="margin-top:0;margin-inline-start:6px;padding:1px 8px" href="${href}" target="_blank" rel="noopener noreferrer" aria-label="${tr3('شاهدي الشرح','Watch the demo','Voir la démo')}: ${escapeHtml(nm)}">▶</a>`; };
   const WG = {
     days:[
       {t:['اليوم 1 · أرجل وجلوتس','Day 1 · Legs & Glutes','Jour 1 · Jambes & fessiers'],x:[['Hip Thrust (Barbell)','4×8-12','90s'],['Romanian Deadlift','3×8-10','90s'],['Bulgarian Split Squat','3×10/leg','75s'],['Cable Kickback','3×12-15','60s'],['Hip Abduction Machine','3×15-20','45s']]},
@@ -2465,7 +2497,7 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
     const cols = [tr3('التمرين','Exercise','Exercice'),tr3('مجموعات×عدات','Sets×Reps','Séries×Reps'),tr3('راحة','Rest','Repos')];
     const notes = GEN()==='m' ? tr3('ركّز على الحمل التدريجي: عند إتمام أعلى تكرارات بجودة ارفع الوزن 2.5 كغ، واترك 1-3 تكرارات احتياطية (RIR). 4 جلسات أسبوعياً.','Use progressive overload: at the top of the rep range with good form, add 2.5 kg and leave 1-3 reps in reserve (RIR). 4 sessions a week.','Surcharge progressive : en haut de la fourchette avec bonne forme, +2,5 kg et 1-3 reps en réserve (RIR). 4 séances par semaine.') : tr3('ركّزي على الحمل التدريجي: عند إتمام أعلى تكرارات بجودة، ارفعي الوزن 2.5 كغ. اتركي 1-3 تكرارات احتياطية (RIR). 3-4 جلسات أسبوعياً مع يوم راحة بين جلسات الأرجل.','Use progressive overload: when you hit the top reps with good form, add 2.5 kg. Leave 1-3 reps in reserve (RIR). 3-4 sessions a week with a rest day between leg days.','Surcharge progressive : au haut de la fourchette avec bonne forme, +2,5 kg. Garde 1-3 reps en réserve (RIR). 3-4 séances/sem avec repos entre les jours jambes.');
     return `<div class="vip-card" style="margin-top:16px"><h3 class="vip-h">${H}</h3><p style="line-height:1.8;margin:0 0 10px">${notes}</p>`
-    + GD().days.map(d=>`<details style="margin:8px 0"><summary><b>${tr3(...d.t)}</b></summary><div style="overflow-x:auto"><table style="width:100%;font-size:.88rem;margin-top:6px"><tr>${cols.map(c=>`<th style="text-align:start;padding:4px 6px;opacity:.7">${c}</th>`).join('')}</tr>${d.x.map(r=>`<tr>${r.map(c=>`<td style="padding:4px 6px" dir="auto">${c}</td>`).join('')}</tr>`).join('')}</table></div></details>`).join('')
+    + GD().days.map(d=>`<details style="margin:8px 0"><summary><b>${tr3(...d.t)}</b></summary><div style="overflow-x:auto"><table style="width:100%;font-size:.88rem;margin-top:6px"><tr>${cols.map(c=>`<th style="text-align:start;padding:4px 6px;opacity:.7">${c}</th>`).join('')}</tr>${d.x.map(r=>`<tr>${r.map((c,k)=>`<td style="padding:4px 6px" dir="auto">${c}${k===0?ytA(c):''}</td>`).join('')}</tr>`).join('')}</table></div></details>`).join('')
     + `<h4 style="margin:14px 0 6px">🌸 ${tr3('تعديل حسب الدورة','Cycle-based adjustment','Ajustement selon le cycle')}</h4><div class="vip-form"><input class="calc-search" id="wgD" type="date" value="${LS.g('lhta-cy','')}"><input class="calc-search" id="wgL" type="number" min="21" max="40" value="${LS.g('lhta-cyL',28)}"></div><button class="btn vip-btn" id="wgS" style="margin:10px 0">${tr3('حساب المرحلة','Find my phase','Trouver ma phase')}</button><p id="wgO" style="line-height:1.9;margin:0"></p></div>`;
   }
   function womenGymBind(area){
@@ -2504,14 +2536,100 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
     area.querySelector('#wcGo').onclick = () => { LS.s('lhta-w-cycle',{d:area.querySelector('#wcD').value,n:area.querySelector('#wcN').value}); show(); };
     show();
   }
-  const WX_HOME = [
-    {n:['أحزمة المقاومة · جلوتس وأرجل (4 أسابيع)','Bands · Glutes & legs (4 weeks)','Élastiques · Fessiers & jambes (4 semaines)'],d:['D1: Banded hip thrust 4x15 · Banded squat 4x12 · Lateral band walk 3x15/side · Glute kickback 3x12','D2: Rest or 30 min walk','D3: Banded RDL 4x12 · Reverse lunge 3x10/leg · Clamshell 3x20 · Donkey kick 3x15','D4: Rest or stretching','D5: Sumo squat pulse 4x15 · Single-leg bridge 4x12 · Fire hydrant 3x15']},
-    {n:['دمبل خفيف · جسم كامل (3 أيام)','Light dumbbells · Full body (3 days)','Haltères légers · Corps entier (3 jours)'],d:['A: Goblet squat 4x12 · DB row 4x10 · Floor press 3x12 · Plank 3x40s','B: DB RDL 4x10 · Shoulder press 3x10 · Split squat 3x10/leg · Dead bug 3x10','C: Step-up 3x10/leg · Bent-over reverse fly 3x12 · Glute bridge (DB) 4x12 · Side plank 3x30s','بدّلي A/B/C مع يوم راحة بين كل حصة · زيدي الوزن عند إتمام كل التكرارات بسهولة']},
-    {n:['15 دقيقة سريعة · بدون أدوات','15-min express · No equipment','Express 15 min · Sans matériel'],d:['4 جولات، 40 ثانية عمل / 20 راحة:','Squat · Incline push-up · Glute bridge · Reverse lunge · Bird dog · Mountain climber','أيام الأسبوع: 3-4 حصص · إحماء 3 دقائق قبل البدء']}
-  ];
+  /* تمارين منزلية للنساء: جسم + شريط صغير + كرسي/جدار فقط (لا تتكرر مع برنامج النادي) */
+  const XR = (a,e,f,sets,rest) => [[a,e,f],sets,rest];
+  const WX_HOME = {
+    lv:[
+      {id:'b', s:['🌱 مبتدئة','🌱 Beginner','🌱 Débutante'], n:['🌱 مبتدئة · 4 أيام بدون أدوات','🌱 Beginner · 4 days, no gear','🌱 Débutante · 4 jours, sans matériel'], days:[
+        {t:['اليوم A · أرجل وجلوتس','Day A · Legs & glutes','Jour A · Jambes & fessiers'], x:[
+          XR('ضغطة الضفدع (جلوتس)','Frog Pump','Frog pump','3×15','45s'),
+          XR('سكوات على كرسي','Chair Squat','Squat à la chaise','3×12','45s'),
+          XR('رفع الركبة جانباً','Fire Hydrant','Fire hydrant','3×12/side','30s'),
+          XR('ركلة الحمار (على اليدين والركبتين)','Donkey Kick','Donkey kick (à quatre pattes)','3×12/side','30s'),
+          XR('جلوس على الجدار','Wall Sit','Chaise murale','3×20s','45s')]},
+        {t:['اليوم B · علوي وجذع','Day B · Upper body & core','Jour B · Haut du corps & gainage'], x:[
+          XR('ضغط مائل (يدان على طاولة)','Incline Push-up','Pompes inclinées','3×8-12','60s'),
+          XR('سوبرمان','Superman','Superman','3×12','45s'),
+          XR('رفع Y-T على البطن','Prone Y-T Raise','Élévations Y-T allongée','3×10','45s'),
+          XR('الكلب والطائر','Bird Dog','Bird dog','3×10/side','30s'),
+          XR('كرنش الدراجة','Bicycle Crunch','Crunch vélo','3×15','30s')]},
+        {t:['اليوم C · كارديو خفيف وتحمل','Day C · Low-impact cardio','Jour C · Cardio doux'], x:[
+          XR('قفز خفيف بدون وثب','Low-impact Jumping Jacks','Jumping jacks sans impact','3×40s','20s'),
+          XR('خطوات المتزلّجة','Skater Steps','Pas de patineuse','3×12/side','30s'),
+          XR('ركبة لمرفق واقفاً','Standing Knee-to-Elbow Crunch','Genou-coude debout','3×12/side','30s'),
+          XR('رفع الساق مستلقية جانباً','Side-Lying Leg Raise','Élévation de jambe allongée','3×15/side','30s')]},
+        {t:['اليوم D · جسم كامل لطيف','Day D · Gentle full body','Jour D · Corps entier doux'], x:[
+          XR('جسر الألوية مع رفع الركبة','Marching Glute Bridge','Pont fessier avec montée de genou','3×10/side','45s'),
+          XR('ضغط على الجدار','Wall Push-up','Pompes au mur','3×12','45s'),
+          XR('رفع الساق جانباً واقفة','Standing Side Leg Raise','Élévation latérale de jambe debout','3×12/side','30s'),
+          XR('كرنش عكسي','Reverse Crunch','Crunch inversé','3×12','30s'),
+          XR('سكوات بخطوة جانبية','Side Step Squat','Squat avec pas latéral','3×10/side','45s')]}
+      ]},
+      {id:'i', s:['🔥 متوسطة','🔥 Intermediate','🔥 Intermédiaire'], n:['🔥 متوسطة · 4 أيام بشريط مقاومة صغير','🔥 Intermediate · 4 days with a mini loop band','🔥 Intermédiaire · 4 jours avec mini-élastique'], days:[
+        {t:['اليوم A · جلوتس بالشريط','Day A · Banded glutes','Jour A · Fessiers avec élastique'], x:[
+          XR('جسر الألوية بساق واحدة','Single-Leg Glute Bridge','Pont fessier unilatéral','4×12/leg','45s'),
+          XR('ضغطة الضفدع بالشريط','Banded Frog Pump','Frog pump avec élastique','4×15','45s'),
+          XR('مشي جانبي بالشريط','Banded Lateral Walk','Marche latérale avec élastique','3×15/side','30s'),
+          XR('اندفاعة التحية','Curtsy Lunge','Fente révérence','3×10/leg','45s'),
+          XR('ركلة الحمار بالشريط','Banded Donkey Kick','Donkey kick avec élastique','3×15/side','30s')]},
+        {t:['اليوم B · أرجل وتحمل','Day B · Legs & endurance','Jour B · Jambes & endurance'], x:[
+          XR('سكوات سومو نبضات','Sumo Squat Pulse','Squat sumo pulsé','4×15','45s'),
+          XR('سكوات القوزاق','Cossack Squat','Squat cosaque','3×8/side','45s'),
+          XR('جلوس على الجدار','Wall Sit','Chaise murale','3×40s','45s'),
+          XR('رفع السمانة بساق واحدة','Single-Leg Calf Raise','Mollets unilatéral','3×15/leg','30s'),
+          XR('المحارة بالشريط','Banded Clamshell','Clamshell avec élastique','3×20/side','30s')]},
+        {t:['اليوم C · علوي وجذع','Day C · Upper body & core','Jour C · Haut du corps & gainage'], x:[
+          XR('ضغط (على الركبتين أو كامل)','Push-up','Pompes','4×8-12','60s'),
+          XR('ضغط الكتفين (Pike)','Pike Push-up','Pompes pike','3×8-10','60s'),
+          XR('فتح الشريط للخلف','Banded Pull-Apart','Écartement d’élastique','3×15','30s'),
+          XR('ملاك الثلج المعكوس','Reverse Snow Angel','Ange des neiges inversé','3×12','30s'),
+          XR('ثبات الجسم المقوّس','Hollow Hold','Hollow hold','3×20-30s','30s'),
+          XR('بلانك جانبي','Side Plank','Gainage latéral','3×30s/side','30s')]},
+        {t:['اليوم D · قوة وجسم كامل','Day D · Full-body strength','Jour D · Force corps entier'], x:[
+          XR('سكوات بساق واحدة بمساعدة كرسي','Assisted Pistol Squat','Pistol squat assisté','3×6/leg','60s'),
+          XR('اندفاعة خلفية مع رفع الركبة','Reverse Lunge to Knee Drive','Fente arrière avec montée de genou','3×10/leg','45s'),
+          XR('ضغط سبايدرمان','Spiderman Push-up','Pompes Spiderman','3×8/side','60s'),
+          XR('جسر الألوية مع المشي للأمام','Glute Bridge Walkout','Pont fessier avec marche','3×8','45s'),
+          XR('متسلّق الجبل','Mountain Climber','Mountain climber','3×40s','30s'),
+          XR('التفاف روسي','Russian Twist','Russian twist','3×20','30s')]}
+      ]},
+      {id:'x', s:['⏱️ 15 دقيقة','⏱️ 15 min','⏱️ 15 min'], n:['⏱️ سريع 15 دقيقة · بدون أدوات','⏱️ 15-min express · no gear','⏱️ Express 15 min · sans matériel'], days:[
+        {t:['4 جولات · 40 ثانية عمل / 20 راحة','4 rounds · 40 s work / 20 s rest','4 tours · 40 s effort / 20 s repos'], x:[
+          XR('قفز خفيف بدون وثب','Low-impact Jumping Jacks','Jumping jacks sans impact','4×40s','20s'),
+          XR('سكوات سومو','Sumo Squat','Squat sumo','4×40s','20s'),
+          XR('ضغط مائل (يدان على طاولة)','Incline Push-up','Pompes inclinées','4×40s','20s'),
+          XR('ضغطة الضفدع (جلوتس)','Frog Pump','Frog pump','4×40s','20s'),
+          XR('خطوات المتزلّجة','Skater Steps','Pas de patineuse','4×40s','20s'),
+          XR('الكلب والطائر','Bird Dog','Bird dog','4×40s','20s')]}
+      ]}
+    ],
+    warm:{t:['إحماء 5 دقائق','5-min warm-up','Échauffement 5 min'], x:[
+      XR('مشي في المكان','Marching in Place','Marche sur place','1×60s','—'),
+      XR('دوائر الورك','Hip Circles','Cercles de hanches','1×10/side','—'),
+      XR('القطة والبقرة','Cat-Cow','Chat-vache','1×10','—'),
+      XR('سكوات خفيف','Bodyweight Squat','Squat au poids du corps','1×10','—')]},
+    cool:{t:['تمدد 5 دقائق','5-min cool-down','Étirements 5 min'], x:[
+      XR('وضعية الطفل','Child’s Pose','Posture de l’enfant','1×30s','—'),
+      XR('تمدد الألوية (رقم 4)','Figure-4 Glute Stretch','Étirement fessier figure 4','1×30s/side','—'),
+      XR('تمدد الفخذ الأمامي','Standing Quad Stretch','Étirement des quadriceps','1×30s/side','—'),
+      XR('تمدد الفخذ الخلفي جالسة','Seated Hamstring Stretch','Étirement des ischios assis','1×30s/side','—')]},
+    prog:['📈 تدرّج 4 أسابيع: الأسبوع 1 أتقني الحركة · 2 زيدي 2-3 تكرارات · 3 انزلي ببطء (3 ثوانٍ) · 4 أضيفي مجموعة أو قلّلي الراحة 15 ثانية، ثم انتقلي للمستوى الأعلى. 3-4 حصص أسبوعياً (A ثم B ثم C ثم D) مع أيام راحة بينها.','📈 4-week progression: week 1 master the form · 2 add 2-3 reps · 3 slow 3-second lowering · 4 add a set or cut rest by 15 s, then move up a level. 3-4 sessions a week (A, B, C, D) with rest days between.','📈 Progression sur 4 semaines : sem. 1 maîtrise la technique · 2 +2-3 reps · 3 descente lente de 3 s · 4 ajoute une série ou réduis le repos de 15 s, puis passe au niveau supérieur. 3-4 séances par semaine (A, B, C, D) avec des jours de repos entre.'],
+    gear:['المستوى المتوسط يحتاج شريط مقاومة صغير (Loop band)؛ إن لم يتوفر نفّذي التمرين بدونه وأبطئي الإيقاع.','The intermediate level needs a mini loop band; if you don’t have one, do the move without it and slow the tempo.','Le niveau intermédiaire demande un mini-élastique ; sinon fais le mouvement sans et ralentis le tempo.']
+  };
   function wxHome(area){
+    const li = {ar:0,en:1,fr:2}[currentLang] || 0;
+    const cur = WX_HOME.lv.find(x => x.id === LS.g('lhta-whlv','b')) || WX_HOME.lv[0];
+    const cols = [tr3('التمرين','Exercise','Exercice'),tr3('مجموعات×عدات','Sets×Reps','Séries×Reps'),tr3('راحة','Rest','Repos')];
+    const day = (d, open) => `<details style="margin:8px 0" ${open?'open':''}><summary><b>${d.t[li]}</b></summary><div style="overflow-x:auto"><table style="width:100%;font-size:.88rem;margin-top:6px"><tr>${cols.map(c=>`<th style="text-align:start;padding:4px 6px;opacity:.7">${c}</th>`).join('')}</tr>${d.x.map(r=>`<tr><td style="padding:4px 6px" dir="auto">${r[0][li]}${li!==1?`<span class="ex-en">${r[0][1]}</span>`:''}${ytA(r[0][1])}</td><td style="padding:4px 6px" dir="auto">${r[1]}</td><td style="padding:4px 6px" dir="auto">${r[2]}</td></tr>`).join('')}</table></div></details>`;
     area.innerHTML = `<div class="vip-card"><h3 class="vip-h">🏠 ${tr3('تمارين منزلية بأدوات بسيطة','Home training, minimal gear','Entraînement maison, peu de matériel')}</h3>
-      ${WX_HOME.map((p,i)=>`<details style="margin:8px 0" ${i?'':'open'}><summary><b>${p.n[{ar:0,en:1,fr:2}[currentLang]||0]}</b></summary><ul style="line-height:1.9">${p.d.map(x=>`<li dir="auto">${x}</li>`).join('')}</ul></details>`).join('')}</div>${wxNote()}`;
+      <div class="sec-switch" style="margin:0 0 12px;max-width:none">${WX_HOME.lv.map(x=>`<button type="button" data-lv="${x.id}" class="${x.id===cur.id?'on':''}" style="padding:8px 6px;font-size:.9rem">${x.s[li]}</button>`).join('')}</div>
+      <p style="line-height:1.8;margin:0 0 6px"><b>${cur.n[li]}</b></p>
+      ${cur.id==='i' ? `<small style="opacity:.75;display:block;margin-bottom:6px">${WX_HOME.gear[li]}</small>` : ''}
+      ${cur.id!=='x' ? day(WX_HOME.warm,false) : ''}
+      ${cur.days.map((d,i)=>day(d,i===0)).join('')}
+      ${cur.id!=='x' ? day(WX_HOME.cool,false) : ''}
+      <small style="opacity:.8;display:block;margin-top:10px;line-height:1.8">${WX_HOME.prog[li]}</small></div>${wxNote()}`;
+    area.querySelectorAll('[data-lv]').forEach(b => b.onclick = () => { LS.s('lhta-whlv', b.dataset.lv); wxHome(area); });
   }
   function wxBody(area){
     const F = ['w','waist','hip','chest','thigh'], N = [tr3('الوزن كغ','Weight kg','Poids kg'),tr3('الخصر سم','Waist cm','Taille cm'),tr3('الورك سم','Hips cm','Hanches cm'),tr3('الصدر سم','Chest cm','Poitrine cm'),tr3('الفخذ سم','Thigh cm','Cuisse cm')];
@@ -2571,7 +2689,7 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
     }
     const _g=genderGymHTML; genderGymHTML=function(){ return _g()+progCard()+formCard(); };
     const _l=renderLibrary; renderLibrary=function(area){ _l(area); area.insertAdjacentHTML('beforeend', formCard()); };
-    document.addEventListener('click',e=>{ const b=e.target.closest&&e.target.closest('[data-prog]'); if(!b) return; const n=+b.dataset.prog, d=done(), k=d.indexOf(n); if(k>=0) d.splice(k,1); else d.push(n); try{ localStorage.setItem('lhta-prog-wk',JSON.stringify(d)); }catch(x){} try{ renderPublicView(); }catch(x){} });
+    document.addEventListener('click',e=>{ const b=e.target.closest&&e.target.closest('[data-prog]'); if(!b) return; const n=+b.dataset.prog, d=done(), k=d.indexOf(n); if(k>=0) d.splice(k,1); else d.push(n); try{ localStorage.setItem('lhta-prog-wk',JSON.stringify(d)); }catch(x){console.warn(x)} try{ renderPublicView(); }catch(x){console.warn(x)} });
   })();
   function infoCards(kind){
     const g = GEN(), items = INFO.filter(i=>i.g===g && i.k===kind), hd = g==='f' ? tr3('💎 معلومات نادرة للنساء','💎 Rare insights for women','💎 Infos rares pour femmes') : tr3('💎 معلومات نادرة للرجال','💎 Rare insights for men','💎 Infos rares pour hommes');
@@ -2583,7 +2701,7 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
     if(GEN()==='m'){ const i = h.indexOf('<h4 style="margin:14px 0 6px">🌸'); if(i>0) h = h.slice(0,i)+'</div>'; h = h.replace(/👩 [^<]*/, tr3('👨 برنامج الجيم للرجال (4 أيام)','👨 Men’s Gym Program (4 days)','👨 Programme salle pour hommes (4 jours)')); }
     return h + infoCards('gym');
   }
-  document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-gd]'); if(!b) return; LS.s('lhta-gender', b.dataset.gd); try{ renderPublicView(); }catch(x){} });
+  document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-gd]'); if(!b) return; LS.s('lhta-gender', b.dataset.gd); try{ renderPublicView(); }catch(x){console.warn(x)} });
 
   // ---------- workout tracker ----------
   const WT = {
@@ -2594,7 +2712,7 @@ const bfEstHtml = (bf === null && bfE >= 3 && bfE <= 60) ? `<br>🔬 ${vn('bfat'
   function wt(k){ return (WT[currentLang] || WT.ar)[k]; }
   function wkKey(){ const d = new Date(); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return 'lhta-sets-' + d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
   function wkLoad(){ try{ const v = JSON.parse(localStorage.getItem(wkKey()) || '{}'); return v && typeof v === 'object' ? v : {}; }catch(e){ return {}; } }
-  function wkSave(o){ try{ localStorage.setItem(wkKey(), JSON.stringify(o)); }catch(e){} }
+  function wkSave(o){ try{ localStorage.setItem(wkKey(), JSON.stringify(o)); }catch(e){console.warn(e)} }
   function wkUpdate(card){
     const total = card.querySelectorAll('.sb').length, done = card.querySelectorAll('.sb.on').length;
     card.querySelector('.wk-n').textContent = done + ' / ' + total;
@@ -2818,10 +2936,10 @@ function renderWorkoutDay(d){
       const v = id => parseFloat(document.getElementById(id).value);
       const x = { s: document.getElementById('tgS').value, a: v('tgA'), h: v('tgH'), w: v('tgW'), act: +document.getElementById('tgAct').value, g: document.getElementById('tgG').value };
       if(!(x.a >= 18 && x.a <= 90 && x.h >= 120 && x.h <= 230 && x.w >= 30 && x.w <= 250)){ document.getElementById('tgErr').textContent = tgt('need'); return; }
-      try{ localStorage.setItem('lhta-target', JSON.stringify(tgCompute(x))); }catch(e){}
+      try{ localStorage.setItem('lhta-target', JSON.stringify(tgCompute(x))); }catch(e){console.warn(e)}
       renderTarget(); renderLog();
     };
-    renderWater(box); try{ mealPlanner(box); }catch(e){}
+    renderWater(box); try{ mealPlanner(box); }catch(e){console.warn(e)}
   }
 
   function renderCalculator(area){
@@ -3008,7 +3126,7 @@ function renderWorkoutDay(d){
       const txt = () => '🛒 قائمة التسوق:\n' + items.map(i => '• ' + i).join('\n');
       ov.querySelector('#shopX').onclick = () => ov.remove();
       if(items.length){
-        ov.querySelector('#shopCopy').onclick = () => { try{ navigator.clipboard.writeText(txt()); }catch(e){} };
+        ov.querySelector('#shopCopy').onclick = () => { try{ navigator.clipboard.writeText(txt()); }catch(e){console.warn(e)} };
         ov.querySelector('#shopWa').onclick = () => window.open('https://wa.me/?text=' + encodeURIComponent(txt()), '_blank');
       }
     };
@@ -3118,12 +3236,12 @@ function renderWorkoutDay(d){
   });
   document.addEventListener('change', e => {
     if(e.target.classList && e.target.classList.contains('vcn')){
-      try{ localStorage.setItem('lhta-cnote:' + e.target.dataset.id, e.target.value); }catch(err){}
+      try{ localStorage.setItem('lhta-cnote:' + e.target.dataset.id, e.target.value); }catch(err){console.warn(err)}
     }
   });
   async function adminInsights(area){
     let reqs = [];
-    try{ reqs = (await (await fetch(`${API_BASE}/api/plan/vip/all`, { headers:{ 'x-admin-password': adminPassword } })).json()).requests || []; }catch(e){}
+    try{ reqs = (await (await fetch(`${API_BASE}/api/plan/vip/all`, { headers:{ 'x-admin-password': adminPassword } })).json()).requests || []; }catch(e){console.warn(e)}
     if(!reqs.length) return;
     const dl = r => Math.ceil((new Date(r.expires_at) - Date.now()) / 864e5), ago = r => r.last_log ? Math.floor((Date.now() - new Date(r.last_log)) / 864e5) : null;
     const acc = reqs.filter(r => r.status === 'accepted'), live = acc.filter(r => !r.expires_at || dl(r) >= 0);
@@ -3231,7 +3349,7 @@ function renderWorkoutDay(d){
       box.innerHTML = `<div class="tg-head"><h3>${T.t}</h3><small>${T.streak}: <b>${hbStreak(m)}</b> ${T.d}</small></div>
         <div class="hb-row"><span>${T.water}</span><span><button type="button" class="btn small ghost" data-w="-1" aria-label="-">−</button> <b style="display:inline-block;min-width:34px;text-align:center">${e.w || 0}/8</b> <button type="button" class="btn small ghost" data-w="1" aria-label="+">+</button></span></div>
         ${tog('s', T.steps)}${tog('z', T.sleep)}${tog('t', T.train)}<div class="hb-strip">${strip}</div><p class="tg-note">${T.hint}</p>`;
-      const save = () => { m[k] = e; try{ localStorage.setItem('lhta-habits', JSON.stringify(m)); }catch(x){} draw(); };
+      const save = () => { m[k] = e; try{ localStorage.setItem('lhta-habits', JSON.stringify(m)); }catch(x){console.warn(x)} draw(); };
       box.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { e[b.dataset.f] = e[b.dataset.f] ? 0 : 1; save(); });
       box.querySelectorAll('[data-w]').forEach(b => b.onclick = () => { e.w = Math.max(0, Math.min(12, (e.w || 0) + (+b.dataset.w))); save(); });
     }
@@ -3258,7 +3376,7 @@ function renderWorkoutDay(d){
     } else {
       const i = parseInt(sel.value); if(isNaN(i) || !all[i] || !confirm('حذف القالب «' + all[i].n + '»؟')) return; all.splice(i, 1);
     }
-    try{ localStorage.setItem('lhta-tpls', JSON.stringify(all.slice(-40))); }catch(err){}
+    try{ localStorage.setItem('lhta-tpls', JSON.stringify(all.slice(-40))); }catch(err){console.warn(err)}
     tplRefresh();
   });
 
@@ -3317,7 +3435,7 @@ function renderWorkoutDay(d){
           giftBtn.className = 'btn small ghost'; giftBtn.type = 'button'; giftBtn.textContent = '🎁 VIP 7 أيام'; giftBtn.style.marginInlineEnd = '6px';
           giftBtn.onclick = async () => {
             if(!confirm('منح «' + (r.name || r.email) + '» تجربة VIP لمدة 7 أيام؟')) return;
-            let rs; try{ rs = await fetch(`${API_BASE}/api/activity/grant`, { method:'POST', headers:{ 'Content-Type':'application/json', 'x-admin-password': adminPassword }, body: JSON.stringify({ memberId: r.id, days: 7 }) }); }catch(e){}
+            let rs; try{ rs = await fetch(`${API_BASE}/api/activity/grant`, { method:'POST', headers:{ 'Content-Type':'application/json', 'x-admin-password': adminPassword }, body: JSON.stringify({ memberId: r.id, days: 7 }) }); }catch(e){console.warn(e)}
             alert(rs && rs.ok ? 'تم منح التجربة' : 'تعذر المنح (قد يملك اشتراكاً قائماً)');
           };
           tr.lastElementChild.appendChild(giftBtn);
@@ -3435,7 +3553,7 @@ function renderWorkoutDay(d){
       });
     } else if(activeAdminTab === 'vip'){
       let reqs = [];
-      try{ reqs = (await (await fetch(`${API_BASE}/api/plan/vip/all`, { headers:{ 'x-admin-password': adminPassword } })).json()).requests || []; }catch(e){}
+      try{ reqs = (await (await fetch(`${API_BASE}/api/plan/vip/all`, { headers:{ 'x-admin-password': adminPassword } })).json()).requests || []; }catch(e){console.warn(e)}
       const G = {lose:'إنقاص الوزن', gain:'زيادة الوزن', muscle:'زيادة العضلات', keep:'الحفاظ على الوزن'}, I = {l:'خفيفة', m:'متوسطة', h:'عالية'};
       const S = {pending:'⏳ قيد المراجعة', accepted:'✅ مقبول', rejected:'❌ مرفوض'};
       const fd = d => new Date(d).toLocaleDateString('ar-EG'), dl = r => Math.ceil((new Date(r.expires_at) - Date.now()) / 864e5), ago = r => r.last_log ? Math.floor((Date.now() - new Date(r.last_log)) / 864e5) : null;
@@ -3473,10 +3591,10 @@ function renderWorkoutDay(d){
       area.querySelectorAll('.vrepbtn').forEach(btn => {
         btn.onclick = async () => {
           const inp = btn.parentElement.querySelector('.vrep');
-          let rs; try{ rs = await fetch(`${API_BASE}/api/plan/vip/checkin/${btn.dataset.c}/reply`, { method:'POST', headers:{ 'Content-Type':'application/json', 'x-admin-password': adminPassword }, body: JSON.stringify({ reply: inp.value }) }); }catch(e){}
+          let rs; try{ rs = await fetch(`${API_BASE}/api/plan/vip/checkin/${btn.dataset.c}/reply`, { method:'POST', headers:{ 'Content-Type':'application/json', 'x-admin-password': adminPassword }, body: JSON.stringify({ reply: inp.value }) }); }catch(e){console.warn(e)}
           if(!rs || !rs.ok){ alert('تعذر الإرسال، حاول مرة أخرى'); return; }
           const now = new Date().toISOString();
-          try{ localStorage.setItem('lhta-rlog:' + btn.dataset.c, now); }catch(e){}
+          try{ localStorage.setItem('lhta-rlog:' + btn.dataset.c, now); }catch(e){console.warn(e)}
           let sm = btn.parentElement.querySelector('.rlog');
           if(!sm){ sm = document.createElement('small'); sm.className = 'rlog'; sm.style.color = 'var(--ink-dim)'; inp.before(sm); sm.after(document.createElement('br')); }
           sm.textContent = 'ردّيت: ' + new Date(now).toLocaleString('ar-EG');
@@ -3492,19 +3610,19 @@ function renderWorkoutDay(d){
       });
       area.querySelectorAll('.vext').forEach(btn => btn.onclick = async () => {
         if(!confirm('تمديد الاشتراك 30 يوماً؟')) return;
-        let rs; try{ rs = await fetch(`${API_BASE}/api/activity/extend`, { method:'POST', headers:{ 'Content-Type':'application/json', 'x-admin-password': adminPassword }, body: JSON.stringify({ id: +btn.dataset.id, days: 30 }) }); }catch(e){}
+        let rs; try{ rs = await fetch(`${API_BASE}/api/activity/extend`, { method:'POST', headers:{ 'Content-Type':'application/json', 'x-admin-password': adminPassword }, body: JSON.stringify({ id: +btn.dataset.id, days: 30 }) }); }catch(e){console.warn(e)}
         if(!rs || !rs.ok){ alert('تعذر التمديد'); return; }
         renderAdminView();
       });
       area.querySelectorAll('.vreqdel').forEach(btn => btn.onclick = async () => {
         if(!confirm('حذف هذا المشترك وكل بياناته (المتابعات، سجل التمارين، وصل الدفع) نهائياً؟')) return;
-        let rs; try{ rs = await fetch(`${API_BASE}/api/plan/vip/${btn.dataset.id}`, { method:'DELETE', headers:{ 'x-admin-password': adminPassword } }); }catch(e){}
+        let rs; try{ rs = await fetch(`${API_BASE}/api/plan/vip/${btn.dataset.id}`, { method:'DELETE', headers:{ 'x-admin-password': adminPassword } }); }catch(e){console.warn(e)}
         if(!rs || !rs.ok){ alert('تعذر الحذف'); return; }
         renderAdminView();
       });
       area.querySelectorAll('.vcdel').forEach(btn => btn.onclick = async () => {
         if(!confirm('حذف هذه المتابعة؟')) return;
-        let rs; try{ rs = await fetch(`${API_BASE}/api/plan/vip/checkin/${btn.dataset.c}`, { method:'DELETE', headers:{ 'x-admin-password': adminPassword } }); }catch(e){}
+        let rs; try{ rs = await fetch(`${API_BASE}/api/plan/vip/checkin/${btn.dataset.c}`, { method:'DELETE', headers:{ 'x-admin-password': adminPassword } }); }catch(e){console.warn(e)}
         if(!rs || !rs.ok){ alert('تعذر الحذف'); return; }
         renderAdminView();
       });
@@ -3524,7 +3642,7 @@ function renderWorkoutDay(d){
       area.querySelectorAll('.vv').forEach(b => voiceInit(b, b.dataset.email, 'coach'));
     } else if(activeAdminTab === 'stats'){
       let st = {};
-      try{ st = await (await fetch(`${API_BASE}/api/admin/stats`, { headers:{ 'x-admin-password': adminPassword } })).json(); }catch(e){}
+      try{ st = await (await fetch(`${API_BASE}/api/admin/stats`, { headers:{ 'x-admin-password': adminPassword } })).json(); }catch(e){console.warn(e)}
       const it = (l, v) => `<div class="summary-item"><span class="slabel">${l}</span><span class="sval">${v ?? '—'}</span></div>`;
       area.innerHTML = `<div class="summary-bar">${it('إجمالي الأعضاء', st.members)}${it('جدد آخر 7 أيام', st.week)}${it('طلبات VIP بالانتظار', st.pending)}${it('VIP مقبولة', st.accepted)}${it('كل طلبات VIP', st.total)}</div>`;
     adminInsights(area);
@@ -3655,7 +3773,7 @@ function renderWorkoutDay(d){
   try{
     const savedUser = localStorage.getItem('lhta-user');
     if(savedUser) currentUser = JSON.parse(savedUser);
-  }catch(e){}
+  }catch(e){console.warn(e)}
 
   // ---------- تسجيل حساب جديد بالإيميل ----------
   document.getElementById('regSubmit').onclick = async () => {
@@ -3697,7 +3815,7 @@ function renderWorkoutDay(d){
     });
     if(!res.ok){ errEl.textContent = 'كلمة مرور غير صحيحة'; return; }
     adminPassword = pass;
-    localStorage.setItem('lhta-admin-pass', pass);
+    sessionStorage.setItem('lhta-admin-pass', pass);
     isAdmin = true;
     document.getElementById('adminPass').value = '';
     closeModal('adminBackdrop');
@@ -3719,7 +3837,7 @@ function renderWorkoutDay(d){
 <script>
 (function(){
   const LS = (k, d) => { try{ const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; }catch(e){ return d; } };
-  const SV = (k, v) => { try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
+  const SV = (k, v) => { try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){console.warn(e)} };
   const L = () => { const l = typeof currentLang !== 'undefined' ? currentLang : (localStorage.getItem('lhta-lang') || 'ar'); return D[l] ? l : 'ar'; };
   const D = {
     ar:{ wl:'⚖️ سجّل وزنك', ask:'كم وزنك اليوم لهذا التمرين (كغ)؟', last:'آخر', best:'أفضل', pr:'🏆 رقم قياسي جديد! أحسنت', saved:'تم الحفظ ✓', vid:'شرح',
@@ -3786,7 +3904,7 @@ function renderWorkoutDay(d){
     box.querySelector('#lxPdf').onclick = () => window.print();
   }
   function notify(title, body){
-    try{ if(navigator.serviceWorker && navigator.serviceWorker.getRegistration) navigator.serviceWorker.getRegistration().then(r => r ? r.showNotification(title, { body, icon:'/icon-192.png' }) : new Notification(title, { body })); else new Notification(title, { body }); }catch(e){}
+    try{ if(navigator.serviceWorker && navigator.serviceWorker.getRegistration) navigator.serviceWorker.getRegistration().then(r => r ? r.showNotification(title, { body, icon:'/icon-192.png' }) : new Notification(title, { body })); else new Notification(title, { body }); }catch(e){console.warn(e)}
   }
   setInterval(() => {
     const s = LS('lht-rem', {}); if(!s.on || !window.Notification || Notification.permission !== 'granted') return;
@@ -3817,7 +3935,7 @@ function renderWorkoutDay(d){
 <script>
 (function(){
   const LS = (k, d) => { try{ const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; }catch(e){ return d; } };
-  const SV = (k, v) => { try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
+  const SV = (k, v) => { try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){console.warn(e)} };
   const li = () => { const l = typeof currentLang !== 'undefined' ? currentLang : 'ar'; return l === 'en' ? 1 : l === 'fr' ? 2 : 0; };
   const x = s => { const a = s.split('|'); return a[li()] || a[0]; };
   const K = 'lht-myplan';
@@ -3944,7 +4062,7 @@ function renderWorkoutDay(d){
       <div class="row"><div><label>${x('أيام التمرين|Days / week|Jours / semaine')}</label>${sel('wzdays', [[3,'3'],[4,'4'],[5,'5'],[6,'6']])}</div><div><label>${x('المكان|Where|Lieu')}</label>${sel('wzplace', [['gym','النادي|Gym|Salle'],['home','المنزل|Home|Maison']])}</div></div>
       <p id="wzE" style="color:var(--red2);font-size:.85rem;min-height:1.2em"></p>
       <button type="button" class="btn primary" id="wzGo" style="width:100%">${x('أنشئ خطتي|Create my plan|Créer mon plan')}</button>
-      <button type="button" class="btn ghost" id="wzX" style="width:100%;margin-top:8px">✕</button></div>`;
+      <button type="button" class="btn ghost" id="wzX" aria-label="Close" style="width:100%;margin-top:8px">✕</button></div>`;
     document.body.appendChild(o);
     o.querySelector('#wzX').onclick = () => o.remove();
     o.querySelector('#wzGo').onclick = () => {
@@ -3996,7 +4114,7 @@ function renderWorkoutDay(d){
 })();
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@twemoji/api@17.0.2/dist/twemoji.min.js" crossorigin="anonymous"></script>
 <script>
 /* Emojis identiques sur tous les appareils (Twemoji) */
 (function(){
@@ -4004,7 +4122,7 @@ function renderWorkoutDay(d){
   var busy=false, timer=null;
   function run(){
     busy=true;
-    try{ twemoji.parse(document.body,{folder:'svg',ext:'.svg',className:'emoji'}); }catch(e){}
+    try{ twemoji.parse(document.body,{folder:'svg',ext:'.svg',className:'emoji'}); }catch(e){console.warn(e)}
     busy=false;
   }
   function schedule(){ if(busy) return; clearTimeout(timer); timer=setTimeout(run,60); }
@@ -4021,7 +4139,7 @@ function renderWorkoutDay(d){
     en:{btn:'⚙️ Progress & backup',title:'Progress & backup',wk:'Week',of:'of the 4-week cycle',none:'No sets logged yet. Complete sets this week, then come back.',deload:'🔄 Deload week: halve the sets, keep the same weight.',up:'📈 You completed most sets. Add 2.5% weight (or 1 rep) this week.',hold:'⏸️ Hold weights this week and complete all sets before increasing.',exp:'⬇️ Export my data',imp:'⬆️ Import backup',ok:'Imported. Reloading.',bad:'Invalid file.',off:'Offline mode',offOn:'✅ Enabled (service worker active)',offNo:'⚠️ Not active: open over https and add to home screen.',cache:'Cached files:',close:'Close'},
     fr:{btn:'⚙️ Progrès & sauvegarde',title:'Progrès & sauvegarde',wk:'Semaine',of:'du cycle de 4 semaines',none:"Aucune série enregistrée. Termine des séries cette semaine puis reviens.",deload:'🔄 Semaine de décharge : moitié des séries, même charge.',up:'📈 Tu as fini presque toutes tes séries. Ajoute 2,5 % de charge (ou 1 rép.) cette semaine.',hold:'⏸️ Garde les charges et termine toutes les séries avant d’augmenter.',exp:'⬇️ Exporter mes données',imp:'⬆️ Importer une sauvegarde',ok:'Importé. Rechargement.',bad:'Fichier invalide.',off:'Mode hors ligne',offOn:'✅ Activé (service worker actif)',offNo:'⚠️ Inactif : ouvre en https et ajoute à l’écran d’accueil.',cache:'Fichiers en cache :',close:'Fermer'}};
   var t=function(k){return (T[lang]||T.ar)[k];};
-  function weeks(){var a=[];for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.indexOf('lhta-sets-')===0){var p=k.slice(10).split('-').map(Number);try{var n=Object.keys(JSON.parse(localStorage.getItem(k)||'{}')).length;a.push({d:new Date(p[0],p[1]-1,p[2]).getTime(),n:n});}catch(e){}}}return a.sort(function(x,y){return x.d-y.d;});}
+  function weeks(){var a=[];for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.indexOf('lhta-sets-')===0){var p=k.slice(10).split('-').map(Number);try{var n=Object.keys(JSON.parse(localStorage.getItem(k)||'{}')).length;a.push({d:new Date(p[0],p[1]-1,p[2]).getTime(),n:n});}catch(e){console.warn(e)}}}return a.sort(function(x,y){return x.d-y.d;});}
   function advice(){var w=weeks().filter(function(x){return x.n>0;});if(!w.length)return {txt:t('none')};
     var first=w[0].d,mon=new Date();mon.setDate(mon.getDate()-((mon.getDay()+6)%7));mon.setHours(0,0,0,0);
     var idx=Math.floor(Math.round((mon.getTime()-first)/6048e5))%4+1;
@@ -4065,21 +4183,21 @@ function renderWorkoutDay(d){
     if(card&&!document.getElementById('vipMeas')){
       var u=(function(){try{return JSON.parse(localStorage.getItem('lhta-user')||'{}').email||'me';}catch(x){return 'me';}})(),K='lhta-meas:'+u;
       var m=document.createElement('div');m.id='vipMeas';m.className='vip-card';
-      function draw(){var a=[];try{a=JSON.parse(localStorage.getItem(K)||'[]');}catch(x){}
+      function draw(){var a=[];try{a=JSON.parse(localStorage.getItem(K)||'[]');}catch(x){console.warn(x)}
         var l=a[a.length-1],p=a[a.length-2];
         function df(k){return l&&p&&l[k]&&p[k]?' ('+(l[k]-p[k]>0?'+':'')+(l[k]-p[k]).toFixed(1)+')':'';}
         m.innerHTML='<h3 class="vip-h">'+t('mt')+'</h3><div class="vip-form"><label>'+t('mw')+' ('+t('cm')+')<input class="calc-search" id="mW" type="number" step="0.1"></label><label>'+t('mc')+' ('+t('cm')+')<input class="calc-search" id="mC" type="number" step="0.1"></label><label>'+t('ma')+' ('+t('cm')+')<input class="calc-search" id="mA" type="number" step="0.1"></label></div><button type="button" class="btn vip-btn" id="mS" style="margin-top:10px">'+t('ms')+'</button>'+
           (l?'<div class="vip-req" style="margin-top:10px"><b>'+new Date(l.d).toLocaleDateString()+'</b><br>'+t('mw')+': '+(l.w||'—')+df('w')+' · '+t('mc')+': '+(l.c||'—')+df('c')+' · '+t('ma')+': '+(l.a||'—')+df('a')+(p?'<br><small>'+t('md')+'</small>':'')+'</div>':'');
-        m.querySelector('#mS').onclick=function(){var w=+m.querySelector('#mW').value||0,c=+m.querySelector('#mC').value||0,ar=+m.querySelector('#mA').value||0;if(!w&&!c&&!ar)return;a.push({d:Date.now(),w:w,c:c,a:ar});try{localStorage.setItem(K,JSON.stringify(a.slice(-60)));}catch(x){}draw();};}
+        m.querySelector('#mS').onclick=function(){var w=+m.querySelector('#mW').value||0,c=+m.querySelector('#mC').value||0,ar=+m.querySelector('#mA').value||0;if(!w&&!c&&!ar)return;a.push({d:Date.now(),w:w,c:c,a:ar});try{localStorage.setItem(K,JSON.stringify(a.slice(-60)));}catch(x){console.warn(x)}draw();};}
       draw();card.insertAdjacentElement('afterend',m);}
   }
   var q=0;new MutationObserver(function(){if(q)return;q=setTimeout(function(){q=0;inject();},150);}).observe(document.body,{childList:true,subtree:true});
   /* 4) notify the member when status / program / coach reply changes (read-only polling) */
-  function notify(msg){try{if(window.Notification&&Notification.permission==='granted'){if(navigator.serviceWorker&&navigator.serviceWorker.getRegistration)navigator.serviceWorker.getRegistration().then(function(g){g?g.showNotification(t('ntit'),{body:msg,icon:'/icon-192.png'}):new Notification(t('ntit'),{body:msg});});else new Notification(t('ntit'),{body:msg});}}catch(x){}
+  function notify(msg){try{if(window.Notification&&Notification.permission==='granted'){if(navigator.serviceWorker&&navigator.serviceWorker.getRegistration)navigator.serviceWorker.getRegistration().then(function(g){g?g.showNotification(t('ntit'),{body:msg,icon:'/icon-192.png'}):new Notification(t('ntit'),{body:msg});});else new Notification(t('ntit'),{body:msg});}}catch(x){console.warn(x)}
     var d=document.createElement('div');d.textContent='👑 '+msg;d.style.cssText='position:fixed;left:0;right:0;bottom:70px;margin:0 auto;width:calc(100% - 32px);max-width:420px;z-index:100000;padding:12px 16px;border-radius:12px;background:#0b1530;border:1px solid #ffd700;color:#fff;text-align:center';document.body.appendChild(d);setTimeout(function(){d.remove();},6000);}
-  function poll(){var u;try{u=JSON.parse(localStorage.getItem('lhta-user')||'null');}catch(x){}if(!u||!u.email)return;
+  function poll(){var u;try{u=JSON.parse(localStorage.getItem('lhta-user')||'null');}catch(x){console.warn(x)}if(!u||!u.email)return;
     fetch('https://lhta-backend.onrender.com'+'/api/plan/vip/mine/'+encodeURIComponent(u.email)).then(function(r){return r.json();}).then(function(j){var r=j&&j.request;if(!r)return;
-      var K='lhta-vipseen:'+u.email,cur={s:r.status,p:(r.program||'').length,r:(r.checkins||[]).filter(function(c){return c.reply;}).length},old=null;try{old=JSON.parse(localStorage.getItem(K)||'null');}catch(x){}
+      var K='lhta-vipseen:'+u.email,cur={s:r.status,p:(r.program||'').length,r:(r.checkins||[]).filter(function(c){return c.reply;}).length},old=null;try{old=JSON.parse(localStorage.getItem(K)||'null');}catch(x){console.warn(x)}
       localStorage.setItem(K,JSON.stringify(cur));if(!old)return;
       if(cur.s!==old.s)notify(cur.s==='accepted'?t('nacc'):t('nrej'));else if(cur.p!==old.p&&cur.p>0)notify(t('nprog'));else if(cur.r>old.r)notify(t('nrep'));}).catch(function(){});}
   setTimeout(poll,4000);setInterval(poll,90000);document.addEventListener('visibilitychange',function(){if(!document.hidden)poll();});
@@ -4092,7 +4210,7 @@ var cfg=window.APP_CONFIG||{},API='https://lhta-backend.onrender.com';
 var T=function(a,e,f){var l=localStorage.getItem('lhta-lang')||'ar';return l==='en'?e:l==='fr'?f:a;};
 var E=function(){try{return JSON.parse(localStorage.getItem('lhta-user')||'{}').email||'';}catch(x){return '';}};
 var G=function(k,d){try{var v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(x){return d;}};
-var S=function(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(x){}};
+var S=function(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(x){console.warn(x)}};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
 var W=function(){return Math.floor(Date.now()/(7*864e5));};
 var today=function(){return new Date().toISOString().slice(0,10);};
@@ -4193,7 +4311,7 @@ function status(){
   if(s.classList.contains('pending')){var p=document.createElement('p');p.textContent='⏱️ '+T('نراجع الطلبات عادةً خلال ','We usually review requests within ','Nous examinons les demandes sous ')+(cfg.eta||T('24 ساعة','24 hours','24 h'))+'.';s.appendChild(p);}
   if(s.querySelector('.vip-days.warn')){var b=document.createElement('div');b.className='vip-card lx-ban';
     b.innerHTML='<b>🔄 '+T('اشتراكك على وشك الانتهاء','Your plan ends soon','Ton abonnement se termine bientôt')+'</b><p style="font-size:.85rem;margin:6px 0">'+T('للتجديد حوّل ','To renew, send ','Pour renouveler, envoie ')+esc(cfg.price||'')+T(' إلى CCP ثم أرسل طلباً جديداً بعد انتهاء المدة.',' to CCP, then submit a new request after expiry.',' au CCP puis fais une nouvelle demande après expiration.')+'</p><code style="direction:ltr;display:block;color:#ffd700;margin:6px 0">'+esc(cfg.ccp||'')+'</code><button type="button" class="btn small vip-btn" style="width:auto">'+T('نسخ الرقم','Copy number','Copier')+'</button>';
-    b.querySelector('button').onclick=function(){try{navigator.clipboard.writeText(cfg.ccp||'');}catch(x){}this.textContent='✓';};
+    b.querySelector('button').onclick=function(){try{navigator.clipboard.writeText(cfg.ccp||'');}catch(x){console.warn(x)}this.textContent='✓';};
     s.after(b);}
 }
 
@@ -4213,7 +4331,7 @@ function push(){
   d.querySelector('button').onclick=function(){Notification.requestPermission().then(function(){d.remove();subscribe();});};
   ck.closest('.vip-card').before(d);
 }
-function run(){try{program();checkin();backup();status();push();subscribe();restore();}catch(x){}}
+function run(){try{program();checkin();backup();status();push();subscribe();restore();}catch(x){console.debug('lx run:',x)}}
 var q=0;new MutationObserver(function(){if(q)return;q=setTimeout(function(){q=0;run();},200);}).observe(document.body,{childList:true,subtree:true});
 })();
 </script>
